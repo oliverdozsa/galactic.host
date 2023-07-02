@@ -26,6 +26,7 @@ import security.JwtCenter;
 import security.TokenAuthAlgorithmProvider;
 import security.TokenAuthUserIdUtil;
 import security.jwtverification.*;
+import services.social.SocialService;
 import services.voting.CommissionService;
 import services.voting.EnvelopKeyPairProvider;
 import services.voting.TokenAuthService;
@@ -81,6 +82,7 @@ public class Module extends AbstractModule {
         bind(VotingService.class).asEagerSingleton();
         bind(CommissionService.class).asEagerSingleton();
         bind(TokenAuthService.class).asEagerSingleton();
+        bind(SocialService.class).asEagerSingleton();
 
         // Tasks
         bind(ChannelAccountBuilderTaskContext.class).asEagerSingleton();
@@ -91,7 +93,6 @@ public class Module extends AbstractModule {
         bind(TasksOrganizer.class).asEagerSingleton();
 
         // Auth
-
         bind(JwtVerification.class)
                 .annotatedWith(Names.named("auth0"))
                 .to(Auth0JwtVerification.class)

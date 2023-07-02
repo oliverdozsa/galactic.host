@@ -26,3 +26,9 @@ GET     /encryptchoice/:votingId/:choice            controllers.voting.Commissio
 
 # Token auth
 GET    /tokenauth/:token                            controllers.voting.TokenAuthController.auth(token: String)
+
+# Social
++ jwtOptionalFilter
+GET    /social/:id                                  controllers.social.SocialController.getActor(id: String, request: Request)
++ jwtFilter
+POST   /social/signup                               controllers.social.SocialController.signup(request: Request)
