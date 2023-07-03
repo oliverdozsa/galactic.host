@@ -18,4 +18,44 @@ public class ActorResponseFromResult {
         JsonNode jsonNode = jsonOf(result);
         return jsonNode.get("id").asText();
     }
+
+    public static String followingOf(Result result) {
+        JsonNode jsonNode = jsonOf(result);
+        return jsonNode.get("following").asText();
+    }
+
+    public static String followersOf(Result result) {
+        JsonNode jsonNode = jsonOf(result);
+        return jsonNode.get("followers").asText();
+    }
+
+    public static String likedOf(Result result) {
+        JsonNode jsonNode = jsonOf(result);
+        return jsonNode.get("liked").asText();
+    }
+
+    public static String inboxOf(Result result) {
+        JsonNode jsonNode = jsonOf(result);
+        return jsonNode.get("inbox").asText();
+    }
+
+    public static String outboxOf(Result result) {
+        JsonNode jsonNode = jsonOf(result);
+        return jsonNode.get("outbox").asText();
+    }
+
+    public static String typeOf(Result result) {
+        JsonNode jsonNode = jsonOf(result);
+        return jsonNode.get("type").asText();
+    }
+
+    public static String nameOf(Result result) {
+        JsonNode jsonNode = jsonOf(result);
+        return jsonNode.get("name").asText();
+    }
+
+    public static String preferredUsernameOf(Result result) {
+        JsonNode jsonNode = jsonOf(result);
+        return jsonNode.get("preferredUsername").asText();
+    }
 }

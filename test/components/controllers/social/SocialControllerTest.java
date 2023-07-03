@@ -2,6 +2,7 @@ package components.controllers.social;
 
 import components.clients.social.SocialTestClient;
 import components.extractors.social.ActorResponseFromResult;
+import controllers.social.routes;
 import io.ipfs.api.IPFS;
 import ipfs.api.IpfsApi;
 import org.junit.Before;
@@ -69,7 +70,88 @@ public class SocialControllerTest {
         assertThat(context, equalTo("https://www.w3.org/ns/activitystreams"));
 
         String id = ActorResponseFromResult.idOf(getByLocationResult);
-        // assertThat(id, equalTo());
+        assertThat(id, equalTo(routes.SocialController.getActor("alice").url()));
+
+        String following = ActorResponseFromResult.followingOf(getByLocationResult);
+        assertThat(following, equalTo(routes.SocialController.getActor("alice").url() + "/following"));
+
+        String followers = ActorResponseFromResult.followersOf(getByLocationResult);
+        assertThat(followers, equalTo(routes.SocialController.getActor("alice").url() + "/followers"));
+
+        String liked = ActorResponseFromResult.likedOf(getByLocationResult);
+        assertThat(liked, equalTo(routes.SocialController.getActor("alice").url() + "/liked"));
+
+        String inbox = ActorResponseFromResult.inboxOf(getByLocationResult);
+        assertThat(inbox, equalTo(routes.SocialController.getActor("alice").url() + "/inbox"));
+
+        String outbox = ActorResponseFromResult.outboxOf(getByLocationResult);
+        assertThat(outbox, equalTo(routes.SocialController.getActor("alice").url() + "/outbox"));
+
+        String name = ActorResponseFromResult.nameOf(getByLocationResult);
+        assertThat(name, equalTo("Actor Alice"));
+
+        String type = ActorResponseFromResult.typeOf(getByLocationResult);
+        assertThat(type, equalTo("Person"));
+
+        String preferredUserName = ActorResponseFromResult.preferredUsernameOf(getByLocationResult);
+        assertThat(preferredUserName, equalTo("Alice"));
+    }
+
+    @Test
+    public void testFollowers() {
+        // Given
+        // When
+        // Then
+        // TODO
+        //  Create two actors, Alice and Bob.
+        //  Bob follows Alice.
+        //  Check that Bob is present in Alice's followers
+    }
+
+    @Test
+    public void testFollowing() {
+        // Given
+        // When
+        // Then
+        // TODO
+        //  Create two actors, Alice and Bob.
+        //  Bob follows Alice.
+        //  Check that Alice is in Bob's following
+    }
+
+    @Test
+    public void testLiked() {
+        // Given
+        // When
+        // Then
+        // TODO
+        //  Create two actors, Alice and Bob.
+        //  Bob creates a post.
+        //  Alice likes that.
+        //  Check that Alice's like collection contains the new like.
+    }
+
+    @Test
+    public void testInbox() {
+        // Given
+        // When
+        // Then
+        // TODO
+        //  Create two actors Alice and Bob.
+        //  Bobs is authorized to send posts to Alice.
+        //  Bob sends a post to Alice.
+        //  Check that Alice's inbox contains the new post.
+    }
+
+    @Test
+    public void testOutbox() {
+        // Given
+        // When
+        // Then
+        // TODO
+        //  Create an actor Alice.
+        //  Alice creates a public post for herself
+        //  Check that the new post is in Alice's outbox
     }
 
     // TODO: tests for unhappy cases
