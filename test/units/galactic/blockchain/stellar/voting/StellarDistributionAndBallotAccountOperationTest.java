@@ -2,7 +2,7 @@ package units.galactic.blockchain.stellar.voting;
 
 import galactic.blockchain.api.Account;
 import galactic.blockchain.api.BlockchainException;
-import galactic.blockchain.api.DistributionAndBallotAccountOperation;
+import galactic.blockchain.api.voting.DistributionAndBallotAccountOperation;
 import galactic.blockchain.stellar.voting.StellarDistributionAndBallotAccountOperation;
 import org.junit.Before;
 import org.junit.Test;

@@ -1,6 +1,7 @@
 package galactic.blockchain;
 
 import galactic.blockchain.api.*;
+import galactic.blockchain.api.voting.*;
 import org.reflections.Reflections;
 import play.Logger;
 

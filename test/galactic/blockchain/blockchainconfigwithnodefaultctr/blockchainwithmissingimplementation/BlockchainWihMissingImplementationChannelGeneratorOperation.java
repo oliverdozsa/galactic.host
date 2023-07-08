@@ -1,8 +1,8 @@
 package galactic.blockchain.blockchainconfigwithnodefaultctr.blockchainwithmissingimplementation;
 
 import galactic.blockchain.api.BlockchainConfiguration;
-import galactic.blockchain.api.ChannelGenerator;
-import galactic.blockchain.api.ChannelGeneratorAccountOperation;
+import galactic.blockchain.api.voting.ChannelGenerator;
+import galactic.blockchain.api.voting.ChannelGeneratorAccountOperation;
 import galactic.blockchain.api.Account;
 
 import java.util.List;

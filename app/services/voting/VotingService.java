@@ -4,7 +4,7 @@ import data.entities.voting.JpaVoting;
 import data.entities.voting.Visibility;
 import data.operations.voting.VoterDbOperations;
 import data.operations.voting.VotingDbOperations;
-import galactic.blockchain.api.ChannelGenerator;
+import galactic.blockchain.api.voting.ChannelGenerator;
 import galactic.blockchain.operations.VotingBlockchainOperations;
 import exceptions.ForbiddenException;
 import play.Logger;

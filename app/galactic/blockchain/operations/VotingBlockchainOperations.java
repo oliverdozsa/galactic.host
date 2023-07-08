@@ -2,7 +2,7 @@ package galactic.blockchain.operations;
 
 import galactic.blockchain.BlockchainFactory;
 import galactic.blockchain.Blockchains;
-import galactic.blockchain.api.FundingAccountOperation;
+import galactic.blockchain.api.voting.FundingAccountOperation;
 import exceptions.BusinessLogicViolationException;
 import executioncontexts.BlockchainExecutionContext;
 import play.Logger;

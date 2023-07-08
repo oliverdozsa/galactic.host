@@ -3,7 +3,7 @@ package galactic.blockchain.stellar.voting;
 import galactic.blockchain.api.Account;
 import galactic.blockchain.api.BlockchainConfiguration;
 import galactic.blockchain.api.BlockchainException;
-import galactic.blockchain.api.DistributionAndBallotAccountOperation;
+import galactic.blockchain.api.voting.DistributionAndBallotAccountOperation;
 import galactic.blockchain.stellar.StellarBlockchainConfiguration;
 import galactic.blockchain.stellar.StellarServerAndNetwork;
 import galactic.blockchain.stellar.StellarSubmitTransaction;

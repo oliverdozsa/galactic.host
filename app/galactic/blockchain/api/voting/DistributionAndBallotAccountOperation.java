@@ -1,5 +1,8 @@
-package galactic.blockchain.api;
+package galactic.blockchain.api.voting;
 
+
+import galactic.blockchain.api.Account;
+import galactic.blockchain.api.BlockchainOperation;
 
 public interface DistributionAndBallotAccountOperation extends BlockchainOperation {
     TransactionResult create(Account funding, String assetCode, long votesCap);

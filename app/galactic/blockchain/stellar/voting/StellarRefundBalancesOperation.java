@@ -3,7 +3,7 @@ package galactic.blockchain.stellar.voting;
 import galactic.blockchain.api.Account;
 import galactic.blockchain.api.BlockchainConfiguration;
 import galactic.blockchain.api.BlockchainException;
-import galactic.blockchain.api.RefundBalancesOperation;
+import galactic.blockchain.api.voting.RefundBalancesOperation;
 import galactic.blockchain.stellar.StellarBlockchainConfiguration;
 import galactic.blockchain.stellar.StellarServerAndNetwork;
 import org.stellar.sdk.Server;

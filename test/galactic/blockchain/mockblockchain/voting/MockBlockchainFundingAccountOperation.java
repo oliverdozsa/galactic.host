@@ -2,7 +2,7 @@ package galactic.blockchain.mockblockchain.voting;
 
 import galactic.blockchain.api.Account;
 import galactic.blockchain.api.BlockchainConfiguration;
-import galactic.blockchain.api.FundingAccountOperation;
+import galactic.blockchain.api.voting.FundingAccountOperation;
 
 public class MockBlockchainFundingAccountOperation implements FundingAccountOperation {
     @Override

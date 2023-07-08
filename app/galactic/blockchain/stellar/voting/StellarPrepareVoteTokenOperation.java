@@ -1,7 +1,7 @@
 package galactic.blockchain.stellar.voting;
 
 import galactic.blockchain.api.Account;
-import galactic.blockchain.api.DistributionAndBallotAccountOperation;
+import galactic.blockchain.api.voting.DistributionAndBallotAccountOperation;
 import org.stellar.sdk.Asset;
 import org.stellar.sdk.ChangeTrustAsset;
 import org.stellar.sdk.ChangeTrustOperation;

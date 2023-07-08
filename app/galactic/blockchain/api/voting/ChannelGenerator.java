@@ -1,4 +1,6 @@
-package galactic.blockchain.api;
+package galactic.blockchain.api.voting;
+
+import galactic.blockchain.api.Account;
 
 public class ChannelGenerator {
     public final Account account;

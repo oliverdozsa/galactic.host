@@ -2,7 +2,7 @@ package galactic.blockchain.mockblockchain.voting;
 
 import galactic.blockchain.api.Account;
 import galactic.blockchain.api.BlockchainConfiguration;
-import galactic.blockchain.api.DistributionAndBallotAccountOperation;
+import galactic.blockchain.api.voting.DistributionAndBallotAccountOperation;
 
 public class MockBlockchainDistributionAndBallotAccountOperation implements DistributionAndBallotAccountOperation {
     private static int currentDistributionAccountId = 0;

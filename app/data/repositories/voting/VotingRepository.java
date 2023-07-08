@@ -1,8 +1,8 @@
 package data.repositories.voting;
 
 import data.entities.voting.JpaVoting;
-import galactic.blockchain.api.ChannelGenerator;
-import galactic.blockchain.api.DistributionAndBallotAccountOperation;
+import galactic.blockchain.api.voting.ChannelGenerator;
+import galactic.blockchain.api.voting.DistributionAndBallotAccountOperation;
 import galactic.blockchain.api.Account;
 import requests.voting.CreateVotingRequest;
 
