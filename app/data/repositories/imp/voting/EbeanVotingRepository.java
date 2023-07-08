@@ -2,8 +2,8 @@ package data.repositories.imp.voting;
 
 import data.entities.voting.*;
 import data.repositories.voting.VotingRepository;
-import galactic.blockchain.api.ChannelGenerator;
-import galactic.blockchain.api.DistributionAndBallotAccountOperation;
+import galactic.blockchain.api.voting.ChannelGenerator;
+import galactic.blockchain.api.voting.DistributionAndBallotAccountOperation;
 import galactic.blockchain.api.Account;
 import io.ebean.EbeanServer;
 import play.Logger;

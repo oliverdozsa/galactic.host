@@ -4,7 +4,7 @@ import com.typesafe.config.Config;
 import galactic.blockchain.BlockchainFactory;
 import galactic.blockchain.Blockchains;
 import galactic.blockchain.api.BlockchainException;
-import galactic.blockchain.api.ChannelGeneratorAccountOperation;
+import galactic.blockchain.api.voting.ChannelGeneratorAccountOperation;
 import galactic.blockchain.mockblockchain.voting.MockBlockchainChannelGeneratorAccountOperation;
 import org.junit.Before;
 import org.junit.Test;

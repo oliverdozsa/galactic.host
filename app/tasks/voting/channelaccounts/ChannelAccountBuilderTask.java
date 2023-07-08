@@ -4,8 +4,8 @@ import data.entities.voting.JpaChannelAccountProgress;
 import data.entities.voting.JpaChannelGeneratorAccount;
 import galactic.blockchain.BlockchainFactory;
 import galactic.blockchain.api.Account;
-import galactic.blockchain.api.ChannelAccountOperation;
-import galactic.blockchain.api.ChannelGenerator;
+import galactic.blockchain.api.voting.ChannelAccountOperation;
+import galactic.blockchain.api.voting.ChannelGenerator;
 import play.Logger;
 
 import java.util.List;

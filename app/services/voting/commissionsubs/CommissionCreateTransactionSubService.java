@@ -5,7 +5,7 @@ import data.entities.voting.JpaVotingChannelAccount;
 import data.operations.voting.CommissionDbOperations;
 import data.operations.voting.VotingDbOperations;
 import galactic.blockchain.api.Account;
-import galactic.blockchain.api.VoterAccountOperation;
+import galactic.blockchain.api.voting.VoterAccountOperation;
 import galactic.blockchain.operations.CommissionBlockchainOperations;
 import exceptions.ForbiddenException;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;

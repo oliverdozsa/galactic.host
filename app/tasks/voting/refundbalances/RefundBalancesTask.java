@@ -4,7 +4,7 @@ import data.entities.voting.JpaChannelGeneratorAccount;
 import data.entities.voting.JpaVoting;
 import data.entities.voting.JpaVotingChannelAccount;
 import galactic.blockchain.api.Account;
-import galactic.blockchain.api.RefundBalancesOperation;
+import galactic.blockchain.api.voting.RefundBalancesOperation;
 import play.Logger;
 
 import java.util.Collections;

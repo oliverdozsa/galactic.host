@@ -1,9 +1,9 @@
 package galactic.blockchain.mockblockchain.voting;
 
 import galactic.blockchain.api.BlockchainConfiguration;
-import galactic.blockchain.api.ChannelAccountOperation;
+import galactic.blockchain.api.voting.ChannelAccountOperation;
 import galactic.blockchain.api.Account;
-import galactic.blockchain.api.ChannelGenerator;
+import galactic.blockchain.api.voting.ChannelGenerator;
 
 import java.util.ArrayList;
 import java.util.List;

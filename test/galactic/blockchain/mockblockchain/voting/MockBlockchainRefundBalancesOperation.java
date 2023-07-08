@@ -2,7 +2,7 @@ package galactic.blockchain.mockblockchain.voting;
 
 import galactic.blockchain.api.Account;
 import galactic.blockchain.api.BlockchainConfiguration;
-import galactic.blockchain.api.RefundBalancesOperation;
+import galactic.blockchain.api.voting.RefundBalancesOperation;
 
 import java.util.List;
 

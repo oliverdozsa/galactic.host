@@ -1,7 +1,7 @@
 package galactic.blockchain.mockblockchain.voting;
 
 import galactic.blockchain.api.BlockchainConfiguration;
-import galactic.blockchain.api.VoterAccountOperation;
+import galactic.blockchain.api.voting.VoterAccountOperation;
 
 import static utils.StringUtils.createRandomAlphabeticString;
 
