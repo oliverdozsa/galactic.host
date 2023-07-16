@@ -8,6 +8,7 @@ import data.repositories.imp.*;
 import data.repositories.imp.voting.*;
 import data.repositories.voting.*;
 import galactic.blockchain.operations.CommissionBlockchainOperations;
+import galactic.blockchain.operations.SocialBlockchainOperations;
 import galactic.blockchain.operations.VotingBlockchainOperations;
 import data.operations.voting.VotingDbOperations;
 import galactic.blockchain.Blockchains;
@@ -77,6 +78,7 @@ public class Module extends AbstractModule {
         bind(PageOfVotingsDbOperations.class).asEagerSingleton();
         bind(VotingBlockchainOperations.class).asEagerSingleton();
         bind(CommissionBlockchainOperations.class).asEagerSingleton();
+        bind(SocialBlockchainOperations.class).asEagerSingleton();
 
         // Services
         bind(VotingService.class).asEagerSingleton();

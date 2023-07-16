@@ -52,6 +52,14 @@ public class StellarBlockchainConfiguration implements BlockchainConfiguration {
         return config.getLong("galactic.host.vote.blockchain.stellar.votebuckets");
     }
 
+    public String getSocialMinimumSpendableLumensForSignup() {
+        return config.getString("galactic.host.social.blockchain.stellar.minimum.spendable.lumens.for.signup");
+    }
+
+    public String getSocialOperationCostInLumens() {
+        return config.getString("galactic.host.social.blockchain.stellar.operation.cost.in.lumens");
+    }
+
     private void initServerAndNetworkIfNeeded() {
         if (server == null) {
             String horizonUrl = config.getString("galactic.host.blockchain.stellar.url");

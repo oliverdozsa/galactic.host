@@ -3,8 +3,10 @@ package components.clients.social;
 import components.clients.TestClient;
 import controllers.social.routes;
 import play.Application;
+import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
+import requests.social.SignupRequest;
 
 import static play.mvc.Http.HeaderNames.CONTENT_TYPE;
 import static play.mvc.Http.HttpVerbs.GET;
@@ -18,11 +20,11 @@ public class SocialTestClient extends TestClient {
         super(application);
     }
 
-    public Result signup(String userId) {
+    public Result signup(String userId, SignupRequest request) {
         Http.RequestBuilder httpRequest = new Http.RequestBuilder()
                 .method(POST)
                 .header(CONTENT_TYPE, Http.MimeTypes.JSON)
-                // TODO: .bodyJson()
+                .bodyJson(Json.toJson(request))
                 .uri(routes.SocialController.signup().url());
 
         String jwt = jwtTestUtils.createToken(userId, userId + "@mail.com");
