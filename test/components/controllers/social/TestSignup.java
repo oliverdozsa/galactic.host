@@ -4,21 +4,26 @@ import components.extractors.social.ActorResponseFromResult;
 import controllers.social.routes;
 import org.junit.Test;
 import play.mvc.Result;
+import requests.social.SignupRequest;
 
 import static components.extractors.GenericDataFromResult.statusOf;
 import static matchers.ResultHasHeader.hasLocationHeader;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static play.mvc.Http.HeaderNames.LOCATION;
-import static play.mvc.Http.Status.CREATED;
-import static play.mvc.Http.Status.OK;
+import static play.mvc.Http.Status.*;
 
 public class TestSignup extends SocialTest {
     @Test
     public void testSignup() {
         // Given
         // When
-        Result result = client.signup("alice");
+        SignupRequest signupRequest = new SignupRequest();
+        signupRequest.network = "mockblockchain";
+        signupRequest.accountPublic = "mockpublic";
+        signupRequest.accountSecret = "mocksecret";
+
+        Result result = client.signup("alice", signupRequest);
 
         // Then
         assertThat(statusOf(result), equalTo(CREATED));
@@ -59,5 +64,50 @@ public class TestSignup extends SocialTest {
 
         String preferredUserName = ActorResponseFromResult.preferredUsernameOf(getByLocationResult);
         assertThat(preferredUserName, equalTo("Alice"));
+    }
+
+    @Test
+    public void testSignup_InvalidNetwork() {
+        // Given
+        // When
+        SignupRequest signupRequest = new SignupRequest();
+        signupRequest.network = "some-unknown-network";
+        signupRequest.accountPublic = "mockpublic";
+        signupRequest.accountSecret = "mocksecret";
+
+        Result result = client.signup("alice", signupRequest);
+
+        // Then
+        assertThat(statusOf(result), equalTo(BAD_REQUEST));
+    }
+
+    @Test
+    public void testSignup_NotEnoughBalance() {
+        // Given
+        // When
+        SignupRequest signupRequest = new SignupRequest();
+        signupRequest.network = "mockblockchain";
+        signupRequest.accountPublic = "mockpublic-low-balance";
+        signupRequest.accountSecret = "mocksecret-low-balance";
+
+        Result result = client.signup("alice", signupRequest);
+
+        // Then
+        assertThat(statusOf(result), equalTo(BAD_REQUEST));
+    }
+
+    @Test
+    public void testSignup_AccountInvalid() {
+        // Given
+        // When
+        SignupRequest signupRequest = new SignupRequest();
+        signupRequest.network = "mockblockchain";
+        signupRequest.accountPublic = "mockpublic-invalid";
+        signupRequest.accountSecret = "mocksecret-invalid";
+
+        Result result = client.signup("alice", signupRequest);
+
+        // Then
+        assertThat(statusOf(result), equalTo(BAD_REQUEST));
     }
 }
