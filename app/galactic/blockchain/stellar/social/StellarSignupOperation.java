@@ -29,7 +29,10 @@ public class StellarSignupOperation implements SignupOperation {
     public void init(BlockchainConfiguration configuration) {
         this.configuration = (StellarBlockchainConfiguration) configuration;
         serverAndNetwork = StellarServerAndNetwork.create(this.configuration);
-        minimumBalanceForSignup = ((StellarBlockchainConfiguration) configuration).getSocialMinimumSpendableLumensForSignup();
+
+        StellarBlockchainConfiguration stellarBlockchainConfig = ((StellarBlockchainConfiguration) configuration);
+
+        minimumBalanceForSignup = stellarBlockchainConfig.getSocialMinimumSpendableBalanceForSignupOf("stellar");
     }
 
     @Override

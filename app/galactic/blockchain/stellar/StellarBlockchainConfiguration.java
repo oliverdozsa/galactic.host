@@ -1,6 +1,7 @@
 package galactic.blockchain.stellar;
 
 import com.typesafe.config.Config;
+import galactic.blockchain.api.Account;
 import galactic.blockchain.api.BlockchainConfiguration;
 import org.stellar.sdk.Network;
 import org.stellar.sdk.Server;
@@ -52,12 +53,31 @@ public class StellarBlockchainConfiguration implements BlockchainConfiguration {
         return config.getLong("galactic.host.vote.blockchain.stellar.votebuckets");
     }
 
-    public String getSocialMinimumSpendableLumensForSignup() {
-        return config.getString("galactic.host.social.blockchain.stellar.minimum.spendable.lumens.for.signup");
+    public String getSocialMinimumSpendableBalanceForSignupOf(String network) {
+        if (network.equals("stellar")) {
+            return config.getString("galactic.host.social.blockchain.stellar.minimum.spendable.lumens.for.signup");
+        }
+
+        throw new RuntimeException("getSocialMinimumSpendableBalanceForSignupOf(): unknown network. network = " + network);
     }
 
-    public String getSocialOperationCostInLumens() {
-        return config.getString("galactic.host.social.blockchain.stellar.operation.cost.in.lumens");
+    public String getSocialOperationCostOf(String network) {
+        if (network.equals("stellar")) {
+            return config.getString("galactic.host.social.blockchain.stellar.operation.cost.in.lumens");
+        }
+
+        throw new RuntimeException("getSocialOperationCostOf(): unknown network. network = " + network);
+    }
+
+    public Account getSocialCostAccountOf(String network) {
+        if (network.equals("stellar")) {
+            String secret = config.getString("galactic.host.social.blockchain.stellar.cost.account.secret");
+            String publik = config.getString("galactic.host.social.blockchain.stellar.cost.account.public");
+
+            return new Account(secret, publik);
+        }
+
+        throw new RuntimeException("getSocialCostAccountOf(): unknown network. network = " + network);
     }
 
     private void initServerAndNetworkIfNeeded() {

@@ -19,9 +19,9 @@ public class TestSignup extends SocialTest {
         // Given
         // When
         SignupRequest signupRequest = new SignupRequest();
-        signupRequest.network = "mockblockchain";
-        signupRequest.accountPublic = "mockpublic";
-        signupRequest.accountSecret = "mocksecret";
+        signupRequest.setNetwork("mockblockchain");
+        signupRequest.setAccountPublic("mockpublic");
+        signupRequest.setAccountSecret("mocksecret");
 
         Result result = client.signup("alice", signupRequest);
 
@@ -71,9 +71,9 @@ public class TestSignup extends SocialTest {
         // Given
         // When
         SignupRequest signupRequest = new SignupRequest();
-        signupRequest.network = "some-unknown-network";
-        signupRequest.accountPublic = "mockpublic";
-        signupRequest.accountSecret = "mocksecret";
+        signupRequest.setNetwork("some-unknown-network");
+        signupRequest.setAccountPublic("mockpublic");
+        signupRequest.setAccountSecret("mocksecret");
 
         Result result = client.signup("alice", signupRequest);
 
@@ -86,9 +86,9 @@ public class TestSignup extends SocialTest {
         // Given
         // When
         SignupRequest signupRequest = new SignupRequest();
-        signupRequest.network = "mockblockchain";
-        signupRequest.accountPublic = "mockpublic-low-balance";
-        signupRequest.accountSecret = "mocksecret-low-balance";
+        signupRequest.setNetwork("mockblockchain");
+        signupRequest.setAccountPublic("mockpublic-low-balance");
+        signupRequest.setAccountSecret("mocksecret-low-balance");
 
         Result result = client.signup("alice", signupRequest);
 
@@ -101,11 +101,29 @@ public class TestSignup extends SocialTest {
         // Given
         // When
         SignupRequest signupRequest = new SignupRequest();
-        signupRequest.network = "mockblockchain";
-        signupRequest.accountPublic = "mockpublic-invalid";
-        signupRequest.accountSecret = "mocksecret-invalid";
+        signupRequest.setNetwork("mockblockchain");
+        signupRequest.setAccountPublic("mockpublic-invalid");
+        signupRequest.setAccountSecret("mocksecret-invalid");
 
         Result result = client.signup("alice", signupRequest);
+
+        // Then
+        assertThat(statusOf(result), equalTo(BAD_REQUEST));
+    }
+
+    @Test
+    public void testSignup_AlreadySignedUp() {
+        // Given
+        // When
+        SignupRequest signupRequest = new SignupRequest();
+        signupRequest.setNetwork("mockblockchain");
+        signupRequest.setAccountPublic("mockpublic");
+        signupRequest.setAccountSecret("mocksecret");
+
+        Result result = client.signup("alice", signupRequest);
+        assertThat(statusOf(result), equalTo(CREATED));
+
+        result = client.signup("alice", signupRequest);
 
         // Then
         assertThat(statusOf(result), equalTo(BAD_REQUEST));

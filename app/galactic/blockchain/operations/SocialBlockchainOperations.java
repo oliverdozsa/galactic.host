@@ -5,10 +5,12 @@ import exceptions.BusinessLogicViolationException;
 import executioncontexts.BlockchainExecutionContext;
 import galactic.blockchain.Blockchains;
 import galactic.blockchain.api.Account;
+import galactic.blockchain.api.social.CostAccountOperation;
 import galactic.blockchain.api.social.SignupOperation;
 import play.Logger;
 import requests.social.SignupRequest;
 
+import javax.inject.Inject;
 import java.util.concurrent.CompletionStage;
 
 import static java.util.concurrent.CompletableFuture.runAsync;
@@ -20,6 +22,7 @@ public class SocialBlockchainOperations {
 
     private static final Logger.ALogger logger = Logger.of(SocialBlockchainOperations.class);
 
+    @Inject
     public SocialBlockchainOperations(BlockchainExecutionContext blockchainExecContext, Blockchains blockchains,
                                       Config config) {
         this.blockchainExecContext = blockchainExecContext;
@@ -27,27 +30,35 @@ public class SocialBlockchainOperations {
         this.config = config;
     }
 
-    CompletionStage<Void> signup(SignupRequest request) {
+    public CompletionStage<Void> signup(SignupRequest request) {
         return runAsync(() -> {
             logger.info("signup(): request = {}", request);
 
-            SignupOperation signupOperation = blockchains.getFactoryByNetwork(request.network).createSignupOperation();
+            SignupOperation signupOperation = blockchains.getFactoryByNetwork(request.getNetwork()).createSignupOperation();
 
-            Account userAccount = new Account(request.accountSecret, request.accountPublic);
-            if(!signupOperation.isAccountValid(userAccount)){
+            CostAccountOperation costAccountOperation = blockchains.getFactoryByNetwork(request.getNetwork()).createCostAccountOperation();
+            Account costAccount = getCostAccount();
+
+            if (request.isUseTestnet()) {
+                signupOperation.useTestNet();
+                costAccountOperation.createOnTestnetIfNotExists(costAccount);
+            }
+
+            Account userAccount = new Account(request.getAccountSecret(), request.getAccountPublic());
+            if (!signupOperation.isAccountValid(userAccount)) {
                 throw new BusinessLogicViolationException("signup(): Account is not valid.");
             }
 
-            if(!signupOperation.hasEnoughBalance(userAccount)) {
+            if (!signupOperation.hasEnoughBalance(userAccount)) {
                 throw new BusinessLogicViolationException("signup(): Account doesn't have enough balance.");
             }
 
-            signupOperation.deductSignupCost(userAccount);
+            signupOperation.deductSignupCost(userAccount, costAccount);
 
         }, blockchainExecContext);
     }
 
-    private Account getCostAccount(SignupRequest request) {
+    private Account getCostAccount() {
         // TODO
         return null;
     }
