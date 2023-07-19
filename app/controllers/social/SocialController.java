@@ -8,6 +8,8 @@ import play.data.FormFactory;
 import play.mvc.Http;
 import play.mvc.Result;
 import requests.social.SignupRequest;
+import security.SecurityUtils;
+import security.VerifiedJwt;
 import services.social.SocialService;
 
 import javax.inject.Inject;
@@ -48,7 +50,9 @@ public class SocialController {
             return completedFuture(badRequest(errorJson));
         }
 
-        return socialService.signup(signupRequest)
+        VerifiedJwt jwt = SecurityUtils.getFromRequest(request);
+
+        return socialService.signup(signupRequest, jwt)
                 .thenApply(userId -> signedUpToResult(userId, request))
                 .exceptionally(mapExceptionWithUnpack);
     }

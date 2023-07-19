@@ -5,7 +5,9 @@ import com.typesafe.config.Config;
 import data.operations.voting.CommissionDbOperations;
 import data.operations.voting.PageOfVotingsDbOperations;
 import data.repositories.imp.*;
+import data.repositories.imp.social.EbeanActorRepository;
 import data.repositories.imp.voting.*;
+import data.repositories.social.ActorRepository;
 import data.repositories.voting.*;
 import galactic.blockchain.operations.CommissionBlockchainOperations;
 import galactic.blockchain.operations.SocialBlockchainOperations;
@@ -71,6 +73,7 @@ public class Module extends AbstractModule {
         bind(ChannelAccountRepository.class).to(EbeanChannelAccountRepository.class).asEagerSingleton();
         bind(ChannelGeneratorAccountRepository.class).to(EbeanChannelGeneratorAccountRepository.class).asEagerSingleton();
         bind(TokenAuthRepository.class).to(EbeanTokenAuthRepository.class).asEagerSingleton();
+        bind(ActorRepository.class).to(EbeanActorRepository.class).asEagerSingleton();
 
         // Operations
         bind(VotingDbOperations.class).asEagerSingleton();

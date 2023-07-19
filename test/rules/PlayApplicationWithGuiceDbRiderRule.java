@@ -7,6 +7,9 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import play.Application;
+import play.db.Database;
+import play.db.Databases;
+import play.db.evolutions.Evolutions;
 import play.inject.guice.GuiceApplicationBuilder;
 import play.test.Helpers;
 
@@ -50,6 +53,8 @@ public class PlayApplicationWithGuiceDbRiderRule implements TestRule {
     private void startPlay() {
         application = appBuilder.build();
         Helpers.start(application);
+        Database database = Databases.inMemory();
+        Evolutions.applyEvolutions(database);
         emProvider = EntityManagerProvider.instance("GalacticHostPU");
         dbUnitRule = DBUnitRule.instance(emProvider.connection());
     }
