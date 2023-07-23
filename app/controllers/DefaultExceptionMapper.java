@@ -47,10 +47,18 @@ public class DefaultExceptionMapper implements Function<Throwable, Result> {
 
         if(input instanceof BlockchainException) {
             logger.warn("Blockchain exception!", input);
-            return internalServerError(input.getMessage());
+            return handleBlockchainException((BlockchainException) input);
         }
 
         logger.error("Internal Error!", input);
         return internalServerError();
+    }
+
+    private Result handleBlockchainException(BlockchainException exception) {
+        if(exception.getMessage().contains("Not found blockchain factory for network")) {
+            return badRequest("Unsupported network.");
+        }
+
+        return internalServerError(exception.getMessage());
     }
 }
