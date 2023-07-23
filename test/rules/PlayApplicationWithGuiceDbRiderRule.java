@@ -53,8 +53,6 @@ public class PlayApplicationWithGuiceDbRiderRule implements TestRule {
     private void startPlay() {
         application = appBuilder.build();
         Helpers.start(application);
-        Database database = Databases.inMemory();
-        Evolutions.applyEvolutions(database);
         emProvider = EntityManagerProvider.instance("GalacticHostPU");
         dbUnitRule = DBUnitRule.instance(emProvider.connection());
     }

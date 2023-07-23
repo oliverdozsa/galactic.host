@@ -2,6 +2,7 @@ import com.auth0.jwk.JwkProvider;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.google.inject.name.Names;
 import com.typesafe.config.Config;
+import data.operations.social.ActorDbOperations;
 import data.operations.voting.CommissionDbOperations;
 import data.operations.voting.PageOfVotingsDbOperations;
 import data.repositories.imp.*;
@@ -82,6 +83,7 @@ public class Module extends AbstractModule {
         bind(VotingBlockchainOperations.class).asEagerSingleton();
         bind(CommissionBlockchainOperations.class).asEagerSingleton();
         bind(SocialBlockchainOperations.class).asEagerSingleton();
+        bind(ActorDbOperations.class).asEagerSingleton();
 
         // Services
         bind(VotingService.class).asEagerSingleton();
