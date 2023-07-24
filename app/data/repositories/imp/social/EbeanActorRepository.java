@@ -22,18 +22,23 @@ public class EbeanActorRepository implements ActorRepository {
 
     @Override
     public JpaActor createFrom(SignupRequest request, String userEmail) {
+        logger.info("createFrom(): request = {}, userEmail = {}", request, userEmail);
+
         Optional<JpaActor> existingActorMaybe = ebeanServer.createQuery(JpaActor.class)
                 .where()
                 .eq("email", userEmail)
                 .findOneOrEmpty();
 
         if (existingActorMaybe.isPresent()) {
-            throw new BusinessLogicViolationException("User with email =\"" + userEmail + "\" already exists!");
+            throw new IllegalArgumentException("User with email =\"" + userEmail + "\" already exists!");
         }
 
         JpaActor actor = new JpaActor();
         actor.setEmail(userEmail);
         actor.setPreferredUserName(request.getPreferredUserName());
+        actor.setAccountPublic(request.getAccountPublic());
+        actor.setAccountSecret(request.getAccountSecret());
+        actor.setUseTestnet(request.isUseTestnet());
 
         ebeanServer.save(actor);
         return actor;

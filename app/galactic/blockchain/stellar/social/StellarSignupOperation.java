@@ -2,12 +2,13 @@ package galactic.blockchain.stellar.social;
 
 import galactic.blockchain.api.Account;
 import galactic.blockchain.api.BlockchainConfiguration;
+import galactic.blockchain.api.BlockchainException;
 import galactic.blockchain.api.social.SignupOperation;
 import galactic.blockchain.stellar.StellarBlockchainConfiguration;
 import galactic.blockchain.stellar.StellarServerAndNetwork;
+import galactic.blockchain.stellar.StellarSubmitTransaction;
 import galactic.blockchain.stellar.StellarUtils;
-import org.stellar.sdk.KeyPair;
-import org.stellar.sdk.Server;
+import org.stellar.sdk.*;
 import org.stellar.sdk.responses.AccountResponse;
 import play.Logger;
 
@@ -89,6 +90,31 @@ public class StellarSignupOperation implements SignupOperation {
         logger.info("[STELLAR]: Deducting signup cost of {} XLM from {} to {}",
                 minimumBalanceForSignup, sourceAccountToLog, destinationAccountToLog);
 
-        // TODO
+        try {
+            Transaction.Builder txBuilder = prepareSignupTx(source);
+            deductSignupCost(txBuilder, destination);
+            submitDeductSignupTx(txBuilder, source);
+        } catch (Exception e) {
+            logger.warn("[STELLAR]: Failed to deduct signup cost!", e);
+            throw new BlockchainException("Failed to deduct signup cost!", e);
+        }
+    }
+
+    private Transaction.Builder prepareSignupTx(Account source) throws IOException {
+        return StellarUtils.createTransactionBuilder(serverAndNetwork.getServer(), serverAndNetwork.getNetwork(), source.publik);
+    }
+
+    private void deductSignupCost(Transaction.Builder txBuilder, Account destination) {
+        PaymentOperation signupPayment = new PaymentOperation.Builder(destination.publik, new AssetTypeNative(), minimumBalanceForSignup)
+                .build();
+        txBuilder.addOperation(signupPayment);
+    }
+
+    private void submitDeductSignupTx(Transaction.Builder txBuilder, Account source) throws AccountRequiresMemoException, IOException {
+        KeyPair sourceKeyPair = StellarUtils.fromAccount(source);
+        Transaction deductSignupCostTx = txBuilder.build();
+        deductSignupCostTx.sign(sourceKeyPair);
+
+        StellarSubmitTransaction.submit("deduct signup cost", deductSignupCostTx, serverAndNetwork.getServer());
     }
 }
