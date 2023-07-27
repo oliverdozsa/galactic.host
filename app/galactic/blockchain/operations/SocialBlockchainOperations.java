@@ -37,12 +37,11 @@ public class SocialBlockchainOperations {
             SignupOperation signupOperation = blockchains.getFactoryByNetwork(request.getNetwork()).createSignupOperation();
 
             CostAccountOperation costAccountOperation = blockchains.getFactoryByNetwork(request.getNetwork()).createCostAccountOperation();
-            Account costAccount = getCostAccount();
-
-            if (request.isUseTestnet()) {
-                signupOperation.useTestNet();
-                costAccountOperation.createOnTestnetIfNotExists(costAccount);
+            if(request.isUseTestnet()) {
+                costAccountOperation.useTestNet();
             }
+
+            Account costAccount = costAccountOperation.getAccount();
 
             Account userAccount = new Account(request.getAccountSecret(), request.getAccountPublic());
             if (!signupOperation.isAccountValid(userAccount)) {
@@ -56,10 +55,5 @@ public class SocialBlockchainOperations {
             signupOperation.deductSignupCost(userAccount, costAccount);
 
         }, blockchainExecContext);
-    }
-
-    private Account getCostAccount() {
-        // TODO
-        return null;
     }
 }

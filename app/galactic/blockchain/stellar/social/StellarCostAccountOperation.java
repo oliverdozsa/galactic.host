@@ -10,18 +10,26 @@ public class StellarCostAccountOperation implements CostAccountOperation {
     private StellarServerAndNetwork serverAndNetwork;
     private StellarBlockchainConfiguration configuration;
 
+    private boolean useTestnet;
+
     @Override
     public void init(BlockchainConfiguration configuration) {
-        // TODO
+        this.configuration = (StellarBlockchainConfiguration) configuration;
+        serverAndNetwork = StellarServerAndNetwork.create(this.configuration);
     }
 
     @Override
     public void useTestNet() {
-        // TODO
+        serverAndNetwork = StellarServerAndNetwork.createForTestNet(this.configuration);
+        useTestnet = true;
     }
 
     @Override
-    public void createOnTestnetIfNotExists(Account account) {
-        // TODO
+    public Account getAccount() {
+        Account account = configuration.getSocialCostAccountOf();
+
+        // TODO: create if not exists on testnet
+
+        return account;
     }
 }

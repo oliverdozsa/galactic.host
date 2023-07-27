@@ -16,6 +16,10 @@ public class SignupRequest {
 
     private String preferredUserName;
 
+    @Constraints.Required
+    @Constraints.Pattern("^[a-zA-Z0-9_.]+$")
+    private String userId;
+
     private boolean useTestnet;
 
     public String getNetwork() {
@@ -58,6 +62,14 @@ public class SignupRequest {
         this.useTestnet = useTestnet;
     }
 
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
     @Override
     public String toString() {
         return "SignupRequest{" +
@@ -66,6 +78,7 @@ public class SignupRequest {
                 ", accountSecret='" + redactWithEllipsis(accountSecret, 5) + '\'' +
                 ", preferredUserName='" + preferredUserName + '\'' +
                 ", useTestnet='" + useTestnet + '\'' +
+                ", userId='" + userId + '\'' +
                 '}';
     }
 }

@@ -2,12 +2,11 @@ package services.social;
 
 import data.entities.social.JpaActor;
 import data.operations.social.ActorDbOperations;
-import data.repositories.social.ActorRepository;
 import galactic.blockchain.operations.SocialBlockchainOperations;
 import play.Logger;
 import requests.social.SignupRequest;
+import responses.social.ActorResponse;
 import security.VerifiedJwt;
-import services.Base62Conversions;
 
 import javax.inject.Inject;
 import java.util.concurrent.CompletionStage;
@@ -30,6 +29,18 @@ public class SocialService {
 
         return socialBlockchainOperations.signup(signupRequest)
                 .thenCompose(v -> this.actorDbOperations.createFrom(signupRequest, jwt.getEmail()))
-                .thenApply(Base62Conversions::encode);
+                .thenApply(v -> v.getUserId());
+    }
+
+    public CompletionStage<ActorResponse> getActor(String userId) {
+        logger.info("getActor(): userId = {}", userId);
+
+        return actorDbOperations.getByUserId(userId)
+                .thenApply(SocialService::fromJpaActor);
+    }
+
+    private static ActorResponse fromJpaActor(JpaActor entity) {
+        // TODO
+        return null;
     }
 }

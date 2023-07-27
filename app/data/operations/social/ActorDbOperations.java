@@ -23,11 +23,17 @@ public class ActorDbOperations {
         this.actorRepository = actorRepository;
     }
 
-    public CompletionStage<Long> createFrom(SignupRequest signupRequest, String userId) {
+    public CompletionStage<JpaActor> createFrom(SignupRequest signupRequest, String userEmail) {
         return supplyAsync(() -> {
-            logger.info("createFrom(): signupRequest = {}, userId = {}", signupRequest, userId);
-            JpaActor newActor = actorRepository.createFrom(signupRequest, userId);
-            return newActor.getId();
+            logger.info("createFrom(): signupRequest = {}, userEmail = {}", signupRequest, userEmail);
+            return actorRepository.createFrom(signupRequest, userEmail);
+        }, dbExecContext);
+    }
+
+    public CompletionStage<JpaActor> getByUserId(String userId){
+        return supplyAsync(() -> {
+            logger.info("getByUserId(): userId = {}", userId);
+            return actorRepository.getByUserId(userId);
         }, dbExecContext);
     }
 }

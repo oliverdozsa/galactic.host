@@ -69,15 +69,11 @@ public class StellarBlockchainConfiguration implements BlockchainConfiguration {
         throw new RuntimeException("getSocialOperationCostOf(): unknown network. network = " + network);
     }
 
-    public Account getSocialCostAccountOf(String network) {
-        if (network.equals("stellar")) {
-            String secret = config.getString("galactic.host.social.blockchain.stellar.cost.account.secret");
-            String publik = config.getString("galactic.host.social.blockchain.stellar.cost.account.public");
+    public Account getSocialCostAccountOf() {
+        String secret = config.getString("galactic.host.social.blockchain.stellar.cost.account.secret");
+        String publik = config.getString("galactic.host.social.blockchain.stellar.cost.account.public");
 
-            return new Account(secret, publik);
-        }
-
-        throw new RuntimeException("getSocialCostAccountOf(): unknown network. network = " + network);
+        return new Account(secret, publik);
     }
 
     private void initServerAndNetworkIfNeeded() {
