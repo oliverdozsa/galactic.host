@@ -2,6 +2,8 @@ package components.controllers.social;
 
 import components.extractors.social.ActorResponseFromResult;
 import controllers.social.routes;
+import galactic.blockchain.mockblockchain.social.MockBlockchainSignupOperation;
+import org.junit.After;
 import org.junit.Test;
 import play.mvc.Result;
 import requests.social.SignupRequest;
@@ -19,6 +21,7 @@ public class TestSignup extends SocialTest {
         // Given
         // When
         SignupRequest signupRequest = new SignupRequest();
+        signupRequest.setUserId("alice");
         signupRequest.setNetwork("mockblockchain");
         signupRequest.setAccountPublic("mockpublic");
         signupRequest.setAccountSecret("mocksecret");
@@ -71,6 +74,7 @@ public class TestSignup extends SocialTest {
         // Given
         // When
         SignupRequest signupRequest = new SignupRequest();
+        signupRequest.setUserId("alice");
         signupRequest.setNetwork("some-unknown-network");
         signupRequest.setAccountPublic("mockpublic");
         signupRequest.setAccountSecret("mocksecret");
@@ -84,8 +88,11 @@ public class TestSignup extends SocialTest {
     @Test
     public void testSignup_NotEnoughBalance() {
         // Given
+        MockBlockchainSignupOperation.forceHasEnoughBalanceValueTo(false);
+
         // When
         SignupRequest signupRequest = new SignupRequest();
+        signupRequest.setUserId("alice");
         signupRequest.setNetwork("mockblockchain");
         signupRequest.setAccountPublic("mockpublic-low-balance");
         signupRequest.setAccountSecret("mocksecret-low-balance");
@@ -99,8 +106,11 @@ public class TestSignup extends SocialTest {
     @Test
     public void testSignup_AccountInvalid() {
         // Given
+        MockBlockchainSignupOperation.forceIsAccountValidTo(false);
+
         // When
         SignupRequest signupRequest = new SignupRequest();
+        signupRequest.setUserId("alice");
         signupRequest.setNetwork("mockblockchain");
         signupRequest.setAccountPublic("mockpublic-invalid");
         signupRequest.setAccountSecret("mocksecret-invalid");
@@ -116,6 +126,7 @@ public class TestSignup extends SocialTest {
         // Given
         // When
         SignupRequest signupRequest = new SignupRequest();
+        signupRequest.setUserId("alice");
         signupRequest.setNetwork("mockblockchain");
         signupRequest.setAccountPublic("mockpublic");
         signupRequest.setAccountSecret("mocksecret");
@@ -127,5 +138,49 @@ public class TestSignup extends SocialTest {
 
         // Then
         assertThat(statusOf(result), equalTo(BAD_REQUEST));
+    }
+
+    @Test
+    public void testSignup_UserIdAlreadyExists() {
+        // Given
+        // When
+        SignupRequest signupRequest = new SignupRequest();
+        signupRequest.setUserId("alice");
+        signupRequest.setNetwork("mockblockchain");
+        signupRequest.setAccountPublic("mockpublic");
+        signupRequest.setAccountSecret("mocksecret");
+
+        Result result = client.signup("alice", signupRequest);
+        assertThat(statusOf(result), equalTo(CREATED));
+
+        SignupRequest signupRequestWithUserIdAlreadyExist = new SignupRequest();
+        signupRequestWithUserIdAlreadyExist.setUserId("alice");
+        signupRequestWithUserIdAlreadyExist.setNetwork("mockblockchain");
+        signupRequestWithUserIdAlreadyExist.setAccountPublic("mockpublic");
+        signupRequestWithUserIdAlreadyExist.setAccountSecret("mocksecret");
+
+        // Then
+        result = client.signup("bob", signupRequestWithUserIdAlreadyExist);
+        assertThat(statusOf(result), equalTo(BAD_REQUEST));
+    }
+
+    @Test
+    public void testSignup_InvalidUserId() {
+        // Given
+        // When
+        SignupRequest signupRequest = new SignupRequest();
+        signupRequest.setUserId("a!ice");
+        signupRequest.setNetwork("mockblockchain");
+        signupRequest.setAccountPublic("mockpublic");
+        signupRequest.setAccountSecret("mocksecret");
+
+        Result result = client.signup("alice", signupRequest);
+        assertThat(statusOf(result), equalTo(BAD_REQUEST));
+    }
+
+    @After
+    public void tearDown(){
+        MockBlockchainSignupOperation.forceIsAccountValidTo(true);
+        MockBlockchainSignupOperation.forceHasEnoughBalanceValueTo(true);
     }
 }

@@ -13,6 +13,9 @@ public class JpaActor {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
+    @Column(name = "user_id", nullable = false, unique = true)
+    private String userId;
+
     @Lob
     @Column(name = "inbox")
     private String inbox;
@@ -134,5 +137,13 @@ public class JpaActor {
 
     public void setUseTestnet(boolean useTestnet) {
         this.useTestnet = useTestnet;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }
