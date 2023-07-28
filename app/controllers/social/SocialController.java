@@ -60,7 +60,7 @@ public class SocialController {
     public CompletionStage<Result> getActor(String userId, Http.Request request) {
         logger.info("getActor(): userId = {}", userId);
 
-        return socialService.getActor(userId)
+        return socialService.getActor(userId, request)
                 .thenApply(this::toResult)
                 .exceptionally(mapExceptionWithUnpack);
     }
