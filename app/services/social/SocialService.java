@@ -1,9 +1,11 @@
 package services.social;
 
+import controllers.social.routes;
 import data.entities.social.JpaActor;
 import data.operations.social.ActorDbOperations;
 import galactic.blockchain.operations.SocialBlockchainOperations;
 import play.Logger;
+import play.mvc.Http;
 import requests.social.SignupRequest;
 import responses.social.ActorResponse;
 import security.VerifiedJwt;
@@ -29,17 +31,24 @@ public class SocialService {
 
         return socialBlockchainOperations.signup(signupRequest)
                 .thenCompose(v -> this.actorDbOperations.createFrom(signupRequest, jwt.getEmail()))
-                .thenApply(v -> v.getUserId());
+                .thenApply(JpaActor::getUserId);
     }
 
-    public CompletionStage<ActorResponse> getActor(String userId) {
+    public CompletionStage<ActorResponse> getActor(String userId, Http.Request request) {
         logger.info("getActor(): userId = {}", userId);
 
         return actorDbOperations.getByUserId(userId)
-                .thenApply(SocialService::fromJpaActor);
+                .thenApply(e -> fromJpaActor(e, request));
     }
 
-    private static ActorResponse fromJpaActor(JpaActor entity) {
+    private static ActorResponse fromJpaActor(JpaActor entity, Http.Request request) {
+        ActorResponse actorResponse = new ActorResponse();
+        actorResponse.setFollowing(routes.SocialController.getFollowingOf(entity.getUserId()).absoluteURL(request));
+        actorResponse.setFollowers(routes.SocialController.getFollowersOf(entity.getUserId()).absoluteURL(request));
+        actorResponse.setLiked(routes.SocialController.getLikedOf(entity.getUserId()).absoluteURL(request));
+        actorResponse.setInbox(routes.SocialController.getInboxOf(entity.getUserId()).absoluteURL(request));
+        actorResponse.setOutbox(routes.SocialController.getOutboxOf(entity.getUserId()).absoluteURL(request));
+
         // TODO
         return null;
     }
