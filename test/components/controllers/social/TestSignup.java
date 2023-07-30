@@ -8,6 +8,7 @@ import org.junit.Test;
 import play.mvc.Result;
 import requests.social.SignupRequest;
 
+import static components.extractors.GenericDataFromResult.jsonOf;
 import static components.extractors.GenericDataFromResult.statusOf;
 import static matchers.ResultHasHeader.hasLocationHeader;
 import static org.hamcrest.CoreMatchers.equalTo;

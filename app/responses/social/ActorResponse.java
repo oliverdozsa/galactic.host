@@ -29,6 +29,10 @@ public class ActorResponse {
         return context;
     }
 
+    public String getType() {
+        return type;
+    }
+
     public String getFollowing() {
         return following;
     }

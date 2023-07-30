@@ -49,7 +49,6 @@ public class SocialService {
         actorResponse.setInbox(routes.SocialController.getInboxOf(entity.getUserId()).absoluteURL(request));
         actorResponse.setOutbox(routes.SocialController.getOutboxOf(entity.getUserId()).absoluteURL(request));
 
-        // TODO
-        return null;
+        return actorResponse;
     }
 }
