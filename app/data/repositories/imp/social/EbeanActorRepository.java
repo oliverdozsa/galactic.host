@@ -34,6 +34,7 @@ public class EbeanActorRepository implements ActorRepository {
         actor.setAccountPublic(request.getAccountPublic());
         actor.setAccountSecret(request.getAccountSecret());
         actor.setUseTestnet(request.isUseTestnet());
+        actor.setName(request.getName());
 
         ebeanServer.save(actor);
         return actor;

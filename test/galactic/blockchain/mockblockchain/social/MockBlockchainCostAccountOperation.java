@@ -4,6 +4,7 @@ import galactic.blockchain.api.Account;
 import galactic.blockchain.api.BlockchainConfiguration;
 import galactic.blockchain.api.social.CostAccountOperation;
 import org.checkerframework.checker.units.qual.A;
+import play.libs.ws.WSClient;
 
 public class MockBlockchainCostAccountOperation implements CostAccountOperation {
     @Override
