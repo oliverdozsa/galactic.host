@@ -5,12 +5,14 @@ import controllers.social.routes;
 import galactic.blockchain.mockblockchain.social.MockBlockchainSignupOperation;
 import org.junit.After;
 import org.junit.Test;
+import play.mvc.Http;
 import play.mvc.Result;
 import requests.social.SignupRequest;
 
 import static components.extractors.GenericDataFromResult.jsonOf;
 import static components.extractors.GenericDataFromResult.statusOf;
 import static matchers.ResultHasHeader.hasLocationHeader;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static play.mvc.Http.HeaderNames.LOCATION;
@@ -26,6 +28,8 @@ public class TestSignup extends SocialTest {
         signupRequest.setNetwork("mockblockchain");
         signupRequest.setAccountPublic("mockpublic");
         signupRequest.setAccountSecret("mocksecret");
+        signupRequest.setName("Actor Alice");
+        signupRequest.setPreferredUserName("Alice");
 
         Result result = client.signup("alice", signupRequest);
 
@@ -43,22 +47,22 @@ public class TestSignup extends SocialTest {
         assertThat(context, equalTo("https://www.w3.org/ns/activitystreams"));
 
         String id = ActorResponseFromResult.idOf(getByLocationResult);
-        assertThat(id, equalTo(routes.SocialController.getActor("alice").url()));
+        assertThat(id, containsString(routes.SocialController.getActor("alice").url()));
 
         String following = ActorResponseFromResult.followingOf(getByLocationResult);
-        assertThat(following, equalTo(routes.SocialController.getActor("alice").url() + "/following"));
+        assertThat(following, containsString(routes.SocialController.getActor("alice").url() + "/following"));
 
         String followers = ActorResponseFromResult.followersOf(getByLocationResult);
-        assertThat(followers, equalTo(routes.SocialController.getActor("alice").url() + "/followers"));
+        assertThat(followers, containsString(routes.SocialController.getActor("alice").url() + "/followers"));
 
         String liked = ActorResponseFromResult.likedOf(getByLocationResult);
-        assertThat(liked, equalTo(routes.SocialController.getActor("alice").url() + "/liked"));
+        assertThat(liked, containsString(routes.SocialController.getActor("alice").url() + "/liked"));
 
         String inbox = ActorResponseFromResult.inboxOf(getByLocationResult);
-        assertThat(inbox, equalTo(routes.SocialController.getActor("alice").url() + "/inbox"));
+        assertThat(inbox, containsString(routes.SocialController.getActor("alice").url() + "/inbox"));
 
         String outbox = ActorResponseFromResult.outboxOf(getByLocationResult);
-        assertThat(outbox, equalTo(routes.SocialController.getActor("alice").url() + "/outbox"));
+        assertThat(outbox, containsString(routes.SocialController.getActor("alice").url() + "/outbox"));
 
         String name = ActorResponseFromResult.nameOf(getByLocationResult);
         assertThat(name, equalTo("Actor Alice"));

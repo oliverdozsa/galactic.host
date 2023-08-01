@@ -7,7 +7,9 @@ import galactic.blockchain.Blockchains;
 import galactic.blockchain.api.Account;
 import galactic.blockchain.api.social.CostAccountOperation;
 import galactic.blockchain.api.social.SignupOperation;
+import galactic.blockchain.stellar.social.StellarCostAccountOperation;
 import play.Logger;
+import play.libs.ws.WSClient;
 import requests.social.SignupRequest;
 
 import javax.inject.Inject;
@@ -19,15 +21,17 @@ public class SocialBlockchainOperations {
     private final BlockchainExecutionContext blockchainExecContext;
     private final Blockchains blockchains;
     private final Config config;
+    private final WSClient wsClient;
 
     private static final Logger.ALogger logger = Logger.of(SocialBlockchainOperations.class);
 
     @Inject
     public SocialBlockchainOperations(BlockchainExecutionContext blockchainExecContext, Blockchains blockchains,
-                                      Config config) {
+                                      Config config, WSClient wsClient) {
         this.blockchainExecContext = blockchainExecContext;
         this.blockchains = blockchains;
         this.config = config;
+        this.wsClient = wsClient;
     }
 
     public CompletionStage<Void> signup(SignupRequest request) {
@@ -37,7 +41,7 @@ public class SocialBlockchainOperations {
             SignupOperation signupOperation = blockchains.getFactoryByNetwork(request.getNetwork()).createSignupOperation();
 
             CostAccountOperation costAccountOperation = blockchains.getFactoryByNetwork(request.getNetwork()).createCostAccountOperation();
-            if(request.isUseTestnet()) {
+            if (request.isUseTestnet()) {
                 costAccountOperation.useTestNet();
             }
 

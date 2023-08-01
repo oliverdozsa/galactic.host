@@ -51,6 +51,9 @@ public class JpaActor {
     @Column(name = "use_testnet")
     private boolean useTestnet;
 
+    @Column(name = "name")
+    private String name;
+
     public Long getId() {
         return id;
     }
@@ -145,5 +148,13 @@ public class JpaActor {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

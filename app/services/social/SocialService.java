@@ -43,11 +43,14 @@ public class SocialService {
 
     private static ActorResponse fromJpaActor(JpaActor entity, Http.Request request) {
         ActorResponse actorResponse = new ActorResponse();
+        actorResponse.setId(routes.SocialController.getActor(entity.getUserId()).absoluteURL(request));
         actorResponse.setFollowing(routes.SocialController.getFollowingOf(entity.getUserId()).absoluteURL(request));
         actorResponse.setFollowers(routes.SocialController.getFollowersOf(entity.getUserId()).absoluteURL(request));
         actorResponse.setLiked(routes.SocialController.getLikedOf(entity.getUserId()).absoluteURL(request));
         actorResponse.setInbox(routes.SocialController.getInboxOf(entity.getUserId()).absoluteURL(request));
         actorResponse.setOutbox(routes.SocialController.getOutboxOf(entity.getUserId()).absoluteURL(request));
+        actorResponse.setName(entity.getName());
+        actorResponse.setPreferredUsername(entity.getPreferredUserName());
 
         return actorResponse;
     }

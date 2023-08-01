@@ -16,6 +16,8 @@ public class SignupRequest {
 
     private String preferredUserName;
 
+    private String name;
+
     @Constraints.Required
     @Constraints.Pattern("^[a-zA-Z0-9_.]+$")
     private String userId;
@@ -70,6 +72,14 @@ public class SignupRequest {
         this.userId = userId;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @Override
     public String toString() {
         return "SignupRequest{" +
@@ -79,6 +89,7 @@ public class SignupRequest {
                 ", preferredUserName='" + preferredUserName + '\'' +
                 ", useTestnet='" + useTestnet + '\'' +
                 ", userId='" + userId + '\'' +
+                ", name='" + name + '\'' +
                 '}';
     }
 }
