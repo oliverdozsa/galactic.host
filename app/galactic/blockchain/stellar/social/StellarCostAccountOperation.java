@@ -8,7 +8,6 @@ import galactic.blockchain.api.social.CostAccountOperation;
 import galactic.blockchain.stellar.StellarBlockchainConfiguration;
 import galactic.blockchain.stellar.StellarServerAndNetwork;
 import org.stellar.sdk.Server;
-import org.stellar.sdk.responses.AccountResponse;
 import play.Logger;
 import play.libs.ws.WSClient;
 import play.libs.ws.WSRequest;
@@ -56,7 +55,7 @@ public class StellarCostAccountOperation implements CostAccountOperation {
         String accountPublicToLog = redactWithEllipsis(account.publik, 5);
 
         try {
-            AccountResponse accountResponse = server.accounts().account(account.publik);
+            server.accounts().account(account.publik);
             logger.info("[STELLAR]: Cost account: {} on testnet already exists.", accountPublicToLog);
             return;
         } catch (IOException e) {
