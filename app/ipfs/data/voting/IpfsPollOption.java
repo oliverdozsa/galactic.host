@@ -1,4 +1,4 @@
-package ipfs.data;
+package ipfs.data.voting;
 
 public class IpfsPollOption {
     private String name;

@@ -30,11 +30,9 @@ public class EbeanActorRepository implements ActorRepository {
         JpaActor actor = new JpaActor();
         actor.setEmail(userEmail);
         actor.setUserId(request.getUserId());
-        actor.setPreferredUserName(request.getPreferredUserName());
         actor.setAccountPublic(request.getAccountPublic());
         actor.setAccountSecret(request.getAccountSecret());
         actor.setUseTestnet(request.isUseTestnet());
-        actor.setName(request.getName());
 
         ebeanServer.save(actor);
         return actor;

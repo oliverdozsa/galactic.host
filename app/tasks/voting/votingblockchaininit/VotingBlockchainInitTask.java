@@ -8,8 +8,8 @@ import galactic.blockchain.api.voting.ChannelGenerator;
 import galactic.blockchain.api.voting.ChannelGeneratorAccountOperation;
 import galactic.blockchain.api.voting.DistributionAndBallotAccountOperation;
 import galactic.blockchain.api.voting.FundingAccountOperation;
-import ipfs.data.IpfsVoting;
-import ipfs.data.IpfsVotingFromJpaVoting;
+import ipfs.data.voting.IpfsVoting;
+import ipfs.data.voting.IpfsVotingFromJpaVoting;
 import play.Logger;
 import play.libs.Json;
 

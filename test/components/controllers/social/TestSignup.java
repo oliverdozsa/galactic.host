@@ -5,11 +5,9 @@ import controllers.social.routes;
 import galactic.blockchain.mockblockchain.social.MockBlockchainSignupOperation;
 import org.junit.After;
 import org.junit.Test;
-import play.mvc.Http;
 import play.mvc.Result;
 import requests.social.SignupRequest;
 
-import static components.extractors.GenericDataFromResult.jsonOf;
 import static components.extractors.GenericDataFromResult.statusOf;
 import static matchers.ResultHasHeader.hasLocationHeader;
 import static org.hamcrest.CoreMatchers.containsString;

@@ -84,20 +84,8 @@ public class StellarSignupOperation implements SignupOperation {
     }
 
     @Override
-    public void deductSignupCost(Account source, Account destination) {
-        String sourceAccountToLog = redactWithEllipsis(source.publik, 5);
-        String destinationAccountToLog = redactWithEllipsis(destination.publik, 5);
-        logger.info("[STELLAR]: Deducting signup cost of {} XLM from {} to {}",
-                minimumBalanceForSignup, sourceAccountToLog, destinationAccountToLog);
-
-        try {
-            Transaction.Builder txBuilder = prepareSignupTx(source);
-            deductSignupCost(txBuilder, destination);
-            submitDeductSignupTx(txBuilder, source);
-        } catch (Exception e) {
-            logger.warn("[STELLAR]: Failed to deduct signup cost!", e);
-            throw new BlockchainException("Failed to deduct signup cost!", e);
-        }
+    public void createProfile(String cid) {
+        // TODO
     }
 
     private Transaction.Builder prepareSignupTx(Account source) throws IOException {

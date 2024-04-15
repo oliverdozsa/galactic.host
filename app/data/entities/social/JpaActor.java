@@ -17,28 +17,8 @@ public class JpaActor {
     private String userId;
 
     @Lob
-    @Column(name = "inbox")
-    private String inbox;
-
-    @Lob
-    @Column(name = "outbox")
-    private String outbox;
-
-    @Lob
-    @Column(name = "following")
-    private String following;
-
-    @Lob
-    @Column(name = "followers")
-    private String followers;
-
-    @Lob
-    @Column(name = "liked")
-    private String liked;
-
-    @Lob
-    @Column(name = "preferred_user_name")
-    private String preferredUserName;
+    @Column(name = "encryption_key", nullable = false)
+    private String encryptionKey;
 
     @Lob
     @Column(name = "account_public", nullable = false)
@@ -51,63 +31,12 @@ public class JpaActor {
     @Column(name = "use_testnet")
     private boolean useTestnet;
 
-    @Column(name = "name")
-    private String name;
-
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getInbox() {
-        return inbox;
-    }
-
-    public void setInbox(String inbox) {
-        this.inbox = inbox;
-    }
-
-    public String getOutbox() {
-        return outbox;
-    }
-
-    public void setOutbox(String outbox) {
-        this.outbox = outbox;
-    }
-
-    public String getFollowing() {
-        return following;
-    }
-
-    public void setFollowing(String following) {
-        this.following = following;
-    }
-
-    public String getFollowers() {
-        return followers;
-    }
-
-    public void setFollowers(String followers) {
-        this.followers = followers;
-    }
-
-    public String getLiked() {
-        return liked;
-    }
-
-    public void setLiked(String liked) {
-        this.liked = liked;
-    }
-
-    public String getPreferredUserName() {
-        return preferredUserName;
-    }
-
-    public void setPreferredUserName(String preferredUserName) {
-        this.preferredUserName = preferredUserName;
     }
 
     public String getEmail() {
@@ -148,13 +77,5 @@ public class JpaActor {
 
     public void setUserId(String userId) {
         this.userId = userId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 }

@@ -1,4 +1,4 @@
-package ipfs.data;
+package ipfs.data.voting;
 
 import java.util.List;
 

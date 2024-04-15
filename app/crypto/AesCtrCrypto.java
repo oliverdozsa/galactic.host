@@ -10,7 +10,6 @@ import javax.crypto.spec.SecretKeySpec;
 import java.security.SecureRandom;
 import java.security.Security;
 import java.util.Arrays;
-import java.util.Base64;
 
 // Based on:
 //   - https://medium.com/lumenauts/sending-secret-and-anonymous-memos-with-stellar-8914479e949b

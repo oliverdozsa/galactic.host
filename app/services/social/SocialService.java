@@ -1,6 +1,7 @@
 package services.social;
 
 import controllers.social.routes;
+import crypto.AesCtrCrypto;
 import data.entities.social.JpaActor;
 import data.operations.social.ActorDbOperations;
 import galactic.blockchain.operations.SocialBlockchainOperations;
@@ -11,6 +12,7 @@ import responses.social.ActorResponse;
 import security.VerifiedJwt;
 
 import javax.inject.Inject;
+import java.util.Base64;
 import java.util.concurrent.CompletionStage;
 
 public class SocialService {
@@ -29,8 +31,10 @@ public class SocialService {
     public CompletionStage<String> signup(SignupRequest signupRequest, VerifiedJwt jwt) {
         logger.info("signup(): signupRequest = {}", signupRequest.toString());
 
-        return socialBlockchainOperations.signup(signupRequest)
-                .thenCompose(v -> this.actorDbOperations.createFrom(signupRequest, jwt.getEmail()))
+        String encryptionKey = generateEncryptionKey();
+
+        return socialBlockchainOperations.signup(signupRequest, encryptionKey)
+                .thenCompose(v -> this.actorDbOperations.createFrom(signupRequest, jwt.getEmail(), encryptionKey))
                 .thenApply(JpaActor::getUserId);
     }
 
@@ -49,9 +53,15 @@ public class SocialService {
         actorResponse.setLiked(routes.SocialController.getLikedOf(entity.getUserId()).absoluteURL(request));
         actorResponse.setInbox(routes.SocialController.getInboxOf(entity.getUserId()).absoluteURL(request));
         actorResponse.setOutbox(routes.SocialController.getOutboxOf(entity.getUserId()).absoluteURL(request));
-        actorResponse.setName(entity.getName());
-        actorResponse.setPreferredUsername(entity.getPreferredUserName());
+        // TODO: get this from IPFS
+        // actorResponse.setName(entity.getName());
+        // actorResponse.setPreferredUsername(entity.getPreferredUserName());
 
         return actorResponse;
+    }
+
+    private static String generateEncryptionKey() {
+        byte[] keyBytes = AesCtrCrypto.generateKey();
+        return Base64.getEncoder().encodeToString(keyBytes);
     }
 }

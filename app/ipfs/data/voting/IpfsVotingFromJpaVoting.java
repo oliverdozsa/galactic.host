@@ -1,4 +1,4 @@
-package ipfs.data;
+package ipfs.data.voting;
 
 import data.entities.voting.JpaVoting;
 import data.entities.voting.JpaVotingPoll;

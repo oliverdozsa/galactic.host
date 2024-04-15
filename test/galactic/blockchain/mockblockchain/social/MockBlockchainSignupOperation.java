@@ -29,8 +29,8 @@ public class MockBlockchainSignupOperation implements SignupOperation {
     }
 
     @Override
-    public void deductSignupCost(Account source, Account destination) {
-
+    public void createProfile(String cid) {
+        // TODO
     }
 
     public static void forceIsAccountValidTo(boolean value) {
