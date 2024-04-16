@@ -1,5 +1,7 @@
 package ipfs.data.social;
 
+import requests.social.SignupRequest;
+
 public class IpfsActor {
     private String id;
 
@@ -79,5 +81,14 @@ public class IpfsActor {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public static IpfsActor from(SignupRequest signupRequest) {
+        IpfsActor actor = new IpfsActor();
+        actor.setName(signupRequest.getName());
+        actor.setId(signupRequest.getUserId());
+        actor.setPreferredUsername(signupRequest.getPreferredUserName());
+
+        return actor;
     }
 }

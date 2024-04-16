@@ -5,6 +5,8 @@ import crypto.AesCtrCrypto;
 import data.entities.social.JpaActor;
 import data.operations.social.ActorDbOperations;
 import galactic.blockchain.operations.SocialBlockchainOperations;
+import ipfs.api.imp.IpfsSocialOperations;
+import ipfs.data.social.IpfsActor;
 import play.Logger;
 import play.mvc.Http;
 import requests.social.SignupRequest;
@@ -18,13 +20,16 @@ import java.util.concurrent.CompletionStage;
 public class SocialService {
     private final SocialBlockchainOperations socialBlockchainOperations;
     private final ActorDbOperations actorDbOperations;
+    private final IpfsSocialOperations ipfsSocialOperations;
 
     private static final Logger.ALogger logger = Logger.of(SocialService.class);
 
     @Inject
-    public SocialService(SocialBlockchainOperations socialBlockchainOperations, ActorDbOperations actorDbOperations) {
+    public SocialService(SocialBlockchainOperations socialBlockchainOperations, ActorDbOperations actorDbOperations,
+                         IpfsSocialOperations ipfsSocialOperations) {
         this.socialBlockchainOperations = socialBlockchainOperations;
         this.actorDbOperations = actorDbOperations;
+        this.ipfsSocialOperations = ipfsSocialOperations;
 
     }
 
@@ -33,7 +38,8 @@ public class SocialService {
 
         String encryptionKey = generateEncryptionKey();
 
-        return socialBlockchainOperations.signup(signupRequest, encryptionKey)
+        return ipfsSocialOperations.saveActor(IpfsActor.from(signupRequest), encryptionKey)
+                .thenCompose(cid -> this.socialBlockchainOperations.signup(signupRequest, cid))
                 .thenCompose(v -> this.actorDbOperations.createFrom(signupRequest, jwt.getEmail(), encryptionKey))
                 .thenApply(JpaActor::getUserId);
     }

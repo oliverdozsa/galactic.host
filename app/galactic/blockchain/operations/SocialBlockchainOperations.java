@@ -8,7 +8,6 @@ import galactic.blockchain.api.Account;
 import galactic.blockchain.api.social.SignupOperation;
 import ipfs.api.IpfsApi;
 import play.Logger;
-import play.libs.ws.WSClient;
 import requests.social.SignupRequest;
 
 import javax.inject.Inject;
@@ -19,23 +18,16 @@ import static java.util.concurrent.CompletableFuture.runAsync;
 public class SocialBlockchainOperations {
     private final BlockchainExecutionContext blockchainExecContext;
     private final Blockchains blockchains;
-    private final Config config;
-    private final WSClient wsClient;
-    private final IpfsApi ipfsApi;
 
     private static final Logger.ALogger logger = Logger.of(SocialBlockchainOperations.class);
 
     @Inject
-    public SocialBlockchainOperations(BlockchainExecutionContext blockchainExecContext, Blockchains blockchains,
-                                      Config config, WSClient wsClient, IpfsApi ipfsApi) {
+    public SocialBlockchainOperations(BlockchainExecutionContext blockchainExecContext, Blockchains blockchains, IpfsApi ipfsApi) {
         this.blockchainExecContext = blockchainExecContext;
         this.blockchains = blockchains;
-        this.config = config;
-        this.wsClient = wsClient;
-        this.ipfsApi = ipfsApi;
     }
 
-    public CompletionStage<Void> signup(SignupRequest request, String encryptionKey) {
+    public CompletionStage<Void> signup(SignupRequest request, String actorData) {
         return runAsync(() -> {
             logger.info("signup(): request = {}", request);
 

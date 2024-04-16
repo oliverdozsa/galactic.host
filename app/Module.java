@@ -21,6 +21,7 @@ import io.ebean.EbeanServer;
 import io.ipfs.api.IPFS;
 import ipfs.api.IpfsApi;
 import ipfs.api.imp.IpfsProvider;
+import ipfs.api.imp.IpfsSocialOperations;
 import ipfs.api.imp.Web3StorageIpfsApiImp;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -127,5 +128,6 @@ public class Module extends AbstractModule {
         bind(JwtCenter.class).asEagerSingleton();
         bind(IPFS.class).toProvider(IpfsProvider.class);
         bind(IpfsApi.class).to(Web3StorageIpfsApiImp.class).asEagerSingleton();
+        bind(IpfsSocialOperations.class).asEagerSingleton();
     }
 }
