@@ -4,6 +4,6 @@ import data.entities.social.JpaActor;
 import requests.social.SignupRequest;
 
 public interface ActorRepository {
-    JpaActor createFrom(SignupRequest request, String userEmail);
+    JpaActor createFrom(SignupRequest request, String userEmail, String encryptionKey);
     JpaActor getByUserId(String userId);
 }

@@ -26,7 +26,7 @@ public class ActorDbOperations {
     public CompletionStage<JpaActor> createFrom(SignupRequest signupRequest, String userEmail, String encryptionKey) {
         return supplyAsync(() -> {
             logger.info("createFrom(): signupRequest = {}, userEmail = {}", signupRequest, userEmail);
-            return actorRepository.createFrom(signupRequest, userEmail);
+            return actorRepository.createFrom(signupRequest, userEmail, encryptionKey);
         }, dbExecContext);
     }
 

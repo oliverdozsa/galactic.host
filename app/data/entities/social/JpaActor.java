@@ -78,4 +78,12 @@ public class JpaActor {
     public void setUserId(String userId) {
         this.userId = userId;
     }
+
+    public String getEncryptionKey() {
+        return encryptionKey;
+    }
+
+    public void setEncryptionKey(String encryptionKey) {
+        this.encryptionKey = encryptionKey;
+    }
 }

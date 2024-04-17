@@ -21,7 +21,7 @@ public class EbeanActorRepository implements ActorRepository {
     }
 
     @Override
-    public JpaActor createFrom(SignupRequest request, String userEmail) {
+    public JpaActor createFrom(SignupRequest request, String userEmail, String encryptionKey) {
         logger.info("createFrom(): request = {}, userEmail = {}", request, userEmail);
 
         checkIfEmailDoesNotExist(userEmail);
@@ -33,6 +33,7 @@ public class EbeanActorRepository implements ActorRepository {
         actor.setAccountPublic(request.getAccountPublic());
         actor.setAccountSecret(request.getAccountSecret());
         actor.setUseTestnet(request.isUseTestnet());
+        actor.setEncryptionKey(encryptionKey);
 
         ebeanServer.save(actor);
         return actor;

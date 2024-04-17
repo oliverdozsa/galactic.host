@@ -16,11 +16,11 @@ public class MockIpfsApi implements IpfsApi {
 
     @Override
     public String saveJson(JsonNode json) {
-        Long randomLong = random.nextLong();
-        ByteBuffer longBytes = ByteBuffer.allocate(Long.BYTES);
-        longBytes.putLong(randomLong);
+        String mockCid = generateMockCid();
+        while(savedJsons.containsKey(mockCid)) {
+            mockCid = generateMockCid();
+        }
 
-        String mockCid = Base64.getEncoder().encodeToString(longBytes.array());
         savedJsons.put(mockCid, json);
 
         return mockCid;
@@ -29,5 +29,13 @@ public class MockIpfsApi implements IpfsApi {
     @Override
     public JsonNode retrieveJson(String cid) {
         return savedJsons.get(cid);
+    }
+
+    private String generateMockCid() {
+        Long randomLong = random.nextLong();
+        ByteBuffer longBytes = ByteBuffer.allocate(Long.BYTES);
+        longBytes.putLong(randomLong);
+
+        return Base64.getEncoder().encodeToString(longBytes.array());
     }
 }
