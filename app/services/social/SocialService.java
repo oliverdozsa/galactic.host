@@ -5,6 +5,7 @@ import crypto.AesCtrCrypto;
 import data.entities.social.JpaActor;
 import data.operations.social.ActorDbOperations;
 import galactic.blockchain.operations.SocialBlockchainOperations;
+import galactic.blockchain.api.Account;
 import ipfs.api.imp.IpfsSocialOperations;
 import ipfs.data.social.IpfsActor;
 import play.Logger;
@@ -48,17 +49,45 @@ public class SocialService {
         logger.info("getActor(): userId = {}", userId);
 
         return actorDbOperations.getByUserId(userId)
-                .thenApply(e -> fromJpaActor(e, request));
+                .thenApply(this::getJpaActorIntoComposedActor)
+                .thenCompose(this::getProfiledCidIntoComposedActor)
+                .thenCompose(this::getIpfsActorIntoComposedActor)
+                .thenApply(c -> fromComposedActor(c, request));
     }
 
-    private static ActorResponse fromJpaActor(JpaActor entity, Http.Request request) {
+    private ComposedActor getJpaActorIntoComposedActor(JpaActor jpaActor) {
+        ComposedActor composedActor = new ComposedActor();
+        composedActor.jpaActor = jpaActor;
+        return composedActor;
+    }
+
+    private CompletionStage<ComposedActor> getProfiledCidIntoComposedActor(ComposedActor c) {
+        Account forAccount = getAccountOf(c.jpaActor);
+        return socialBlockchainOperations.getProfileCid(forAccount)
+                .thenApply(cid -> {
+                    c.actorCid = cid;
+                    return c;
+                });
+    }
+
+    private CompletionStage<ComposedActor> getIpfsActorIntoComposedActor(ComposedActor c) {
+        return ipfsSocialOperations.getActor(c.actorCid, c.jpaActor.getEncryptionKey())
+                .thenApply(i -> {
+                    c.ipfsActor = i;
+                    return c;
+                });
+    }
+
+    private static ActorResponse fromComposedActor(ComposedActor composedActor, Http.Request request) {
+        JpaActor jpaActor = composedActor.jpaActor;
+
         ActorResponse actorResponse = new ActorResponse();
-        actorResponse.setId(routes.SocialController.getActor(entity.getUserId()).absoluteURL(request));
-        actorResponse.setFollowing(routes.SocialController.getFollowingOf(entity.getUserId()).absoluteURL(request));
-        actorResponse.setFollowers(routes.SocialController.getFollowersOf(entity.getUserId()).absoluteURL(request));
-        actorResponse.setLiked(routes.SocialController.getLikedOf(entity.getUserId()).absoluteURL(request));
-        actorResponse.setInbox(routes.SocialController.getInboxOf(entity.getUserId()).absoluteURL(request));
-        actorResponse.setOutbox(routes.SocialController.getOutboxOf(entity.getUserId()).absoluteURL(request));
+        actorResponse.setId(routes.SocialController.getActor(jpaActor.getUserId()).absoluteURL(request));
+        actorResponse.setFollowing(routes.SocialController.getFollowingOf(jpaActor.getUserId()).absoluteURL(request));
+        actorResponse.setFollowers(routes.SocialController.getFollowersOf(jpaActor.getUserId()).absoluteURL(request));
+        actorResponse.setLiked(routes.SocialController.getLikedOf(jpaActor.getUserId()).absoluteURL(request));
+        actorResponse.setInbox(routes.SocialController.getInboxOf(jpaActor.getUserId()).absoluteURL(request));
+        actorResponse.setOutbox(routes.SocialController.getOutboxOf(jpaActor.getUserId()).absoluteURL(request));
         // TODO: get this from IPFS
         // actorResponse.setName(entity.getName());
         // actorResponse.setPreferredUsername(entity.getPreferredUserName());
@@ -69,5 +98,16 @@ public class SocialService {
     private static String generateEncryptionKey() {
         byte[] keyBytes = AesCtrCrypto.generateKey();
         return Base64.getEncoder().encodeToString(keyBytes);
+    }
+
+    private static Account getAccountOf(JpaActor jpaActor) {
+        // TODO
+        return null;
+    }
+
+    private static class ComposedActor {
+        public JpaActor jpaActor;
+        public IpfsActor ipfsActor;
+        public String actorCid;
     }
 }

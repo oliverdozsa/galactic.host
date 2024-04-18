@@ -2,11 +2,9 @@ package galactic.blockchain.stellar.social;
 
 import galactic.blockchain.api.Account;
 import galactic.blockchain.api.BlockchainConfiguration;
-import galactic.blockchain.api.BlockchainException;
-import galactic.blockchain.api.social.SignupOperation;
+import galactic.blockchain.api.social.SocialOperation;
 import galactic.blockchain.stellar.StellarBlockchainConfiguration;
 import galactic.blockchain.stellar.StellarServerAndNetwork;
-import galactic.blockchain.stellar.StellarSubmitTransaction;
 import galactic.blockchain.stellar.StellarUtils;
 import org.stellar.sdk.*;
 import org.stellar.sdk.responses.AccountResponse;
@@ -18,8 +16,8 @@ import java.math.BigDecimal;
 import static galactic.blockchain.stellar.StellarUtils.findXlmBalance;
 import static utils.StringUtils.redactWithEllipsis;
 
-public class StellarSignupOperation implements SignupOperation {
-    private static final Logger.ALogger logger = Logger.of(StellarSignupOperation.class);
+public class StellarSocialOperation implements SocialOperation {
+    private static final Logger.ALogger logger = Logger.of(StellarSocialOperation.class);
 
     private StellarServerAndNetwork serverAndNetwork;
     private StellarBlockchainConfiguration configuration;
@@ -84,25 +82,13 @@ public class StellarSignupOperation implements SignupOperation {
     }
 
     @Override
-    public void createProfile(String cid) {
+    public void setProfileCid(Account account, String cid) {
         // TODO
     }
 
-    private Transaction.Builder prepareSignupTx(Account source) throws IOException {
-        return StellarUtils.createTransactionBuilder(serverAndNetwork.getServer(), serverAndNetwork.getNetwork(), source.publik);
-    }
-
-    private void deductSignupCost(Transaction.Builder txBuilder, Account destination) {
-        PaymentOperation signupPayment = new PaymentOperation.Builder(destination.publik, new AssetTypeNative(), minimumBalanceForSignup)
-                .build();
-        txBuilder.addOperation(signupPayment);
-    }
-
-    private void submitDeductSignupTx(Transaction.Builder txBuilder, Account source) throws AccountRequiresMemoException, IOException {
-        KeyPair sourceKeyPair = StellarUtils.fromAccount(source);
-        Transaction deductSignupCostTx = txBuilder.build();
-        deductSignupCostTx.sign(sourceKeyPair);
-
-        StellarSubmitTransaction.submit("deduct signup cost", deductSignupCostTx, serverAndNetwork.getServer());
+    @Override
+    public String getProfileCid(Account account) {
+        // TODO
+        return "";
     }
 }

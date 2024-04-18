@@ -13,6 +13,7 @@ import javax.inject.Inject;
 import java.util.Base64;
 import java.util.concurrent.CompletionStage;
 
+import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.concurrent.CompletableFuture.supplyAsync;
 
 public class IpfsSocialOperations {
@@ -35,6 +36,11 @@ public class IpfsSocialOperations {
             return ipfsApi.saveJson(Json.toJson(ipfsEncryptedActor));
 
         }, blockchainExecutionContext);
+    }
+
+    public CompletionStage<IpfsActor> getActor(String cid, String encryptionKey) {
+        // TODO
+        return completedFuture(new IpfsActor());
     }
 
     private static String encryptActor(IpfsActor ipfsActor, String encryptionKey) {

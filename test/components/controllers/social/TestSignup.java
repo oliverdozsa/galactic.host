@@ -2,7 +2,7 @@ package components.controllers.social;
 
 import components.extractors.social.ActorResponseFromResult;
 import controllers.social.routes;
-import galactic.blockchain.mockblockchain.social.MockBlockchainSignupOperation;
+import galactic.blockchain.mockblockchain.social.MockBlockchainSocialOperation;
 import org.junit.After;
 import org.junit.Test;
 import play.mvc.Result;
@@ -91,7 +91,7 @@ public class TestSignup extends SocialTest {
     @Test
     public void testSignup_NotEnoughBalance() {
         // Given
-        MockBlockchainSignupOperation.forceHasEnoughBalanceValueTo(false);
+        MockBlockchainSocialOperation.forceHasEnoughBalanceValueTo(false);
 
         // When
         SignupRequest signupRequest = new SignupRequest();
@@ -109,7 +109,7 @@ public class TestSignup extends SocialTest {
     @Test
     public void testSignup_AccountInvalid() {
         // Given
-        MockBlockchainSignupOperation.forceIsAccountValidTo(false);
+        MockBlockchainSocialOperation.forceIsAccountValidTo(false);
 
         // When
         SignupRequest signupRequest = new SignupRequest();
@@ -183,7 +183,7 @@ public class TestSignup extends SocialTest {
 
     @After
     public void tearDown(){
-        MockBlockchainSignupOperation.forceIsAccountValidTo(true);
-        MockBlockchainSignupOperation.forceHasEnoughBalanceValueTo(true);
+        MockBlockchainSocialOperation.forceIsAccountValidTo(true);
+        MockBlockchainSocialOperation.forceHasEnoughBalanceValueTo(true);
     }
 }

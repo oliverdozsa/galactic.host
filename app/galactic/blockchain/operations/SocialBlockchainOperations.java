@@ -1,14 +1,16 @@
 package galactic.blockchain.operations;
 
-import com.typesafe.config.Config;
 import exceptions.BusinessLogicViolationException;
 import executioncontexts.BlockchainExecutionContext;
 import galactic.blockchain.Blockchains;
 import galactic.blockchain.api.Account;
-import galactic.blockchain.api.social.SignupOperation;
+import galactic.blockchain.api.social.SocialOperation;
 import ipfs.api.IpfsApi;
 import play.Logger;
 import requests.social.SignupRequest;
+
+import static java.util.concurrent.CompletableFuture.supplyAsync;
+import static utils.StringUtils.redactWithEllipsis;
 
 import javax.inject.Inject;
 import java.util.concurrent.CompletionStage;
@@ -27,23 +29,30 @@ public class SocialBlockchainOperations {
         this.blockchains = blockchains;
     }
 
-    public CompletionStage<Void> signup(SignupRequest request, String actorData) {
+    public CompletionStage<Void> signup(SignupRequest request, String actorCid) {
         return runAsync(() -> {
-            logger.info("signup(): request = {}", request);
+            logger.info("signup(): request = {}, actorCid = {}", request, redactWithEllipsis(actorCid, 10));
 
-            SignupOperation signupOperation = blockchains.getFactoryByNetwork(request.getNetwork()).createSignupOperation();
+            SocialOperation socialOperation = blockchains.getFactoryByNetwork(request.getNetwork()).createSignupOperation();
 
             Account userAccount = new Account(request.getAccountSecret(), request.getAccountPublic());
-            if (!signupOperation.isAccountValid(userAccount)) {
+            if (!socialOperation.isAccountValid(userAccount)) {
                 throw new BusinessLogicViolationException("signup(): Account is not valid.");
             }
 
-            if (!signupOperation.hasEnoughBalance(userAccount)) {
+            if (!socialOperation.hasEnoughBalance(userAccount)) {
                 throw new BusinessLogicViolationException("signup(): Account doesn't have enough balance.");
             }
 
-            // TODO: create profile
+            socialOperation.setProfileCid(userAccount, actorCid);
 
+        }, blockchainExecContext);
+    }
+
+    public CompletionStage<String> getProfileCid(Account account) {
+        return supplyAsync(() -> {
+            // TODO
+            return "";
         }, blockchainExecContext);
     }
 }
