@@ -5,9 +5,9 @@ import galactic.blockchain.api.BlockchainConfiguration;
 import galactic.blockchain.api.social.SignupOperation;
 import galactic.blockchain.stellar.StellarBlockchainConfiguration;
 import galactic.blockchain.stellar.StellarServerAndNetwork;
+import galactic.blockchain.stellar.StellarSubmitTransaction;
 import galactic.blockchain.stellar.StellarUtils;
-import org.stellar.sdk.KeyPair;
-import org.stellar.sdk.Server;
+import org.stellar.sdk.*;
 import org.stellar.sdk.responses.AccountResponse;
 import play.Logger;
 
@@ -15,10 +15,11 @@ import java.io.IOException;
 import java.math.BigDecimal;
 
 import static galactic.blockchain.stellar.StellarUtils.findXlmBalance;
+import static galactic.blockchain.stellar.StellarUtils.fromAccount;
 import static utils.StringUtils.redactWithEllipsis;
 
 public class StellarSignupOperation implements SignupOperation {
-    private static final Logger.ALogger logger = Logger.of(StellarGetProfileOperation.class);
+    private static final Logger.ALogger logger = Logger.of(StellarSignupOperation.class);
 
     private StellarServerAndNetwork serverAndNetwork;
     private StellarBlockchainConfiguration configuration;
@@ -84,6 +85,37 @@ public class StellarSignupOperation implements SignupOperation {
 
     @Override
     public void setProfileCid(Account account, String cid) {
-        // TODO
+        try {
+            Transaction.Builder setProfileCidTx = prepareTransaction(account);
+            prepareManageDataOperationOn(setProfileCidTx, cid);
+            submitTransaction(setProfileCidTx, account);
+        } catch (IOException | AccountRequiresMemoException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    private Transaction.Builder prepareTransaction(Account profileAccount) throws IOException {
+        Server server = serverAndNetwork.getServer();
+        Network network = serverAndNetwork.getNetwork();
+
+        return StellarUtils.createTransactionBuilder(server, network, profileAccount.publik);
+    }
+
+    private void prepareManageDataOperationOn(Transaction.Builder txBuilder, String cid) {
+        ManageDataOperation.Builder manageDataOperationBuilder = new ManageDataOperation.Builder("galacticPubProfile", cid.getBytes());
+        txBuilder.addOperation(manageDataOperationBuilder.build());
+
+        logger.info("[STELLAR]: About to save profile cid: {}", redactWithEllipsis(cid, 10));
+    }
+
+    private void submitTransaction(Transaction.Builder txBuilder, Account account) throws AccountRequiresMemoException, IOException {
+        Transaction transaction = txBuilder.build();
+        KeyPair keyPair = fromAccount(account);
+
+        transaction.sign(keyPair);
+
+        Server server = serverAndNetwork.getServer();
+        StellarSubmitTransaction.submit("save profile cid", transaction, server);
     }
 }
