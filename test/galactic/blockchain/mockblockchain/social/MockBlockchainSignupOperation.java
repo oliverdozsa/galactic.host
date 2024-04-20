@@ -2,12 +2,15 @@ package galactic.blockchain.mockblockchain.social;
 
 import galactic.blockchain.api.Account;
 import galactic.blockchain.api.BlockchainConfiguration;
-import galactic.blockchain.api.social.SocialOperation;
+import galactic.blockchain.api.social.SignupOperation;
 
-public class MockBlockchainSocialOperation implements SocialOperation {
+import java.util.HashMap;
+import java.util.Map;
+
+public class MockBlockchainSignupOperation implements SignupOperation {
     private static boolean isAccountValidValue = true;
     private static boolean hasEnoughBalanceValue = true;
-    private String profileCid;
+    public static Map<Account, String> profileCids = new HashMap<>();
 
     @Override
     public void init(BlockchainConfiguration configuration) {
@@ -31,12 +34,7 @@ public class MockBlockchainSocialOperation implements SocialOperation {
 
     @Override
     public void setProfileCid(Account account, String cid) {
-        this.profileCid = cid;
-    }
-
-    @Override
-    public String getProfileCid(Account account) {
-        return profileCid;
+        profileCids.put(account, cid);
     }
 
     public static void forceIsAccountValidTo(boolean value) {

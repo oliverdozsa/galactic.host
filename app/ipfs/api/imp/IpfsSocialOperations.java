@@ -39,8 +39,19 @@ public class IpfsSocialOperations {
     }
 
     public CompletionStage<IpfsActor> getActor(String cid, String encryptionKey) {
-        // TODO
-        return completedFuture(new IpfsActor());
+        return supplyAsync(() -> {
+            JsonNode ipfsEncryptedActorJson = ipfsApi.retrieveJson(cid);
+            IpfsEncryptedActor ipfsEncryptedActor = Json.fromJson(ipfsEncryptedActorJson, IpfsEncryptedActor.class);
+
+            String encryptedPayload = ipfsEncryptedActor.getPayload();
+            byte[] encryptedPayloadBytes = Base64.getDecoder().decode(encryptedPayload);
+            byte[] encryptionKeyBytes = Base64.getDecoder().decode(encryptionKey);
+
+            byte[] decryptedBytes = AesCtrCrypto.decrypt(encryptionKeyBytes, encryptedPayloadBytes);
+            JsonNode ipfsActorJson = Json.parse(new String(decryptedBytes));
+
+            return Json.fromJson(ipfsActorJson, IpfsActor.class);
+        }, blockchainExecutionContext);
     }
 
     private static String encryptActor(IpfsActor ipfsActor, String encryptionKey) {

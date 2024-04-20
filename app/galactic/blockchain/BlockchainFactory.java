@@ -1,7 +1,8 @@
 package galactic.blockchain;
 
 import galactic.blockchain.api.*;
-import galactic.blockchain.api.social.SocialOperation;
+import galactic.blockchain.api.social.GetProfileOperation;
+import galactic.blockchain.api.social.SignupOperation;
 import galactic.blockchain.api.voting.*;
 import org.reflections.Reflections;
 import play.Logger;
@@ -43,8 +44,12 @@ public class BlockchainFactory {
         return createBlockchainOperation(RefundBalancesOperation.class);
     }
 
-    public SocialOperation createSignupOperation() {
-        return createBlockchainOperation(SocialOperation.class);
+    public SignupOperation createSignupOperation() {
+        return createBlockchainOperation(SignupOperation.class);
+    }
+
+    public GetProfileOperation createGetProfileOperation() {
+        return createBlockchainOperation(GetProfileOperation.class);
     }
 
     private <T extends BlockchainOperation> T createBlockchainOperation(Class<T> blockChainOperationParentClass) {

@@ -2,11 +2,12 @@ package galactic.blockchain.stellar.social;
 
 import galactic.blockchain.api.Account;
 import galactic.blockchain.api.BlockchainConfiguration;
-import galactic.blockchain.api.social.SocialOperation;
+import galactic.blockchain.api.social.SignupOperation;
 import galactic.blockchain.stellar.StellarBlockchainConfiguration;
 import galactic.blockchain.stellar.StellarServerAndNetwork;
 import galactic.blockchain.stellar.StellarUtils;
-import org.stellar.sdk.*;
+import org.stellar.sdk.KeyPair;
+import org.stellar.sdk.Server;
 import org.stellar.sdk.responses.AccountResponse;
 import play.Logger;
 
@@ -16,8 +17,8 @@ import java.math.BigDecimal;
 import static galactic.blockchain.stellar.StellarUtils.findXlmBalance;
 import static utils.StringUtils.redactWithEllipsis;
 
-public class StellarSocialOperation implements SocialOperation {
-    private static final Logger.ALogger logger = Logger.of(StellarSocialOperation.class);
+public class StellarSignupOperation implements SignupOperation {
+    private static final Logger.ALogger logger = Logger.of(StellarGetProfileOperation.class);
 
     private StellarServerAndNetwork serverAndNetwork;
     private StellarBlockchainConfiguration configuration;
@@ -84,11 +85,5 @@ public class StellarSocialOperation implements SocialOperation {
     @Override
     public void setProfileCid(Account account, String cid) {
         // TODO
-    }
-
-    @Override
-    public String getProfileCid(Account account) {
-        // TODO
-        return "";
     }
 }

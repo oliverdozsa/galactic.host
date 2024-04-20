@@ -4,7 +4,8 @@ import exceptions.BusinessLogicViolationException;
 import executioncontexts.BlockchainExecutionContext;
 import galactic.blockchain.Blockchains;
 import galactic.blockchain.api.Account;
-import galactic.blockchain.api.social.SocialOperation;
+import galactic.blockchain.api.social.GetProfileOperation;
+import galactic.blockchain.api.social.SignupOperation;
 import ipfs.api.IpfsApi;
 import play.Logger;
 import requests.social.SignupRequest;
@@ -33,7 +34,7 @@ public class SocialBlockchainOperations {
         return runAsync(() -> {
             logger.info("signup(): request = {}, actorCid = {}", request, redactWithEllipsis(actorCid, 10));
 
-            SocialOperation socialOperation = blockchains.getFactoryByNetwork(request.getNetwork()).createSignupOperation();
+            SignupOperation socialOperation = blockchains.getFactoryByNetwork(request.getNetwork()).createSignupOperation();
 
             Account userAccount = new Account(request.getAccountSecret(), request.getAccountPublic());
             if (!socialOperation.isAccountValid(userAccount)) {
@@ -49,10 +50,13 @@ public class SocialBlockchainOperations {
         }, blockchainExecContext);
     }
 
-    public CompletionStage<String> getProfileCid(Account account) {
+    public CompletionStage<String> getProfileCid(Account account, String network) {
         return supplyAsync(() -> {
-            // TODO
-            return "";
+            logger.info("getProfileCid(): account = {}, network = {}", redactWithEllipsis(account.publik, 5), network);
+
+            GetProfileOperation socialOperation = blockchains.getFactoryByNetwork(network).createGetProfileOperation();
+
+            return socialOperation.getProfileCid(account);
         }, blockchainExecContext);
     }
 }

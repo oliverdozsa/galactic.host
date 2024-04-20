@@ -63,7 +63,7 @@ public class SocialService {
 
     private CompletionStage<ComposedActor> getProfiledCidIntoComposedActor(ComposedActor c) {
         Account forAccount = getAccountOf(c.jpaActor);
-        return socialBlockchainOperations.getProfileCid(forAccount)
+        return socialBlockchainOperations.getProfileCid(forAccount, c.jpaActor.getNetwork())
                 .thenApply(cid -> {
                     c.actorCid = cid;
                     return c;
@@ -88,9 +88,10 @@ public class SocialService {
         actorResponse.setLiked(routes.SocialController.getLikedOf(jpaActor.getUserId()).absoluteURL(request));
         actorResponse.setInbox(routes.SocialController.getInboxOf(jpaActor.getUserId()).absoluteURL(request));
         actorResponse.setOutbox(routes.SocialController.getOutboxOf(jpaActor.getUserId()).absoluteURL(request));
-        // TODO: get this from IPFS
-        // actorResponse.setName(entity.getName());
-        // actorResponse.setPreferredUsername(entity.getPreferredUserName());
+
+        IpfsActor ipfsActor = composedActor.ipfsActor;
+        actorResponse.setName(ipfsActor.getName());
+        actorResponse.setPreferredUsername(ipfsActor.getPreferredUsername());
 
         return actorResponse;
     }
@@ -101,8 +102,7 @@ public class SocialService {
     }
 
     private static Account getAccountOf(JpaActor jpaActor) {
-        // TODO
-        return null;
+        return new Account(jpaActor.getAccountSecret(), jpaActor.getAccountPublic());
     }
 
     private static class ComposedActor {

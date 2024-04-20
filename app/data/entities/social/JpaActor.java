@@ -31,6 +31,9 @@ public class JpaActor {
     @Column(name = "use_testnet")
     private boolean useTestnet;
 
+    @Column(name = "network")
+    private String network;
+
     public Long getId() {
         return id;
     }
@@ -85,5 +88,13 @@ public class JpaActor {
 
     public void setEncryptionKey(String encryptionKey) {
         this.encryptionKey = encryptionKey;
+    }
+
+    public String getNetwork() {
+        return network;
+    }
+
+    public void setNetwork(String network) {
+        this.network = network;
     }
 }
