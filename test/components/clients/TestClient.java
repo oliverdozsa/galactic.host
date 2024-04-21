@@ -27,10 +27,6 @@ public class TestClient {
     }
 
     public Result byLocation(String url, String userId, String[] roles, String email) {
-        Http.RequestBuilder request = new Http.RequestBuilder()
-                .method(GET)
-                .uri(url);
-
         String jwt = jwtTestUtils.createToken(userId, roles, email);
         return byLocation(url, jwt);
     }

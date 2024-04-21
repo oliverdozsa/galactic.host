@@ -33,7 +33,7 @@ public class StellarBlockchainTestNet implements BlockchainTestNet {
 
     private void fundAccountWithBalance(KeyPair account, long balance) {
         try {
-            String loggableAccount = redactWithEllipsis(account.getAccountId(), 5);
+            String loggableAccount = account.getAccountId();
             logger.info("[STELLAR TEST]: Creating test account {} with 10 000 XLM (requested balance is ignored).", loggableAccount);
 
             String fundingUrlString = String.format(FRIENDBOT_URL, account.getAccountId());

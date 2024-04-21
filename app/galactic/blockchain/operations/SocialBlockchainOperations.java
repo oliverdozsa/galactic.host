@@ -35,6 +35,9 @@ public class SocialBlockchainOperations {
             logger.info("signup(): request = {}, actorCid = {}", request, redactWithEllipsis(actorCid, 10));
 
             SignupOperation socialOperation = blockchains.getFactoryByNetwork(request.getNetwork()).createSignupOperation();
+            if(request.isUseTestnet()) {
+                socialOperation.useTestNet();
+            }
 
             Account userAccount = new Account(request.getAccountSecret(), request.getAccountPublic());
             if (!socialOperation.isAccountValid(userAccount)) {
@@ -50,11 +53,14 @@ public class SocialBlockchainOperations {
         }, blockchainExecContext);
     }
 
-    public CompletionStage<String> getProfileCid(Account account, String network) {
+    public CompletionStage<String> getProfileCid(Account account, String network, boolean useTestNet) {
         return supplyAsync(() -> {
             logger.info("getProfileCid(): account = {}, network = {}", redactWithEllipsis(account.publik, 5), network);
 
             GetProfileOperation socialOperation = blockchains.getFactoryByNetwork(network).createGetProfileOperation();
+            if(useTestNet) {
+                socialOperation.useTestNet();
+            }
 
             return socialOperation.getProfileCid(account);
         }, blockchainExecContext);

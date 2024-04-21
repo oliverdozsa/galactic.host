@@ -63,7 +63,7 @@ public class SocialService {
 
     private CompletionStage<ComposedActor> getProfiledCidIntoComposedActor(ComposedActor c) {
         Account forAccount = getAccountOf(c.jpaActor);
-        return socialBlockchainOperations.getProfileCid(forAccount, c.jpaActor.getNetwork())
+        return socialBlockchainOperations.getProfileCid(forAccount, c.jpaActor.getNetwork(), c.jpaActor.isUseTestnet())
                 .thenApply(cid -> {
                     c.actorCid = cid;
                     return c;
