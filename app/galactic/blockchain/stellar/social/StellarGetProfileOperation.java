@@ -35,7 +35,14 @@ public class StellarGetProfileOperation implements GetProfileOperation {
 
     @Override
     public String getProfileCid(Account account) {
-        // TODO
-        return "";
+        Server server = serverAndNetwork.getServer();
+
+        try {
+            AccountResponse accountResponse = server.accounts().account(account.publik);
+            byte[] cidBytes = accountResponse.getData().getDecoded("galacticPubProfile");
+            return new String(cidBytes);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

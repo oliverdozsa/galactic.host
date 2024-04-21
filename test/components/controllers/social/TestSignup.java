@@ -172,7 +172,7 @@ public class TestSignup extends SocialTest {
         // Given
         // When
         SignupRequest signupRequest = new SignupRequest();
-        signupRequest.setUserId("a!ice");
+        signupRequest.setUserId("a!Ice");
         signupRequest.setNetwork("mockblockchain");
         signupRequest.setAccountPublic("mockpublic");
         signupRequest.setAccountSecret("mocksecret");

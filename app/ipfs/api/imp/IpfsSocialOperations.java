@@ -13,7 +13,6 @@ import javax.inject.Inject;
 import java.util.Base64;
 import java.util.concurrent.CompletionStage;
 
-import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.concurrent.CompletableFuture.supplyAsync;
 
 public class IpfsSocialOperations {

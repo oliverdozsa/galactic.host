@@ -19,7 +19,7 @@ public class SignupRequest {
     private String name;
 
     @Constraints.Required
-    @Constraints.Pattern("^[a-zA-Z0-9_.]+$")
+    @Constraints.Pattern("^[a-z0-9_.]+$")
     private String userId;
 
     private boolean useTestnet;
@@ -65,7 +65,7 @@ public class SignupRequest {
     }
 
     public String getUserId() {
-        return userId;
+        return userId.toLowerCase();
     }
 
     public void setUserId(String userId) {
