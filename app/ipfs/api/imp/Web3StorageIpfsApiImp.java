@@ -22,8 +22,7 @@ public class Web3StorageIpfsApiImp implements IpfsApi {
 
     @Override
     public String saveJson(JsonNode json) {
-        // TODO: change URL to https://bridge.galactic.pub/ipfs
-        CompletionStage<WSResponse> response = this.wsClient.url("https://bridge.galactic.pub/voting-ipfs")
+        CompletionStage<WSResponse> response = this.wsClient.url("https://bridge.galactic.pub/ipfs")
                 .addHeader("Content-Type", "application/json")
                 .addHeader("Authorization", "Bearer " + token)
                 .post(json.toString());
