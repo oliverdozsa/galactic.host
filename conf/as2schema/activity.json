@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://galactic.pub/as2-schema/activity",
+  "$ref": "https://galactic.pub/as2-schema/activity-base.json",
+  "title": "Activity",
+  "type": "object",
+  "properties": {
+    "type": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/types"
+        },
+        {
+          "type": "array",
+          "contains": {
+            "$ref": "#/$defs/types"
+          }
+        }
+      ]
+    }
+  },
+  "$defs": {
+    "types": {
+      "anyOf": [
+        {
+          "const": "Activity"
+        },
+        {
+          "const": "Add"
+        },
+        {
+          "const": "Announce"
+        },
+        {
+          "const": "Create"
+        },
+        {
+          "const": "Delete"
+        },
+        {
+          "const": "Dislike"
+        },
+        {
+          "const": "Flag"
+        },
+        {
+          "const": "Follow"
+        },
+        {
+          "const": "Join"
+        },
+        {
+          "const": "Leave"
+        },
+        {
+          "const": "Like"
+        },
+        {
+          "const": "Listen"
+        },
+        {
+          "const": "Move"
+        },
+        {
+          "const": "Read"
+        },
+        {
+          "const": "Remove"
+        },
+        {
+          "const": "Undo"
+        },
+        {
+          "const": "Update"
+        },
+        {
+          "const": "View"
+        }
+      ]
+    }
+  },
+  "required": [
+    "type"
+  ]
+}

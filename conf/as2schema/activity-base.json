@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://galactic.pub/as2-schema/activity-base",
+  "$ref": "https://galactic.pub/as2-schema/object-base.json",
+  "title": "Activity-base",
+  "description": "An Activity is a subtype of Object that describes some form of action that may happen, is currently happening, or has already happened. The Activity type itself serves as an abstract base type for all types of activities. It is important to note that the Activity type itself does not carry any specific semantics about the kind of action being taken.",
+  "type": "object",
+  "properties": {
+    "actor": {
+      "$ref": "https://galactic.pub/as2-schema/object-base.json#/$defs/ObjectOrLinkOrArray",
+      "description": "Describes one or more entities that either performed or are expected to perform the activity. Any single activity can have multiple actors. The actor MAY be specified using an indirect Link."
+    },
+    "instrument": {
+      "$ref": "https://galactic.pub/as2-schema/object-base.json#/$defs/ObjectOrLinkOrArray",
+      "description": "Identifies one or more objects used (or to be used) in the completion of an Activity."
+    },
+    "origin": {
+      "$ref": "https://galactic.pub/as2-schema/object-base.json#/$defs/ObjectOrLinkOrArray",
+      "description": "Describes an indirect object of the activity from which the activity is directed. The precise meaning of the origin is the object of the English preposition \"from\". For instance, in the activity \"John moved an item to List B from List A\", the origin of the activity is \"List A\"."
+    },
+    "object": {
+      "$ref": "https://galactic.pub/as2-schema/object-base.json#/$defs/ObjectOrLinkOrArray",
+      "description": "When used within an Activity, describes the direct object of the activity. For instance, in the activity \"John added a movie to his wishlist\", the object of the activity is the movie added. When used within a Relationship describes the entity to which the subject is related."
+    },
+    "result": {
+      "$ref": "https://galactic.pub/as2-schema/object-base.json#/$defs/ObjectOrLinkOrArray",
+      "description": "Describes the result of the activity. For instance, if a particular action results in the creation of a new resource, the result property can be used to describe that new resource."
+    },
+    "target": {
+      "$ref": "https://galactic.pub/as2-schema/object-base.json#/$defs/ObjectOrLinkOrArray",
+      "description": "Describes the indirect object, or target, of the activity. The precise meaning of the target is largely dependent on the type of action being described but will often be the object of the English preposition \"to\". For instance, in the activity \"John added a movie to his wishlist\", the target of the activity is John's wishlist. An activity can have more than one target."
+    }
+  }
+}

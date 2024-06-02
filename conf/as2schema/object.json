@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://galactic.pub/as2-schema/object",
+  "$ref": "https://galactic.pub/as2-schema/object-base",
+  "title": "Object",
+  "type": "object",
+  "properties": {
+    "type": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/types"
+        },
+        {
+          "type": "array",
+          "contains": {
+            "$ref": "#/$defs/types"
+          }
+        }
+      ]
+    }
+  },
+  "$defs": {
+    "types": {
+      "anyOf": [
+        {
+          "const": "Object"
+        },
+        {
+          "const": "Application"
+        },
+        {
+          "const": "Article"
+        },
+        {
+          "const": "Event"
+        },
+        {
+          "const": "Group"
+        },
+        {
+          "const": "Note"
+        },
+        {
+          "const": "Organization"
+        },
+        {
+          "const": "Person"
+        },
+        {
+          "const": "Service"
+        }
+      ]
+    }
+  },
+  "required": [
+    "type"
+  ]
+}

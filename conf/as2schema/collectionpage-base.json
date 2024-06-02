@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://galactic.pub/as2-schema/collectionpage-base",
+  "$ref": "https://galactic.pub/as2-schema/collection-base",
+  "title": "CollectionPage-base",
+  "description": "Used to represent distinct subsets of items from a Collection. Refer to the Activity Streams 2.0 Core for a complete description of the CollectionPage object.",
+  "type": "object",
+  "properties": {
+    "next": {
+      "oneOf": [
+        {
+          "type": "string",
+          "format": "uri"
+        },
+        {
+          "$ref": "https://galactic.pub/as2-schema/link-base.json"
+        },
+        {
+          "$ref": "https://galactic.pub/as2-schema/collectionpage-base.json"
+        }
+      ],
+      "description": "In a paged Collection, indicates the next page of items."
+    },
+    "prev": {
+      "oneOf": [
+        {
+          "type": "string",
+          "format": "uri"
+        },
+        {
+          "$ref": "https://galactic.pub/as2-schema/link-base.json"
+        },
+        {
+          "$ref": "https://galactic.pub/as2-schema/collectionpage-base.json"
+        }
+      ],
+      "description": "In a paged Collection, identifies the previous page of items."
+    },
+    "partOf": {
+      "oneOf": [
+        {
+          "type": "string",
+          "format": "uri"
+        },
+        {
+          "$ref": "https://galactic.pub/as2-schema/link-base.json"
+        },
+        {
+          "$ref": "https://galactic.pub/as2-schema/collection-base.json"
+        }
+      ],
+      "description": "Identifies the Collection to which a CollectionPage objects items belong."
+    },
+    "href": false
+  }
+}
