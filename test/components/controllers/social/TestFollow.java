@@ -2,15 +2,15 @@ package components.controllers.social;
 
 import org.junit.Test;
 
-public class TestFollowers extends SocialTest {
+public class TestFollow extends SocialTest {
     @Test
-    public void testFollowers() {
+    public void testFollowing() {
         // Given
         // When
         // Then
         // TODO
         //  Create two actors, Alice and Bob.
         //  Bob follows Alice.
-        //  Check that Bob is present in Alice's followers
+        //  Check that Alice is in Bob's following
     }
 }

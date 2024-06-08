@@ -2,15 +2,51 @@ package components.controllers.social;
 
 import org.junit.Test;
 
+import static org.junit.Assert.fail;
+
 public class TestOutbox extends SocialTest{
     @Test
-    public void testOutbox() {
+    public void testCreateActivity() {
         // Given
         // When
         // Then
         // TODO
-        //  Create an actor Alice.
-        //  Alice creates a public post for herself
-        //  Check that the new post is in Alice's outbox
+        fail("Implement create activity test.");
+    }
+
+    @Test
+    public void testImplicitCreateActivity() {
+        // Given
+        // When
+        // Then
+        // TODO
+        fail("Implement implicit create activity test.");
+    }
+
+    @Test
+    public void testUpdateActivity() {
+        // Given
+        // When
+        // Then
+        // TODO
+        fail("Implement update activity test.");
+    }
+
+    @Test
+    public void testPartialUpdateActivity() {
+        // Given
+        // When
+        // Then
+        // TODO
+        fail("Implement partial update activity test.");
+    }
+
+    @Test
+    public void testDeleteActivity() {
+        // Given
+        // When
+        // Then
+        // TODO
+        fail("Implement delete activity test.");
     }
 }

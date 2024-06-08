@@ -2,7 +2,7 @@ package components.controllers.social;
 
 import org.junit.Test;
 
-public class TestLiked extends SocialTest {
+public class TestLike extends SocialTest {
     @Test
     public void testLiked() {
         // Given
