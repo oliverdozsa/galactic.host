@@ -32,13 +32,13 @@ public class SocialTestClient extends TestClient {
         return route(application, httpRequest);
     }
 
-    public Result getActorWithJwt(String userId, String userJwt) {
+    public Result getActorWithJwt(String userId) {
         Http.RequestBuilder httpRequest = new Http.RequestBuilder()
                 .method(GET)
                 .header(CONTENT_TYPE, Http.MimeTypes.JSON)
                 .uri(routes.SocialController.getActor(userId).url());
 
-        String jwt = jwtTestUtils.createToken(userId, userJwt + "@mail.com");
+        String jwt = jwtTestUtils.createToken(userId, userId + "@mail.com");
         addJwtTokenTo(httpRequest, jwt);
 
         return route(application, httpRequest);
@@ -51,5 +51,21 @@ public class SocialTestClient extends TestClient {
                 .uri(routes.SocialController.getActor(userId).url());
 
         return route(application, httpRequest);
+    }
+
+    public Result byLocationWithUserId(String url, String userId) {
+        Http.RequestBuilder request = new Http.RequestBuilder()
+                .method(GET)
+                .uri(url);
+
+        String jwt = jwtTestUtils.createToken(userId, userId + "@mail.com");
+        addJwtTokenTo(request, jwt);
+
+        return route(application, request);
+    }
+
+    public Result postActivity(String userId, String content) {
+        // TODO
+        return null;
     }
 }
