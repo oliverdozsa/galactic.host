@@ -68,4 +68,9 @@ public class SocialTestClient extends TestClient {
         // TODO
         return null;
     }
+
+    public Result updateActivity(String userId, String content) {
+        // TODO
+        return null;
+    }
 }

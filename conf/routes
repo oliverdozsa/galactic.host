@@ -42,3 +42,5 @@ GET    /social/:userId/liked                        controllers.social.SocialCon
 GET    /social/:userId/inbox                        controllers.social.SocialController.getInboxOf(userId: String, request: Request)
 + jwtOptionalFilter
 GET    /social/:userId/outbox                       controllers.social.SocialController.getOutboxOf(userId: String, request: Request)
++ jwtOptionalFilter
+GET    /social/object/:id                           controllers.social.SocialController.getObject(id: String, request: Request)
