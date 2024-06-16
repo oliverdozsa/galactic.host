@@ -73,4 +73,9 @@ public class SocialTestClient extends TestClient {
         // TODO
         return null;
     }
+
+    public Result deleteActivity(String userId, String objectId) {
+        // TODO
+        return null;
+    }
 }

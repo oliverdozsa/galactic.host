@@ -12,12 +12,10 @@ import static components.extractors.GenericDataFromResult.statusOf;
 import static matchers.ResultHasHeader.hasLocationHeader;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.fail;
 import static play.mvc.Http.HeaderNames.LOCATION;
-import static play.mvc.Http.Status.CREATED;
-import static play.mvc.Http.Status.OK;
+import static play.mvc.Http.Status.*;
 
-public class TestOutbox extends SocialTest {
+public class TestOutboxCrudOperations extends SocialTest {
     @Before
     public void setup() {
         super.setup();
@@ -114,7 +112,7 @@ public class TestOutbox extends SocialTest {
     @Test
     public void testUpdateActivity() {
         // Given
-        String objectId = createAPublicNote();
+        String objectId = createAPublicNoteForAlice();
 
         Result getByLocationResult = client.byLocation(objectId);
         JsonNode resultingCreateActivityJson = jsonOf(getByLocationResult);
@@ -166,19 +164,33 @@ public class TestOutbox extends SocialTest {
     @Test
     public void testDeleteActivity() {
         // Given
+        String objectId = createAPublicNoteForAlice();
+
+        Result getByLocationResult = client.byLocation(objectId);
+        assertThat(statusOf(getByLocationResult), equalTo(OK));
+
         // When
+        Result deleteActivityResult = client.deleteActivity("alice", objectId);
+        assertThat(statusOf(deleteActivityResult), equalTo(CREATED));
+
         // Then
-        // TODO
-        fail("Implement delete activity test.");
+        getByLocationResult = client.byLocation(objectId);
+        assertThat(statusOf(getByLocationResult), equalTo(NOT_FOUND));
     }
 
     @Test
     public void testNotAllowed() {
         // Given
+        String objectId = createAPublicNoteForAlice();
+
+        Result getByLocationResult = client.byLocation(objectId);
+        assertThat(statusOf(getByLocationResult), equalTo(OK));
+
         // When
+        Result deleteActivityResult = client.deleteActivity("bob", objectId);
+
         // Then
-        // TODO
-        fail("Implement not allowed activity test.");
+        assertThat(statusOf(deleteActivityResult), equalTo(FORBIDDEN));
     }
 
     private void signupAlice() {
@@ -194,7 +206,20 @@ public class TestOutbox extends SocialTest {
         assertThat("Could not sign up Alice.", statusOf(result), equalTo(CREATED));
     }
 
-    private String createAPublicNote() {
+    private void signupBob() {
+        SignupRequest signupRequest = new SignupRequest();
+        signupRequest.setUserId("bob");
+        signupRequest.setNetwork("mockblockchain");
+        signupRequest.setAccountPublic("mockpublic");
+        signupRequest.setAccountSecret("mocksecret");
+        signupRequest.setName("Actor Bob");
+        signupRequest.setPreferredUserName("Bob");
+
+        Result result = client.signup("bob", signupRequest);
+        assertThat("Could not sign up Bob.", statusOf(result), equalTo(CREATED));
+    }
+
+    private String createAPublicNoteForAlice() {
         String createNoteJson = "{\n" +
                 "  \"@context\": \"https://www.w3.org/ns/activitystreams\",\n" +
                 "  \"type\": \"Note\",\n" +
