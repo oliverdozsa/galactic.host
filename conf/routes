@@ -44,3 +44,5 @@ GET    /social/:userId/inbox                        controllers.social.SocialCon
 GET    /social/:userId/outbox                       controllers.social.SocialController.getOutboxOf(userId: String, request: Request)
 + jwtOptionalFilter
 GET    /social/object/:id                           controllers.social.SocialController.getObject(id: String, request: Request)
++ jwtFilter
+POST   /social/:userId/outbox                       controllers.social.SocialController.postActivity(userId: String, request: Request)

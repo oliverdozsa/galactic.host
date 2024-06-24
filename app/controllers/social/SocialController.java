@@ -95,6 +95,11 @@ public class SocialController {
         return null;
     }
 
+    public CompletionStage<Result> postActivity(String userId, Http.Request request) {
+        // TODO
+        return null;
+    }
+
     private Result signedUpToResult(String userId, Http.Request request) {
         String location = routes.SocialController.getActor(userId).absoluteURL(request);
         return created()

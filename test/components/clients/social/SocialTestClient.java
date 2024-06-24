@@ -78,4 +78,9 @@ public class SocialTestClient extends TestClient {
         // TODO
         return null;
     }
+
+    public Result getOutboxOf(String userId) {
+        // TODO
+        return null;
+    }
 }

@@ -68,6 +68,14 @@ public class TestOutboxCrudOperations extends SocialTest {
 
         String createdObjectAttributedTo = resultingCreateActivityJson.get("object").get("attributedTo").asText();
         assertThat(createdObjectAttributedTo, containsString("alice"));
+
+        Result outboxOfAliceResult = client.getOutboxOf("alice");
+        JsonNode firstPageOfOutbox = jsonOf(outboxOfAliceResult);
+        JsonNode items = firstPageOfOutbox.get("orderedItems");
+        JsonNode newestItem = items.get(0);
+
+        String idOfNewestActivity = newestItem.get("id").asText();
+        assertThat(idOfNewestActivity, equalTo(locationUrl));
     }
 
     @Test
@@ -181,6 +189,7 @@ public class TestOutboxCrudOperations extends SocialTest {
     @Test
     public void testNotAllowed() {
         // Given
+        signupBob();
         String objectId = createAPublicNoteForAlice();
 
         Result getByLocationResult = client.byLocation(objectId);
