@@ -1,6 +1,9 @@
 package controllers.social;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.networknt.schema.JsonSchema;
+import com.networknt.schema.ValidationMessage;
 import controllers.DefaultExceptionMapper;
 import play.Logger;
 import play.data.Form;
@@ -15,6 +18,11 @@ import security.VerifiedJwt;
 import services.social.SocialService;
 
 import javax.inject.Inject;
+import javax.inject.Named;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.StringJoiner;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 
@@ -25,6 +33,7 @@ import static play.mvc.Results.*;
 public class SocialController {
     private final FormFactory formFactory;
     private final SocialService socialService;
+    private final JsonSchema activityValidator;
 
     private static final Logger.ALogger logger = Logger.of(SocialController.class);
 
@@ -33,9 +42,10 @@ public class SocialController {
 
 
     @Inject
-    public SocialController(FormFactory formFactory, SocialService socialService) {
+    public SocialController(FormFactory formFactory, SocialService socialService, @Named("activity") JsonSchema activityValidator) {
         this.formFactory = formFactory;
         this.socialService = socialService;
+        this.activityValidator = activityValidator;
     }
 
     public CompletionStage<Result> signup(Http.Request request) {
@@ -96,6 +106,30 @@ public class SocialController {
     }
 
     public CompletionStage<Result> postActivity(String userId, Http.Request request) {
+        JsonNode activityJson = request.body().asJson();
+
+        if(activityJson == null) {
+            logger.warn("postActivity(): non-json object is posted.");
+            return completedFuture(badRequest("Non-json object is posted."));
+        }
+
+        JsonNode typeJson = activityJson.get("type");
+        if(typeJson == null || !typeJson.asText().equals("Create")) {
+            logger.info("Wrapping object in Create activity.");
+            activityJson = wrapInCreateActivity(activityJson);
+        }
+
+
+        Set<ValidationMessage> validationMessages = activityValidator.validate(activityJson);
+        if(!validationMessages.isEmpty()) {
+            Map<String, String> errors = new HashMap<>();
+            validationMessages.forEach(m -> errors.put(m.getMessageKey(), m.getMessage()));
+
+            logger.warn("postActivity(): invalid activity. errors = {}", errors);
+
+            return completedFuture(badRequest(Json.toJson(errors)));
+        }
+
         // TODO
         return null;
     }
@@ -108,5 +142,16 @@ public class SocialController {
 
     private Result toResult(ActorResponse actorResponse) {
         return ok(Json.toJson(actorResponse));
+    }
+
+    private JsonNode wrapInCreateActivity(JsonNode objectToCreate) {
+        String createActivityJsonStr = "{\n" +
+                "  \"@context\": \"https://www.w3.org/ns/activitystreams\",\n" +
+                "  \"type\": \"Create\",\n" +
+                "  \"id\": \"https://example.net/~mallory/87374\"\n" +
+                "}";
+        ObjectNode createActivityJson = (ObjectNode) Json.parse(createActivityJsonStr);
+        createActivityJson.set("object", objectToCreate);
+        return createActivityJson;
     }
 }

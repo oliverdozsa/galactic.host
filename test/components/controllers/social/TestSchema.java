@@ -39,6 +39,8 @@ public class TestSchema {
                 "}";
 
         Set<ValidationMessage> validationMessages = schema.validate(someCreateActivity, InputFormat.JSON);
-        System.out.println("validation messages: " + validationMessages);
+        validationMessages.forEach(m -> {
+            System.out.println(m.getMessageKey() + ": " + m.getMessage());
+        });
     }
 }

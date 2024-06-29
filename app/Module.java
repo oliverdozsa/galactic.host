@@ -1,6 +1,8 @@
 import com.auth0.jwk.JwkProvider;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.google.inject.name.Named;
 import com.google.inject.name.Names;
+import com.networknt.schema.JsonSchema;
 import com.typesafe.config.Config;
 import data.operations.social.ActorDbOperations;
 import data.operations.voting.CommissionDbOperations;
@@ -27,6 +29,7 @@ import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import play.Environment;
 import play.data.format.Formatters;
+import requests.social.ActivityJsonSchemaValidatorProvider;
 import security.JwtCenter;
 import security.TokenAuthAlgorithmProvider;
 import security.TokenAuthUserIdUtil;
@@ -129,5 +132,10 @@ public class Module extends AbstractModule {
         bind(IPFS.class).toProvider(IpfsProvider.class);
         bind(IpfsApi.class).to(Web3StorageIpfsApiImp.class).asEagerSingleton();
         bind(IpfsSocialOperations.class).asEagerSingleton();
+
+        bind(JsonSchema.class)
+                .annotatedWith(Names.named("activity"))
+                .toProvider(ActivityJsonSchemaValidatorProvider.class)
+                .asEagerSingleton();
     }
 }
