@@ -1,12 +1,23 @@
 package host.galactic.stellar.rest;
 
+import host.galactic.stellar.rest.requests.CreateVotingRequest;
 import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import java.util.stream.Collectors;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @QuarkusTest
 public class StellarVotingCreateValidationTest {
+    @Inject
+    Validator validator;
+
     @Test
     public void testValidationWorksThroughEndpoint() {
         fail("testValidationWorksThroughEndpoint() is not implemented!");
@@ -19,7 +30,16 @@ public class StellarVotingCreateValidationTest {
 
     @Test
     public void testInvalidTitle() {
-        fail("testInvalidTitle() is not implemented!");
+        CreateVotingRequest titleEmptyVotingRequest = new CreateVotingRequest("");
+
+        var violations = validator.validateProperty(titleEmptyVotingRequest, "title");
+        assertThat("Expected to have violations for invalid title, but there isn't.", violations, not(empty()));
+
+        var violationMessages = violations.stream()
+                .map(ConstraintViolation::getMessage)
+                .toList();
+
+        assertThat(violationMessages, hasItems("Title cannot be blank", "Title length must be >= 2 and <= 1000"));
     }
 
     @Test
@@ -58,7 +78,7 @@ public class StellarVotingCreateValidationTest {
     }
 
     @Test
-    public void testInvalidEmails(){
+    public void testInvalidEmails() {
         fail("testInvalidBallotType() is not implemented!");
     }
 
