@@ -1,4 +1,4 @@
-package host.galactic.stellar.rest;
+package host.galactic.requests;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
