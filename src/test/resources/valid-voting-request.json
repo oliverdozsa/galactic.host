@@ -1,0 +1,6 @@
+{
+  "title": "What chocolate do you like?",
+  "description": "This voting is about chocolates",
+  "maxVoters": 5,
+  "tokenId": "choco420"
+}

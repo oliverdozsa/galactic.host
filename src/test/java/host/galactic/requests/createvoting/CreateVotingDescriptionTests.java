@@ -1,5 +1,6 @@
 package host.galactic.requests.createvoting;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import host.galactic.stellar.rest.requests.CreateVotingRequest;
 import host.galactic.testutils.ValidationTestsBase;
 import io.quarkus.test.junit.QuarkusTest;
@@ -45,7 +46,10 @@ public class CreateVotingDescriptionTests extends ValidationTestsBase {
     }
 
     private CreateVotingRequest makeCreateVotingRequestWithDescription(String value) {
-        return new CreateVotingRequest("title", value, 4, "tokenid");
+        ObjectNode objectNode = readJsonFile("valid-voting-request.json");
+        objectNode.put("description", value);
+
+        return convertJsonNodeTo(CreateVotingRequest.class, objectNode);
     }
 
     private String createTooLongDescription() {

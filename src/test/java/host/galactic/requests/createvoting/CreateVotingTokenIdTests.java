@@ -1,5 +1,6 @@
 package host.galactic.requests.createvoting;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import host.galactic.stellar.rest.requests.CreateVotingRequest;
 import host.galactic.testutils.ValidationTestsBase;
 import io.quarkus.test.junit.QuarkusTest;
@@ -68,6 +69,9 @@ public class CreateVotingTokenIdTests extends ValidationTestsBase {
     }
 
     private CreateVotingRequest makeCreateVotingRequestWithTokenId(String value) {
-        return new CreateVotingRequest("title", "description", 4, value);
+        ObjectNode objectNode = readJsonFile("valid-voting-request.json");
+        objectNode.put("tokenId", value);
+
+        return convertJsonNodeTo(CreateVotingRequest.class, objectNode);
     }
 }
