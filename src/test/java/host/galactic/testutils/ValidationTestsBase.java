@@ -1,4 +1,4 @@
-package host.galactic.requests.createvoting;
+package host.galactic.testutils;
 
 import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolation;
@@ -7,9 +7,9 @@ import jakarta.validation.Validator;
 import java.util.List;
 import java.util.Set;
 
-class ValidationTestsBase {
+public class ValidationTestsBase {
     @Inject
-    Validator validator;
+    protected Validator validator;
 
     protected static <T> List<String> extractViolationMessages(Set<ConstraintViolation<T>> violations) {
         return violations.stream()

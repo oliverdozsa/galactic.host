@@ -1,6 +1,7 @@
 package host.galactic.requests.createvoting;
 
 import host.galactic.stellar.rest.requests.CreateVotingRequest;
+import host.galactic.testutils.ValidationTestsBase;
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +13,7 @@ import static org.hamcrest.Matchers.hasSize;
 public class CreateVotingMaxVotersTests extends ValidationTestsBase {
     @Test
     public void testTooManyMaxVoters() {
-        CreateVotingRequest tooManyMaxVotersRequest = new CreateVotingRequest("", 501);
+        CreateVotingRequest tooManyMaxVotersRequest = makeCreateVotingRequestWithMaxVoters(501);
 
         var violations = validator.validateProperty(tooManyMaxVotersRequest, "maxVoters");
         assertThat("Expected to have 1 violation for too many max voters, but there isn't.", violations, hasSize(1));
@@ -23,7 +24,7 @@ public class CreateVotingMaxVotersTests extends ValidationTestsBase {
 
     @Test
     public void testTooFewMaxVoters() {
-        CreateVotingRequest tooFewMaxVotersRequest = new CreateVotingRequest("", 1);
+        CreateVotingRequest tooFewMaxVotersRequest = makeCreateVotingRequestWithMaxVoters(1);
 
         var violations = validator.validateProperty(tooFewMaxVotersRequest, "maxVoters");
         assertThat("Expected to have 1 violation for too few max voters, but there isn't.", violations, hasSize(1));
@@ -34,12 +35,16 @@ public class CreateVotingMaxVotersTests extends ValidationTestsBase {
 
     @Test
     public void noMaxVotersGiven() {
-        CreateVotingRequest maxVotersNotDefined = new CreateVotingRequest("", null);
+        CreateVotingRequest maxVotersNotDefined = makeCreateVotingRequestWithMaxVoters(null);
 
         var violations = validator.validateProperty(maxVotersNotDefined, "maxVoters");
         assertThat("Expected to have 1 violation for not defined max voters, but there isn't.", violations, hasSize(1));
 
         var violationMessages = extractViolationMessages(violations);
         assertThat(violationMessages, hasItems("Max voters must be given."));
+    }
+
+    private CreateVotingRequest makeCreateVotingRequestWithMaxVoters(Integer value) {
+        return new CreateVotingRequest("", value, "tokenid");
     }
 }
