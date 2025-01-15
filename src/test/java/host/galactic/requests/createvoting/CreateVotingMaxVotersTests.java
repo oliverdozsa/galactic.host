@@ -45,6 +45,6 @@ public class CreateVotingMaxVotersTests extends ValidationTestsBase {
     }
 
     private CreateVotingRequest makeCreateVotingRequestWithMaxVoters(Integer value) {
-        return new CreateVotingRequest("", value, "tokenid");
+        return new CreateVotingRequest("", "description", value, "tokenid");
     }
 }

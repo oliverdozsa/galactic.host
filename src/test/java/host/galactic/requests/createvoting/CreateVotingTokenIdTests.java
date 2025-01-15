@@ -68,6 +68,6 @@ public class CreateVotingTokenIdTests extends ValidationTestsBase {
     }
 
     private CreateVotingRequest makeCreateVotingRequestWithTokenId(String value) {
-        return new CreateVotingRequest("title", 4, value);
+        return new CreateVotingRequest("title", "description", 4, value);
     }
 }

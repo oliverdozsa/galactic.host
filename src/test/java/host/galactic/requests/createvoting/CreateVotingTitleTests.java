@@ -49,7 +49,7 @@ public class CreateVotingTitleTests extends ValidationTestsBase {
 
     private String createTooLongTitle() {
         StringJoiner titleJoiner = new StringJoiner("");
-        for(int i = 0; i < 1001; i++) {
+        for (int i = 0; i < 1001; i++) {
             titleJoiner.add("a");
         }
 
@@ -57,6 +57,6 @@ public class CreateVotingTitleTests extends ValidationTestsBase {
     }
 
     private CreateVotingRequest makeCreateVotingRequestWithTitle(String value) {
-        return new CreateVotingRequest(value, 4, "tokenid");
+        return new CreateVotingRequest(value, "description", 4, "tokenid");
     }
 }

@@ -1,0 +1,59 @@
+package host.galactic.requests.createvoting;
+
+import host.galactic.stellar.rest.requests.CreateVotingRequest;
+import host.galactic.testutils.ValidationTestsBase;
+import io.quarkus.test.junit.QuarkusTest;
+import org.junit.jupiter.api.Test;
+
+import java.util.StringJoiner;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.hasSize;
+
+@QuarkusTest
+public class CreateVotingDescriptionTests extends ValidationTestsBase {
+    @Test
+    public void testNullDescription() {
+        CreateVotingRequest nullDescriptionRequest = makeCreateVotingRequestWithDescription(null);
+
+        var violations = validator.validateProperty(nullDescriptionRequest, "description");
+        assertThat("Expected to have no violation for null description, but there is.", violations, hasSize(0));
+    }
+
+    @Test
+    public void testTooShortDescription() {
+        CreateVotingRequest tooShortDescriptionRequest = makeCreateVotingRequestWithDescription("d");
+
+        var violations = validator.validateProperty(tooShortDescriptionRequest, "description");
+        assertThat("Expected to have 1 violation for too short description, but there isn't.", violations, hasSize(1));
+
+        var violationMessages = extractViolationMessages(violations);
+        assertThat(violationMessages, hasItems("Description length must be >= 2 and <= 1000."));
+    }
+
+    @Test
+    public void testTooLongDescription() {
+        String tooLongDescription = createTooLongDescription();
+        CreateVotingRequest tooLongDescriptionRequest = makeCreateVotingRequestWithDescription(tooLongDescription);
+
+        var violations = validator.validateProperty(tooLongDescriptionRequest, "description");
+        assertThat("Expected to have 1 violation for too long description, but there isn't.", violations, hasSize(1));
+
+        var violationMessages = extractViolationMessages(violations);
+        assertThat(violationMessages, hasItems("Description length must be >= 2 and <= 1000."));
+    }
+
+    private CreateVotingRequest makeCreateVotingRequestWithDescription(String value) {
+        return new CreateVotingRequest("title", value, 4, "tokenid");
+    }
+
+    private String createTooLongDescription() {
+        StringJoiner descriptionJoiner = new StringJoiner("");
+        for (int i = 0; i < 1001; i++) {
+            descriptionJoiner.add("a");
+        }
+
+        return descriptionJoiner.toString();
+    }
+}
