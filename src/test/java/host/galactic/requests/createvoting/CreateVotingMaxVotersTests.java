@@ -42,7 +42,7 @@ public class CreateVotingMaxVotersTests extends ValidationTestsBase {
         assertThat("Expected to have 1 violation for not defined max voters, but there isn't.", violations, hasSize(1));
 
         var violationMessages = extractViolationMessages(violations);
-        assertThat(violationMessages, hasItems("Max voters must be given."));
+        assertThat(violationMessages, hasItems("Max voters must not be null."));
     }
 
     private CreateVotingRequest makeCreateVotingRequestWithMaxVoters(Integer value) {

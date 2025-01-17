@@ -3,7 +3,9 @@ package host.galactic.testutils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
@@ -19,6 +21,11 @@ public class ValidationTestsBase {
     protected Validator validator;
 
     private ObjectMapper mapper = new ObjectMapper();
+
+    public ValidationTestsBase() {
+        mapper.registerModule(new JavaTimeModule());
+        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+    }
 
     protected static <T> List<String> extractViolationMessages(Set<ConstraintViolation<T>> violations) {
         return violations.stream()

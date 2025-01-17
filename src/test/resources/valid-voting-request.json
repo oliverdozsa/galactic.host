@@ -2,5 +2,8 @@
   "title": "What chocolate do you like?",
   "description": "This voting is about chocolates",
   "maxVoters": 5,
-  "tokenId": "choco420"
+  "tokenId": "choco420",
+  "dates": {
+    "encryptedUntil": "2100-04-20T04:20:42.0Z"
+  }
 }
