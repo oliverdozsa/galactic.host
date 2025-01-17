@@ -1,9 +1,16 @@
 {
-  "title": "What chocolate do you like?",
+  "title": "Chocolates",
   "description": "This voting is about chocolates",
   "maxVoters": 5,
   "tokenId": "choco420",
   "dates": {
-    "encryptedUntil": "2100-04-20T04:20:42.0Z"
-  }
+    "encryptedUntil": "2100-04-20T04:20:42.0Z",
+    "startDate": "2099-02-20T04:20:42.0Z",
+    "endDate": "2100-04-20T04:20:42.0Z"
+  },
+  "polls": [
+    {
+      "question": "What is your favorite chocolate?"
+    }
+  ]
 }

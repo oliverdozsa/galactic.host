@@ -3,6 +3,8 @@ package host.galactic.stellar.rest.requests;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 
+import java.util.List;
+
 public record CreateVotingRequest(
         @NotBlank(message = "Title cannot be blank.")
         @Size(min = 2, max = 1000, message = "Title length must be >= 2 and <= 1000.")
@@ -22,6 +24,8 @@ public record CreateVotingRequest(
         String tokenId,
 
         @Valid
-        CreateVotingRequestDates dates
+        CreateVotingRequestDates dates,
+
+        List<@Valid CreatePollRequest> polls
 ) {
 }
