@@ -35,7 +35,7 @@ public class CreateVotingMaxVotersTests extends ValidationTestsBase {
     }
 
     @Test
-    public void noMaxVotersGiven() {
+    public void testNoMaxVotersGiven() {
         CreateVotingRequest maxVotersNotDefined = makeCreateVotingRequestWithMaxVoters(null);
 
         var violations = validator.validateProperty(maxVotersNotDefined, "maxVoters");
