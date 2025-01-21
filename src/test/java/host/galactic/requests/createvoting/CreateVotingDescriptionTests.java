@@ -6,8 +6,6 @@ import host.galactic.testutils.ValidationTestsBase;
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 
-import java.util.StringJoiner;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
@@ -53,11 +51,6 @@ public class CreateVotingDescriptionTests extends ValidationTestsBase {
     }
 
     private String createTooLongDescription() {
-        StringJoiner descriptionJoiner = new StringJoiner("");
-        for (int i = 0; i < 1001; i++) {
-            descriptionJoiner.add("a");
-        }
-
-        return descriptionJoiner.toString();
+        return generateRandomStringOfLength(1001);
     }
 }

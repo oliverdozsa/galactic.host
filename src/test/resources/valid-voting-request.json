@@ -10,7 +10,8 @@
   },
   "polls": [
     {
-      "question": "What is your favorite chocolate?"
+      "question": "What is your favorite chocolate?",
+      "description": "In this question you choose from 3 types of chocolates."
     }
   ]
 }

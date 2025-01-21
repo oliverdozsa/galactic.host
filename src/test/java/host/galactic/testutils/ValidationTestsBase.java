@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 import java.util.Set;
 
 public class ValidationTestsBase {
@@ -49,5 +50,19 @@ public class ValidationTestsBase {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    protected static String generateRandomStringOfLength(int value) {
+        String abc = "abcdefghijklmnopqrstuvxyz";
+        Random random = new Random();
+
+        StringBuilder stringBuilder = new StringBuilder();
+        for(int i = 0; i < value; i++) {
+            int randomIndex = random.nextInt(abc.length());
+            char randomLetter = abc.charAt(randomIndex);
+            stringBuilder.append(randomLetter);
+        }
+
+        return stringBuilder.toString();
     }
 }

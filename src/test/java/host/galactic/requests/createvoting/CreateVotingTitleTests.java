@@ -6,7 +6,6 @@ import host.galactic.testutils.ValidationTestsBase;
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 
-import java.util.StringJoiner;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItems;
@@ -49,12 +48,7 @@ public class CreateVotingTitleTests extends ValidationTestsBase {
     }
 
     private String createTooLongTitle() {
-        StringJoiner titleJoiner = new StringJoiner("");
-        for (int i = 0; i < 1001; i++) {
-            titleJoiner.add("a");
-        }
-
-        return titleJoiner.toString();
+        return generateRandomStringOfLength(1001);
     }
 
     private CreateVotingRequest makeCreateVotingRequestWithTitle(String value) {
