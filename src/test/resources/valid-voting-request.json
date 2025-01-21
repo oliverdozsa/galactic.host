@@ -11,7 +11,18 @@
   "polls": [
     {
       "question": "What is your favorite chocolate?",
-      "description": "In this question you choose from 3 types of chocolates."
+      "description": "In this question you choose from 3 types of chocolates.",
+      "options": [
+        {
+          "name": "White"
+        },
+        {
+          "name": "Milk"
+        },
+        {
+          "name": "Dark"
+        }
+      ]
     }
   ]
 }

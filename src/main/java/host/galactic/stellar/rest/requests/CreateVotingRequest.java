@@ -26,6 +26,7 @@ public record CreateVotingRequest(
         @Valid
         CreateVotingRequestDates dates,
 
+        @Size(min = 1, max = 99, message = "Polls length must be >= 1 and <= 99.")
         List<@Valid CreatePollRequest> polls
 ) {
 }
