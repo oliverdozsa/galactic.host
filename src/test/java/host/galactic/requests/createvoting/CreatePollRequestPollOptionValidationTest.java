@@ -36,6 +36,17 @@ public class CreatePollRequestPollOptionValidationTest extends ValidationTestsBa
         assertThat(violationMessages, hasItems("Name length must be >= 2 and <= 300."));
     }
 
+    @Test
+    public void testPollOptionsWithSameCodes() {
+        CreatePollRequest sameOptionCodesRequest = makeCreatePollRequestWithDuplicateCodes();
+
+        var violations = validator.validate(sameOptionCodesRequest);
+        assertThat("Expected to have 1 violation for duplicate option codes.", violations, hasSize(1));
+
+        var violationMessages = extractViolationMessages(violations);
+        assertThat(violationMessages, hasItems("Option codes must be unique."));
+    }
+
     private CreatePollOptionRequest makeCreatePollOptionRequestWithName(String value) {
         ObjectNode votingRequestJson = readJsonFile("valid-voting-request.json");
         ObjectNode pollJson = (ObjectNode) votingRequestJson.get("polls").get(0);
@@ -54,6 +65,16 @@ public class CreatePollRequestPollOptionValidationTest extends ValidationTestsBa
         ArrayNode arrayNode = createArrayNode();
         arrayNode.add(optionJson);
         pollJson.set("options", arrayNode);
+
+        return convertJsonNodeTo(CreatePollRequest.class, pollJson);
+    }
+
+    private CreatePollRequest makeCreatePollRequestWithDuplicateCodes() {
+        ObjectNode votingRequestJson = readJsonFile("valid-voting-request.json");
+        ObjectNode pollJson = (ObjectNode) votingRequestJson.get("polls").get(0);
+        ObjectNode optionJson = (ObjectNode) pollJson.get("options").get(1);
+
+        optionJson.put("code", 1);
 
         return convertJsonNodeTo(CreatePollRequest.class, pollJson);
     }

@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Size;
 
 import java.util.List;
 
+@CreatePollRequestConstraints
 public record CreatePollRequest(
         @NotBlank(message = "Question must not be blank.")
         @Size(min = 2, max = 1000, message = "Question length must be >= 2 and <= 1000.")
