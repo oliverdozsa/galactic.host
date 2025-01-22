@@ -14,13 +14,16 @@
       "description": "In this question you choose from 3 types of chocolates.",
       "options": [
         {
-          "name": "White"
+          "name": "White",
+          "code": 1
         },
         {
-          "name": "Milk"
+          "name": "Milk",
+          "code": 2
         },
         {
-          "name": "Dark"
+          "name": "Dark",
+          "code": 3
         }
       ]
     }
