@@ -15,7 +15,7 @@ public class StellarVotingRest {
     @Consumes(MediaType.APPLICATION_JSON)
     public void create(@Valid CreateVotingRequest createVotingRequest) {
         Log.info("create()");
-        Log.debugf("create(): voting request to be created: %s", createVotingRequest.toString());
+        Log.debugf("create(): createVotingRequest = %s", createVotingRequest.toString());
         // TODO
     }
 
