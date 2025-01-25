@@ -4,6 +4,7 @@
   "maxVoters": 5,
   "tokenId": "choco420",
   "visibility": "UNLISTED",
+  "useTestNet": true,
   "dates": {
     "encryptedUntil": "2100-04-20T04:20:42.0Z",
     "startDate": "2099-02-20T04:20:42.0Z",

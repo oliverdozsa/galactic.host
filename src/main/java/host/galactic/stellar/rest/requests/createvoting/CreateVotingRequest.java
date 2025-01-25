@@ -26,6 +26,8 @@ public record CreateVotingRequest(
         @NotNull(message = "Visibility cannot be null.")
         Visibility visibility,
 
+        Boolean useTestNet,
+
         @Valid
         CreateVotingRequestDates dates,
 
