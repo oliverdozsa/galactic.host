@@ -23,10 +23,22 @@ public record CreateVotingRequest(
         @Pattern(regexp = "^[0-9a-z]+$", message = "Token ID must consists of number and / or lowercase letters.")
         String tokenId,
 
+        @NotNull(message = "Visibility cannot be null.")
+        Visibility visibility,
+
         @Valid
         CreateVotingRequestDates dates,
 
         @Size(min = 1, max = 99, message = "Polls length must be >= 1 and <= 99.")
         List<@Valid CreatePollRequest> polls
 ) {
+        public enum Visibility {
+                UNLISTED,
+                PRIVATE
+        }
+
+        public enum BallotType {
+                MULTI_POLL,
+                MULTI_CHOICE
+        }
 }
