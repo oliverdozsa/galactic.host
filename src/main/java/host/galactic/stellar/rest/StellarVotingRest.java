@@ -1,6 +1,6 @@
-package host.galactic.requests;
+package host.galactic.stellar.rest;
 
-import host.galactic.stellar.rest.requests.CreateVotingRequest;
+import host.galactic.stellar.rest.requests.createvoting.CreateVotingRequest;
 import io.quarkus.logging.Log;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;

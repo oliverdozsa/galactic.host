@@ -1,7 +1,6 @@
-package host.galactic.requests.createvoting;
+package host.galactic.stellar.rest.requests.createvoting;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import host.galactic.stellar.rest.requests.CreatePollRequest;
 import host.galactic.testutils.ValidationTestsBase;
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
