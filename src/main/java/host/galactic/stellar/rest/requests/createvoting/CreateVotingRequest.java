@@ -1,10 +1,13 @@
 package host.galactic.stellar.rest.requests.createvoting;
 
+import host.galactic.stellar.rest.requests.createvoting.constraints.CreateVotingRequestFundingAccountConstraints;
+import host.galactic.stellar.rest.requests.createvoting.constraints.CreateVotingRequestMaxChoicesConstraints;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 
 import java.util.List;
 
+@CreateVotingRequestMaxChoicesConstraints
 public record CreateVotingRequest(
         @NotBlank(message = "Title cannot be blank.")
         @Size(min = 2, max = 1000, message = "Title length must be >= 2 and <= 1000.")
@@ -26,7 +29,15 @@ public record CreateVotingRequest(
         @NotNull(message = "Visibility cannot be null.")
         Visibility visibility,
 
+        BallotType ballotType,
+
+        Integer maxChoices,
+
         Boolean useTestNet,
+
+        @NotBlank(message = "Funding account cannot be blank.")
+        @CreateVotingRequestFundingAccountConstraints
+        String fundingAccountSecret,
 
         @Valid
         CreateVotingRequestDates dates,
@@ -34,13 +45,13 @@ public record CreateVotingRequest(
         @Size(min = 1, max = 99, message = "Polls length must be >= 1 and <= 99.")
         List<@Valid CreatePollRequest> polls
 ) {
-        public enum Visibility {
-                UNLISTED,
-                PRIVATE
-        }
+    public enum Visibility {
+        UNLISTED,
+        PRIVATE
+    }
 
-        public enum BallotType {
-                MULTI_POLL,
-                MULTI_CHOICE
-        }
+    public enum BallotType {
+        MULTI_POLL,
+        MULTI_CHOICE
+    }
 }
