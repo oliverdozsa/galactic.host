@@ -22,7 +22,7 @@ public class VotingEntity extends PanacheEntityBase {
     public String description;
 
     @Column(name = "max_voters", nullable = false)
-    public Long maxVoters;
+    public Integer maxVoters;
 
     @Column(name = "created_at", nullable = false)
     public Instant createdAt;
@@ -53,4 +53,14 @@ public class VotingEntity extends PanacheEntityBase {
 
     @Column(name = "created_by", nullable = false)
     public String createdBy;
+
+    @Column(name = "user_given_funding_account_secret")
+    @Lob
+    public String userGivenFundingAccountSecret;
+
+    @Column(name = "asset_code", length = 20)
+    public String assetCode;
+
+    @Column(name = "is_on_test_network")
+    public Boolean isOnTestNetwork;
 }

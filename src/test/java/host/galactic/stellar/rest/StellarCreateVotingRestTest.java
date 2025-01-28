@@ -13,6 +13,8 @@ import org.junit.jupiter.api.Test;
 import java.net.URL;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 @QuarkusTest
 public class StellarCreateVotingRestTest {
@@ -26,13 +28,17 @@ public class StellarCreateVotingRestTest {
 
         CreateVotingRequest createRequest = makeCreateVotingRequest();
 
-        given()
+        String locationHeader = given()
                 .contentType(ContentType.JSON)
                 .body(createRequest)
                 .when()
                 .post(stellarVotingRest)
                 .then()
-                .statusCode(204);
+                .statusCode(201)
+                .extract()
+                .header("Location");
+
+        assertThat(locationHeader, not(blankOrNullString()));
 
         Log.info("[  END TEST]: testCreateVoting()\n\n");
     }
