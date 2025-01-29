@@ -7,7 +7,7 @@ import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.quarkus.logging.Log;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
-import static host.galactic.data.repositories.CreateVotingRequestMapper.from;
+import static host.galactic.data.mappers.CreateVotingRequestMapper.from;
 
 @ApplicationScoped
 public class VotingRepository implements PanacheRepository<VotingEntity> {
@@ -18,5 +18,10 @@ public class VotingRepository implements PanacheRepository<VotingEntity> {
 
         VotingEntity entity = from(createVotingRequest);
         return persist(entity);
+    }
+
+    public Uni<VotingEntity> getById(Long id) {
+        Log.infof("getById(): id = %s", id);
+        return findById(id);
     }
 }

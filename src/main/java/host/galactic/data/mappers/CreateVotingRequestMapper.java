@@ -1,4 +1,4 @@
-package host.galactic.data.repositories;
+package host.galactic.data.mappers;
 
 import host.galactic.data.entities.BallotType;
 import host.galactic.data.entities.Visibility;
@@ -7,7 +7,7 @@ import host.galactic.stellar.rest.requests.createvoting.CreateVotingRequest;
 
 import java.time.Instant;
 
-class CreateVotingRequestMapper {
+public class CreateVotingRequestMapper {
     public static VotingEntity from(CreateVotingRequest request) {
         VotingEntity votingEntity = new VotingEntity();
 

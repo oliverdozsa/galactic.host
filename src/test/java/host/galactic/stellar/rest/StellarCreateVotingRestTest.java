@@ -2,6 +2,7 @@ package host.galactic.stellar.rest;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import host.galactic.stellar.rest.requests.createvoting.CreateVotingRequest;
+import host.galactic.stellar.rest.responses.VotingResponse;
 import host.galactic.testutils.JsonUtils;
 import io.quarkus.logging.Log;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
@@ -40,6 +41,16 @@ public class StellarCreateVotingRestTest {
 
         assertThat(locationHeader, not(blankOrNullString()));
 
+        VotingResponse votingResponse = given()
+                .get(locationHeader)
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(VotingResponse.class);
+
+        assertThat(votingResponse.title(), equalTo(createRequest.title()));
+
         Log.info("[  END TEST]: testCreateVoting()\n\n");
     }
 
@@ -58,6 +69,19 @@ public class StellarCreateVotingRestTest {
                 .statusCode(400);
 
         Log.info("[  END TEST]: testCreateInvalidVoting()\n\n");
+    }
+
+    @Test
+    public void testNotExistingVoting() {
+        Log.info("[START TEST]: testNotExistingVoting()");
+
+        given()
+                .when()
+                .get(stellarVotingRest + "/42")
+                .then()
+                .statusCode(404);
+
+        Log.info("[  END TEST]: testNotExistingVoting()\n\n");
     }
 
     private CreateVotingRequest makeCreateVotingRequest() {

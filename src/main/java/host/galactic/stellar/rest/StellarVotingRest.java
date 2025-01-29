@@ -1,15 +1,14 @@
 package host.galactic.stellar.rest;
 
 import host.galactic.data.repositories.VotingRepository;
+import host.galactic.stellar.rest.mappers.VotingEntityMapper;
 import host.galactic.stellar.rest.requests.createvoting.CreateVotingRequest;
+import host.galactic.stellar.rest.responses.VotingResponse;
 import io.quarkus.logging.Log;
 import io.smallrye.mutiny.Uni;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriBuilder;
@@ -29,7 +28,9 @@ public class StellarVotingRest {
 
         return repository.createFrom(createVotingRequest)
                 .map(e -> {
-                    URI entityId = UriBuilder.fromMethod(StellarVotingRest.class, "get")
+                    URI entityId = UriBuilder
+                            .fromResource(StellarVotingRest.class)
+                            .path("/{id}")
                             .build(e.id);
                     return Response.created(entityId).build();
                 });
@@ -37,8 +38,15 @@ public class StellarVotingRest {
 
     @Path("/{id}")
     @GET
-    public void get(String id) {
-        // TODO
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<VotingResponse> get(Long id) {
+        Log.infof("get(): id = %s", id);
+
+        return repository.getById(id)
+                .onItem()
+                .ifNull()
+                .failWith(new NotFoundException())
+                .map(VotingEntityMapper::from);
     }
 
     @Path("/of-vote-caller")

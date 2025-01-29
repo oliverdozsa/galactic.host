@@ -13,12 +13,10 @@ public class VotingEntity extends PanacheEntityBase {
     @Column(name = "id", nullable = false)
     public Long id;
 
-    @Column(name = "title")
-    @Lob
+    @Column(name = "title", columnDefinition = "text")
     public String title;
 
-    @Column(name = "description")
-    @Lob
+    @Column(name = "description", columnDefinition = "text")
     public String description;
 
     @Column(name = "max_voters", nullable = false)
@@ -27,8 +25,7 @@ public class VotingEntity extends PanacheEntityBase {
     @Column(name = "created_at", nullable = false)
     public Instant createdAt;
 
-    @Column(name = "encryption_key")
-    @Lob
+    @Column(name = "encryption_key", columnDefinition = "text")
     public String encryptionKey;
 
     @Column(name = "encrypted_until")
@@ -54,8 +51,7 @@ public class VotingEntity extends PanacheEntityBase {
     @Column(name = "created_by", nullable = false)
     public String createdBy;
 
-    @Column(name = "user_given_funding_account_secret")
-    @Lob
+    @Column(name = "user_given_funding_account_secret", columnDefinition = "text")
     public String userGivenFundingAccountSecret;
 
     @Column(name = "asset_code", length = 20)
