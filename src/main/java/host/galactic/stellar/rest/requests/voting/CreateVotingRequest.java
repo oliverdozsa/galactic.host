@@ -1,7 +1,7 @@
-package host.galactic.stellar.rest.requests.createvoting;
+package host.galactic.stellar.rest.requests.voting;
 
-import host.galactic.stellar.rest.requests.createvoting.constraints.CreateVotingRequestFundingAccountConstraints;
-import host.galactic.stellar.rest.requests.createvoting.constraints.CreateVotingRequestMaxChoicesConstraints;
+import host.galactic.stellar.rest.requests.voting.constraints.CreateVotingRequestFundingAccountConstraints;
+import host.galactic.stellar.rest.requests.voting.constraints.CreateVotingRequestMaxChoicesConstraints;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 

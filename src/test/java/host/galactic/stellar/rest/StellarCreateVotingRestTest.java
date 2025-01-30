@@ -1,7 +1,7 @@
 package host.galactic.stellar.rest;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import host.galactic.stellar.rest.requests.createvoting.CreateVotingRequest;
+import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
 import host.galactic.stellar.rest.responses.VotingResponse;
 import host.galactic.testutils.JsonUtils;
 import io.quarkus.logging.Log;

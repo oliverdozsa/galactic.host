@@ -1,4 +1,4 @@
-package host.galactic.stellar.rest.requests.createvoting;
+package host.galactic.stellar.rest.requests.voting;
 
 import jakarta.validation.constraints.*;
 

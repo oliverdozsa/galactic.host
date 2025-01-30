@@ -1,6 +1,6 @@
-package host.galactic.stellar.rest.requests.createvoting.constraints;
+package host.galactic.stellar.rest.requests.voting.constraints;
 
-import host.galactic.stellar.rest.requests.createvoting.CreateVotingRequestDates;
+import host.galactic.stellar.rest.requests.voting.CreateVotingRequestDates;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 

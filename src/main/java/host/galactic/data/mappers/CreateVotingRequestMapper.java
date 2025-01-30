@@ -1,9 +1,9 @@
 package host.galactic.data.mappers;
 
 import host.galactic.data.entities.*;
-import host.galactic.stellar.rest.requests.createvoting.CreatePollOptionRequest;
-import host.galactic.stellar.rest.requests.createvoting.CreatePollRequest;
-import host.galactic.stellar.rest.requests.createvoting.CreateVotingRequest;
+import host.galactic.stellar.rest.requests.voting.CreatePollOptionRequest;
+import host.galactic.stellar.rest.requests.voting.CreatePollRequest;
+import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
 
 import java.time.Instant;
 import java.util.ArrayList;

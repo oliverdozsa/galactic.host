@@ -1,7 +1,7 @@
-package host.galactic.stellar.rest.requests.createvoting.constraints;
+package host.galactic.stellar.rest.requests.voting.constraints;
 
-import host.galactic.stellar.rest.requests.createvoting.CreatePollOptionRequest;
-import host.galactic.stellar.rest.requests.createvoting.CreatePollRequest;
+import host.galactic.stellar.rest.requests.voting.CreatePollOptionRequest;
+import host.galactic.stellar.rest.requests.voting.CreatePollRequest;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 

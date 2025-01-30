@@ -1,4 +1,4 @@
-package host.galactic.stellar.rest.requests.createvoting;
+package host.galactic.stellar.rest.requests.voting;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
