@@ -1,11 +1,12 @@
 package host.galactic.data.mappers;
 
-import host.galactic.data.entities.BallotType;
-import host.galactic.data.entities.Visibility;
-import host.galactic.data.entities.VotingEntity;
+import host.galactic.data.entities.*;
+import host.galactic.stellar.rest.requests.createvoting.CreatePollOptionRequest;
+import host.galactic.stellar.rest.requests.createvoting.CreatePollRequest;
 import host.galactic.stellar.rest.requests.createvoting.CreateVotingRequest;
 
 import java.time.Instant;
+import java.util.ArrayList;
 
 public class CreateVotingRequestMapper {
     public static VotingEntity from(CreateVotingRequest request) {
@@ -26,6 +27,11 @@ public class CreateVotingRequestMapper {
         votingEntity.assetCode = request.tokenId();
         votingEntity.userGivenFundingAccountSecret = request.fundingAccountSecret();
         votingEntity.isOnTestNetwork = request.useTestNet();
+        votingEntity.polls = new ArrayList<>();
+
+        for (int i = 0; i < request.polls().size(); i++) {
+            addPollRequestTo(votingEntity, request.polls().get(i), i + 1);
+        }
 
         return votingEntity;
     }
@@ -42,5 +48,27 @@ public class CreateVotingRequestMapper {
             case UNLISTED -> Visibility.UNLISTED;
             case PRIVATE -> Visibility.PRIVATE;
         };
+    }
+
+    private static void addPollRequestTo(VotingEntity entity, CreatePollRequest request, int index) {
+        VotingPollEntity pollEntity = new VotingPollEntity();
+
+        pollEntity.description = request.description();
+        pollEntity.index = index;
+        pollEntity.question = request.question();
+        pollEntity.options = new ArrayList<>();
+
+        request.options().forEach(o -> addPollOptionTo(pollEntity, o));
+
+        entity.polls.add(pollEntity);
+    }
+
+    private static void addPollOptionTo(VotingPollEntity pollEntity, CreatePollOptionRequest request) {
+        VotingPollOptionEntity pollOptionEntity = new VotingPollOptionEntity();
+
+        pollOptionEntity.code = request.code();
+        pollOptionEntity.name = request.name();
+
+        pollEntity.options.add(pollOptionEntity);
     }
 }

@@ -4,6 +4,7 @@ import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 
 import java.time.Instant;
+import java.util.List;
 
 @Entity
 @Table(name = "voting")
@@ -59,4 +60,7 @@ public class VotingEntity extends PanacheEntityBase {
 
     @Column(name = "is_on_test_network")
     public Boolean isOnTestNetwork;
+
+    @OneToMany(mappedBy = "voting", cascade = {CascadeType.MERGE, CascadeType.REMOVE})
+    public List<VotingPollEntity> polls;
 }
