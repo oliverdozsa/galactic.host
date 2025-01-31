@@ -61,6 +61,6 @@ public class VotingEntity extends PanacheEntityBase {
     @Column(name = "is_on_test_network")
     public Boolean isOnTestNetwork;
 
-    @OneToMany(mappedBy = "voting", cascade = {CascadeType.MERGE, CascadeType.REMOVE})
+    @OneToMany(mappedBy = "voting", cascade = {CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.EAGER)
     public List<VotingPollEntity> polls;
 }

@@ -26,6 +26,6 @@ public class VotingPollEntity extends PanacheEntityBase {
     @JoinColumn(name = "voting_id")
     public VotingEntity voting;
 
-    @OneToMany(mappedBy = "poll", cascade = {CascadeType.MERGE, CascadeType.REMOVE})
+    @OneToMany(mappedBy = "poll", cascade = {CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.EAGER)
     public List<VotingPollOptionEntity> options;
 }

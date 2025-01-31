@@ -1,6 +1,7 @@
-package host.galactic.stellar.rest.responses;
+package host.galactic.stellar.rest.responses.voting;
 
 import java.time.Instant;
+import java.util.List;
 
 public record VotingResponse (
         Long id,
@@ -15,6 +16,7 @@ public record VotingResponse (
         String visibility,
         String ballotType,
         Integer maxChoices,
-        Boolean isOnTestNetwork
+        Boolean isOnTestNetwork,
+        List<VotingPollResponse> polls
 ) {
 }

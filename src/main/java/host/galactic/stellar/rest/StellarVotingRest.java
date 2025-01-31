@@ -3,7 +3,7 @@ package host.galactic.stellar.rest;
 import host.galactic.data.repositories.VotingRepository;
 import host.galactic.stellar.rest.mappers.VotingEntityMapper;
 import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
-import host.galactic.stellar.rest.responses.VotingResponse;
+import host.galactic.stellar.rest.responses.voting.VotingResponse;
 import io.quarkus.logging.Log;
 import io.smallrye.mutiny.Uni;
 import jakarta.inject.Inject;
