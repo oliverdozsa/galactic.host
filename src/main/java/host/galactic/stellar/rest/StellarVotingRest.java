@@ -5,6 +5,8 @@ import host.galactic.stellar.rest.mappers.VotingEntityMapper;
 import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
 import host.galactic.stellar.rest.responses.voting.VotingResponse;
 import io.quarkus.logging.Log;
+import io.quarkus.security.Authenticated;
+import io.quarkus.security.identity.SecurityIdentity;
 import io.smallrye.mutiny.Uni;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
@@ -12,6 +14,7 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriBuilder;
+import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import java.net.URI;
 
@@ -20,7 +23,11 @@ public class StellarVotingRest {
     @Inject
     VotingRepository repository;
 
+    @Inject
+    JsonWebToken jwt;
+
     @POST
+    @Authenticated
     @Consumes(MediaType.APPLICATION_JSON)
     public Uni<Response> create(@Valid CreateVotingRequest createVotingRequest) {
         Log.info("create()");

@@ -3,19 +3,17 @@ package host.galactic.stellar.rest;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
 import host.galactic.stellar.rest.responses.voting.VotingPollOptionResponse;
-import host.galactic.stellar.rest.responses.voting.VotingPollResponse;
 import host.galactic.stellar.rest.responses.voting.VotingResponse;
 import host.galactic.testutils.JsonUtils;
 import io.quarkus.logging.Log;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.security.TestSecurity;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
 
 import java.net.URL;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -28,6 +26,7 @@ public class StellarCreateVotingRestTest {
     private URL stellarVotingRest;
 
     @Test
+    @TestSecurity(user = "alice")
     public void testCreateVoting() {
         Log.info("[START TEST]: testCreateVoting()");
 
@@ -68,6 +67,7 @@ public class StellarCreateVotingRestTest {
     }
 
     @Test
+    @TestSecurity(user = "alice")
     public void testCreateInvalidVoting() {
         Log.info("[START TEST]: testCreateInvalidVoting()");
 
@@ -85,6 +85,7 @@ public class StellarCreateVotingRestTest {
     }
 
     @Test
+    @TestSecurity(user = "alice")
     public void testNotExistingVoting() {
         Log.info("[START TEST]: testNotExistingVoting()");
 
