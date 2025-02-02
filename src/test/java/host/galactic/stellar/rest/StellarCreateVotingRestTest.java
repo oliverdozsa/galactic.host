@@ -2,6 +2,8 @@ package host.galactic.stellar.rest;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
+import host.galactic.stellar.rest.responses.voting.VotingPollOptionResponse;
+import host.galactic.stellar.rest.responses.voting.VotingPollResponse;
 import host.galactic.stellar.rest.responses.voting.VotingResponse;
 import host.galactic.testutils.JsonUtils;
 import io.quarkus.logging.Log;
@@ -12,6 +14,8 @@ import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
 
 import java.net.URL;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -50,6 +54,15 @@ public class StellarCreateVotingRestTest {
                 .as(VotingResponse.class);
 
         assertThat(votingResponse.title(), equalTo(createRequest.title()));
+
+        var polls = votingResponse.polls();
+        assertThat(polls.get(0).question(), equalTo("What is your favorite chocolate?"));
+
+        var pollOptionNames = polls.get(0).pollOptions()
+                .stream()
+                .map(VotingPollOptionResponse::name)
+                .toList();
+        assertThat(pollOptionNames, hasItems("White", "Milk", "Dark"));
 
         Log.info("[  END TEST]: testCreateVoting()\n\n");
     }
