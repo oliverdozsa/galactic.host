@@ -11,8 +11,7 @@ public class VotingPollOptionEntity extends PanacheEntityBase {
     @Column(name = "id", nullable = false)
     public Long id;
 
-    @Column(name = "name", nullable = false)
-    @Lob
+    @Column(name = "name", nullable = false, columnDefinition = "text")
     public String name;
 
     @Column(name = "code", nullable = false)

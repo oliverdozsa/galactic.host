@@ -57,6 +57,7 @@ public class CreateVotingRequestMapper {
         pollEntity.index = index;
         pollEntity.question = request.question();
         pollEntity.options = new ArrayList<>();
+        pollEntity.voting = entity;
 
         request.options().forEach(o -> addPollOptionTo(pollEntity, o));
 
@@ -68,6 +69,7 @@ public class CreateVotingRequestMapper {
 
         pollOptionEntity.code = request.code();
         pollOptionEntity.name = request.name();
+        pollOptionEntity.poll = pollEntity;
 
         pollEntity.options.add(pollOptionEntity);
     }
