@@ -12,15 +12,16 @@ import static host.galactic.data.mappers.CreateVotingRequestMapper.from;
 @ApplicationScoped
 public class VotingRepository implements PanacheRepository<VotingEntity> {
     @WithTransaction
-    public Uni<VotingEntity> createFrom(CreateVotingRequest createVotingRequest) {
+    public Uni<VotingEntity> createFrom(CreateVotingRequest createVotingRequest, String user) {
         Log.info("createFrom()");
         Log.debugf("createFrom(): createVotingRequest = %s", createVotingRequest.toString());
 
-        VotingEntity entity = from(createVotingRequest);
+        VotingEntity entity = from(createVotingRequest, user);
         return persist(entity);
     }
 
     public Uni<VotingEntity> getById(Long id) {
+        // TODO: this should be returned only if auth and role is proper or voting is unlisted.
         Log.infof("getById(): id = %s", id);
         return findById(id);
     }

@@ -9,13 +9,12 @@ import java.time.Instant;
 import java.util.ArrayList;
 
 public class CreateVotingRequestMapper {
-    public static VotingEntity from(CreateVotingRequest request) {
+    public static VotingEntity from(CreateVotingRequest request, String user) {
         VotingEntity votingEntity = new VotingEntity();
 
         votingEntity.ballotType = from(request.ballotType());
         votingEntity.createdAt = Instant.now();
-        // TODO: use when auth is present
-        votingEntity.createdBy = "<ANONYMOUS>";
+        votingEntity.createdBy = user;
         votingEntity.title = request.title();
         votingEntity.description = request.description();
         votingEntity.encryptedUntil = request.dates().encryptedUntil();

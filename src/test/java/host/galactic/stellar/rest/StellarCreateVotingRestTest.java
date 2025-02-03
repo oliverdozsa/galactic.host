@@ -98,14 +98,14 @@ public class StellarCreateVotingRestTest {
         Log.info("[  END TEST]: testNotExistingVoting()\n\n");
     }
 
-    private CreateVotingRequest makeCreateVotingRequest() {
-        ObjectNode votingRequestJson = JsonUtils.readJsonFile("valid-voting-request.json");
-        return JsonUtils.convertJsonNodeTo(CreateVotingRequest.class, votingRequestJson);
-    }
-
     private CreateVotingRequest makeInvalidCreateVotingRequest() {
         ObjectNode votingRequestJson = JsonUtils.readJsonFile("valid-voting-request.json");
         votingRequestJson.put("title", "a");
+        return JsonUtils.convertJsonNodeTo(CreateVotingRequest.class, votingRequestJson);
+    }
+
+    private CreateVotingRequest makeCreateVotingRequest() {
+        ObjectNode votingRequestJson = JsonUtils.readJsonFile("valid-voting-request.json");
         return JsonUtils.convertJsonNodeTo(CreateVotingRequest.class, votingRequestJson);
     }
 }
