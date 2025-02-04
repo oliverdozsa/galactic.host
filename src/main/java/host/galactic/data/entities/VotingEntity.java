@@ -63,4 +63,7 @@ public class VotingEntity extends PanacheEntityBase {
 
     @OneToMany(mappedBy = "voting", cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
     public List<VotingPollEntity> polls;
+
+    @ManyToMany(mappedBy = "votings")
+    public List<UserEntity> voters;
 }

@@ -16,6 +16,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriBuilder;
 import org.eclipse.microprofile.jwt.JsonWebToken;
+import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.net.URI;
 
@@ -49,6 +50,7 @@ public class StellarVotingRest {
                 .ifNull()
                 .failWith(new NotFoundException())
                 .onItem()
+                .call(e -> Mutiny.fetch(e.voters))
                 .invoke(e -> checkIfUserIsAllowedToGetVoting(e, jwt.getName()))
                 .map(VotingEntityMapper::from);
     }
@@ -73,11 +75,16 @@ public class StellarVotingRest {
         return Response.created(entityId).build();
     }
 
-    private void checkIfUserIsAllowedToGetVoting(VotingEntity entity, String user) {
-        // TODO: check if user is participant
-        if (entity.visibility == Visibility.PRIVATE) {
-            Log.warnf("User \"%s\" is not allowed to get voting with id = %s", user, entity.id);
+    private void checkIfUserIsAllowedToGetVoting(VotingEntity voting, String user) {
+        if (voting.visibility == Visibility.PRIVATE && doesUserNotParticipateIn(voting, user)) {
+            Log.warnf("User \"%s\" is not allowed to get voting with id = %s", user, voting.id);
             throw new ForbiddenException();
         }
+    }
+
+    private boolean doesUserNotParticipateIn(VotingEntity entity, String user) {
+        return entity.voters.stream()
+                .map(u -> u.id)
+                .noneMatch(id -> id.equals(user));
     }
 }
