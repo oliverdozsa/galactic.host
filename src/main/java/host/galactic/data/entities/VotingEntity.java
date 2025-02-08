@@ -49,8 +49,9 @@ public class VotingEntity extends PanacheEntityBase {
     @Enumerated(EnumType.STRING)
     public Visibility visibility;
 
-    @Column(name = "created_by", nullable = false)
-    public String createdBy;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "created_by")
+    public UserEntity createdBy;
 
     @Column(name = "user_given_funding_account_secret", columnDefinition = "text")
     public String userGivenFundingAccountSecret;

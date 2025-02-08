@@ -9,7 +9,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 
 public class CreateVotingRequestMapper {
-    public static VotingEntity from(CreateVotingRequest request, String user) {
+    public static VotingEntity from(CreateVotingRequest request, UserEntity user) {
         VotingEntity votingEntity = new VotingEntity();
 
         votingEntity.ballotType = from(request.ballotType());

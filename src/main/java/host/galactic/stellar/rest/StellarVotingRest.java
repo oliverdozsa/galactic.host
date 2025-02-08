@@ -2,6 +2,7 @@ package host.galactic.stellar.rest;
 
 import host.galactic.data.entities.Visibility;
 import host.galactic.data.entities.VotingEntity;
+import host.galactic.data.repositories.UserRepository;
 import host.galactic.data.repositories.VotingRepository;
 import host.galactic.stellar.rest.mappers.VotingEntityMapper;
 import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
@@ -19,11 +20,15 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.net.URI;
+import java.util.List;
 
 @Path("/stellar/votings")
 public class StellarVotingRest {
     @Inject
-    VotingRepository repository;
+    VotingRepository votingRepository;
+
+    @Inject
+    UserRepository userRepository;
 
     @Inject
     JsonWebToken jwt;
@@ -35,8 +40,21 @@ public class StellarVotingRest {
         Log.info("create()");
         Log.debugf("create(): user = \"%s\", createVotingRequest = %s", jwt.getName(), createVotingRequest.toString());
 
-        return repository.createFrom(createVotingRequest, jwt.getName())
-                .map(StellarVotingRest::toCreatedResponse);
+        // TODO: intercept this instead: https://quarkus.io/guides/rest#the-jakarta-rest-way
+        boolean isEmailVerified = jwt.getClaimNames().containsAll(List.of("email", "email_verified")) &&
+                (Boolean) jwt.getClaim("email_verified");
+
+        if (!isEmailVerified) {
+            return Uni.createFrom().failure(new ForbiddenException());
+        }
+
+        return userRepository.createIfNotExists(jwt.getClaim("email"))
+                .onItem()
+                .transformToUni(u -> {
+                    return votingRepository
+                            .createFrom(createVotingRequest, u)
+                            .map(StellarVotingRest::toCreatedResponse);
+                });
     }
 
     @Path("/{id}")
@@ -45,7 +63,9 @@ public class StellarVotingRest {
     public Uni<VotingResponse> get(Long id) {
         Log.infof("get(): id = %s", id);
 
-        return repository.getById(id)
+        String email = jwt.getClaim("email");
+
+        return votingRepository.getById(id)
                 .onItem()
                 .ifNull()
                 .failWith(new NotFoundException())
@@ -75,16 +95,16 @@ public class StellarVotingRest {
         return Response.created(entityId).build();
     }
 
-    private void checkIfUserIsAllowedToGetVoting(VotingEntity voting, String user) {
-        if (voting.visibility == Visibility.PRIVATE && doesUserNotParticipateIn(voting, user)) {
-            Log.warnf("User \"%s\" is not allowed to get voting with id = %s", user, voting.id);
+    private void checkIfUserIsAllowedToGetVoting(VotingEntity voting, String email) {
+        if (voting.visibility == Visibility.PRIVATE && doesUserNotParticipateIn(voting, email)) {
+            Log.warnf("User \"%s\" is not allowed to get voting with id = %s", email, voting.id);
             throw new ForbiddenException();
         }
     }
 
-    private boolean doesUserNotParticipateIn(VotingEntity entity, String user) {
+    private boolean doesUserNotParticipateIn(VotingEntity entity, String email) {
         return entity.voters.stream()
-                .map(u -> u.id)
-                .noneMatch(id -> id.equals(user));
+                .map(u -> u.email)
+                .noneMatch(e -> e.equals(email));
     }
 }

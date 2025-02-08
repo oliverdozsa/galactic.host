@@ -9,11 +9,15 @@ import java.util.List;
 @Table(name = "users")
 public class UserEntity extends PanacheEntityBase {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    public String id;
+    public Long id;
 
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     public String email;
+
+    @OneToMany(mappedBy = "createdBy")
+    public List<VotingEntity> createdVotings;
 
     @ManyToMany
     @JoinTable(

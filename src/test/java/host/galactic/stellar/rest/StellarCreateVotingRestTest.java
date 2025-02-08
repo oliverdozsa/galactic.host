@@ -9,7 +9,7 @@ import io.quarkus.logging.Log;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.security.TestSecurity;
+import io.quarkus.test.keycloak.client.KeycloakTestClient;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
 
@@ -25,14 +25,16 @@ public class StellarCreateVotingRestTest {
     @TestHTTPResource
     private URL stellarVotingRest;
 
+    KeycloakTestClient keycloakClient = new KeycloakTestClient();
+
     @Test
-    @TestSecurity(user = "alice")
     public void testCreateVoting() {
         Log.info("[START TEST]: testCreateVoting()");
 
         CreateVotingRequest createRequest = makeCreateVotingRequest();
 
         String locationHeader = given()
+                .auth().oauth2(keycloakClient.getAccessToken("alice"))
                 .contentType(ContentType.JSON)
                 .body(createRequest)
                 .when()
@@ -67,13 +69,13 @@ public class StellarCreateVotingRestTest {
     }
 
     @Test
-    @TestSecurity(user = "alice")
     public void testCreateInvalidVoting() {
         Log.info("[START TEST]: testCreateInvalidVoting()");
 
         CreateVotingRequest invalidCreateRequest = makeInvalidCreateVotingRequest();
 
         given()
+                .auth().oauth2(keycloakClient.getAccessToken("alice"))
                 .contentType(ContentType.JSON)
                 .body(invalidCreateRequest)
                 .when()
@@ -85,11 +87,11 @@ public class StellarCreateVotingRestTest {
     }
 
     @Test
-    @TestSecurity(user = "alice")
     public void testNotExistingVoting() {
         Log.info("[START TEST]: testNotExistingVoting()");
 
         given()
+                .auth().oauth2(keycloakClient.getAccessToken("alice"))
                 .when()
                 .get(stellarVotingRest + "/42")
                 .then()

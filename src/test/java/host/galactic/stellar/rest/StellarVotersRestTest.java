@@ -37,6 +37,10 @@ public class StellarVotersRestTest {
         Log.info("[  END TEST]: testGetPrivateVotingAsNonParticipant()\n\n");
     }
 
+    public void testGetPrivateVotingAsParticipant() {
+
+    }
+
     private String createPrivateVotingByAlice() {
         ObjectNode createRequest = JsonUtils.readJsonFile("valid-voting-request.json");
         createRequest.put("visibility", CreateVotingRequest.Visibility.PRIVATE.name());
