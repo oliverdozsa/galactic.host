@@ -836,7 +836,8 @@
         }
       ],
       "defaultClientScopes": [
-        "microprofile-jwt"
+        "microprofile-jwt",
+        "email"
       ],
       "optionalClientScopes": []
     },
