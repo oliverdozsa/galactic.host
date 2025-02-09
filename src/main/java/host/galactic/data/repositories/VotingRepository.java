@@ -25,4 +25,9 @@ public class VotingRepository implements PanacheRepository<VotingEntity> {
         Log.infof("getById(): id = %s", id);
         return findById(id);
     }
+
+    public Uni<VotingEntity> addVotersByEmailTo(Long votingId) {
+        // TODO
+        return null;
+    }
 }

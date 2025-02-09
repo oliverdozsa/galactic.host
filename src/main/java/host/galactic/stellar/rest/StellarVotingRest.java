@@ -1,5 +1,6 @@
 package host.galactic.stellar.rest;
 
+import host.galactic.data.entities.UserEntity;
 import host.galactic.data.entities.Visibility;
 import host.galactic.data.entities.VotingEntity;
 import host.galactic.data.repositories.UserRepository;
@@ -42,11 +43,8 @@ public class StellarVotingRest {
 
         return userRepository.createIfNotExists(jwt.getClaim("email"))
                 .onItem()
-                .transformToUni(u -> {
-                    return votingRepository
-                            .createFrom(createVotingRequest, u)
-                            .map(StellarVotingRest::toCreatedResponse);
-                });
+                .transformToUni(u -> votingRepository.createFrom(createVotingRequest, u))
+                .map(StellarVotingRest::toCreatedResponse);
     }
 
     @Path("/addvoters/{id}")

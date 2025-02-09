@@ -14,7 +14,7 @@ public class JwtEmailFilter {
     @Inject
     JsonWebToken jwt;
 
-    @ServerRequestFilter
+    @ServerRequestFilter(nonBlocking = true)
     public Response filter(ContainerRequestContext context) {
         if(context.getSecurityContext().getAuthenticationScheme() == null) {
             return null;

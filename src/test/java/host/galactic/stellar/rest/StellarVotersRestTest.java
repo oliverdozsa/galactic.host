@@ -1,6 +1,7 @@
 package host.galactic.stellar.rest;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import host.galactic.stellar.rest.requests.voting.AddVotersRequest;
 import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
 import host.galactic.testutils.JsonUtils;
 import io.quarkus.logging.Log;
@@ -12,6 +13,7 @@ import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
 
 import java.net.URL;
+import java.util.List;
 
 import static io.restassured.RestAssured.given;
 
@@ -65,6 +67,32 @@ public class StellarVotersRestTest {
                 .statusCode(403);
 
         Log.info("[  END TEST]: testGetVotingWithEmailNotPresentClaim()\n\n");
+    }
+
+    @Test
+    public void testGetPrivateVotingByParticipant() {
+        Log.info("[START TEST]: testGetPrivateVotingByParticipant()");
+
+        String location = createPrivateVotingByAlice();
+        String[] locationParts = location.split("/");
+        Long id = Long.parseLong(locationParts[locationParts.length - 1]);
+
+        AddVotersRequest addVotersRequest = new AddVotersRequest(List.of("emily@galactic.pub", "duke@galactic.pub"));
+        given()
+                .auth().oauth2(keycloakClient.getAccessToken("alice"))
+                .contentType(ContentType.JSON)
+                .body(addVotersRequest)
+                .post(stellarVotingRest + "/" + id)
+                .then()
+                .statusCode(201);
+
+        given()
+                .auth().oauth2(keycloakClient.getAccessToken("emily"))
+                .get(location)
+                .then()
+                .statusCode(200);
+
+        Log.info("[  END TEST]: testGetPrivateVotingByParticipant()\n\n");
     }
 
     private String createPrivateVotingByAlice() {
