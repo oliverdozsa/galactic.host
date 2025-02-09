@@ -14,13 +14,13 @@ import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.NoContentException;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriBuilder;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.net.URI;
-import java.util.List;
 
 @Path("/stellar/votings")
 public class StellarVotingRest {
@@ -40,14 +40,6 @@ public class StellarVotingRest {
         Log.info("create()");
         Log.debugf("create(): user = \"%s\", createVotingRequest = %s", jwt.getName(), createVotingRequest.toString());
 
-        // TODO: intercept this instead: https://quarkus.io/guides/rest#the-jakarta-rest-way
-        boolean isEmailVerified = jwt.getClaimNames().containsAll(List.of("email", "email_verified")) &&
-                (Boolean) jwt.getClaim("email_verified");
-
-        if (!isEmailVerified) {
-            return Uni.createFrom().failure(new ForbiddenException());
-        }
-
         return userRepository.createIfNotExists(jwt.getClaim("email"))
                 .onItem()
                 .transformToUni(u -> {
@@ -55,6 +47,15 @@ public class StellarVotingRest {
                             .createFrom(createVotingRequest, u)
                             .map(StellarVotingRest::toCreatedResponse);
                 });
+    }
+
+    @Path("/addvoters/{id}")
+    @POST
+    @Authenticated
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Uni<Response> addVoters(Long votingId) {
+        // TODO
+        return Uni.createFrom().failure(NotSupportedException::new);
     }
 
     @Path("/{id}")

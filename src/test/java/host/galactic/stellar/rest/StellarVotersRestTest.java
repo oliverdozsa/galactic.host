@@ -37,13 +37,55 @@ public class StellarVotersRestTest {
         Log.info("[  END TEST]: testGetPrivateVotingAsNonParticipant()\n\n");
     }
 
-    public void testGetPrivateVotingAsParticipant() {
+    @Test
+    public void testGetVotingWithEmailNotVerifiedClaim() {
+        Log.info("[START TEST]: testGetVotingWithEmailNotVerifiedClaim()");
 
+        String location = createUnlistedVotingByAlice();
+
+        given()
+                .auth().oauth2(keycloakClient.getAccessToken("george"))
+                .get(location)
+                .then()
+                .statusCode(403);
+
+        Log.info("[  END TEST]: testGetVotingWithEmailNotVerifiedClaim()\n\n");
+    }
+
+    @Test
+    public void testGetVotingWithEmailNotPresentClaim() {
+        Log.info("[START TEST]: testGetVotingWithEmailNotPresentClaim()");
+
+        String location = createUnlistedVotingByAlice();
+
+        given()
+                .auth().oauth2(keycloakClient.getAccessToken("helena"))
+                .get(location)
+                .then()
+                .statusCode(403);
+
+        Log.info("[  END TEST]: testGetVotingWithEmailNotPresentClaim()\n\n");
     }
 
     private String createPrivateVotingByAlice() {
         ObjectNode createRequest = JsonUtils.readJsonFile("valid-voting-request.json");
         createRequest.put("visibility", CreateVotingRequest.Visibility.PRIVATE.name());
+
+        return given()
+                .auth().oauth2(keycloakClient.getAccessToken("alice"))
+                .contentType(ContentType.JSON)
+                .body(createRequest)
+                .when()
+                .post(stellarVotingRest)
+                .then()
+                .statusCode(201)
+                .extract()
+                .header("Location");
+    }
+
+    private String createUnlistedVotingByAlice() {
+        ObjectNode createRequest = JsonUtils.readJsonFile("valid-voting-request.json");
+        createRequest.put("visibility", CreateVotingRequest.Visibility.UNLISTED.name());
 
         return given()
                 .auth().oauth2(keycloakClient.getAccessToken("alice"))

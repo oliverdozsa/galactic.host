@@ -559,6 +559,28 @@
           "value": "frank"
         }
       ]
+    },
+    {
+      "username": "george",
+      "enabled": true,
+      "emailVerified": false,
+      "email": "george@galactic.pub",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "george"
+        }
+      ]
+    },
+    {
+      "username": "helena",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "helena"
+        }
+      ]
     }
   ],
   "scopeMappings": [
