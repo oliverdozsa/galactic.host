@@ -2,12 +2,15 @@ package host.galactic.data.repositories;
 
 import host.galactic.data.entities.UserEntity;
 import host.galactic.data.entities.VotingEntity;
+import host.galactic.stellar.rest.requests.voting.AddVotersRequest;
 import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
 import io.quarkus.hibernate.reactive.panache.PanacheRepository;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.quarkus.logging.Log;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.ws.rs.NotFoundException;
+
 import static host.galactic.data.mappers.CreateVotingRequestMapper.from;
 
 @ApplicationScoped
@@ -26,7 +29,13 @@ public class VotingRepository implements PanacheRepository<VotingEntity> {
         return findById(id);
     }
 
-    public Uni<VotingEntity> addVotersByEmailTo(Long votingId) {
+    public Uni<VotingEntity> addVotersByEmailTo(Long votingId, AddVotersRequest request) {
+        findById(votingId)
+                .onItem()
+                .ifNotNull()
+                .failWith(new NotFoundException());
+
+
         // TODO
         return null;
     }

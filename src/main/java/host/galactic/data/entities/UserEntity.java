@@ -26,4 +26,11 @@ public class UserEntity extends PanacheEntityBase {
             inverseJoinColumns = {@JoinColumn(name = "voting_id")}
     )
     public List<VotingEntity> votings;
+
+    @Override
+    public String toString() {
+        return "UserEntity{" +
+                "email='" + email + '\'' +
+                '}';
+    }
 }

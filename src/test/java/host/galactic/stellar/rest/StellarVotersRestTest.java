@@ -77,12 +77,12 @@ public class StellarVotersRestTest {
         String[] locationParts = location.split("/");
         Long id = Long.parseLong(locationParts[locationParts.length - 1]);
 
-        AddVotersRequest addVotersRequest = new AddVotersRequest(List.of("emily@galactic.pub", "duke@galactic.pub"));
+        AddVotersRequest addVotersRequest = new AddVotersRequest(List.of("emily@galactic.pub", "duke@galactic.pub", "alice@galactic.pub"));
         given()
                 .auth().oauth2(keycloakClient.getAccessToken("alice"))
                 .contentType(ContentType.JSON)
                 .body(addVotersRequest)
-                .post(stellarVotingRest + "/" + id)
+                .post(stellarVotingRest + "/addvoters/" + id)
                 .then()
                 .statusCode(201);
 

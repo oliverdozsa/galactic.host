@@ -1,11 +1,11 @@
 package host.galactic.stellar.rest;
 
-import host.galactic.data.entities.UserEntity;
 import host.galactic.data.entities.Visibility;
 import host.galactic.data.entities.VotingEntity;
 import host.galactic.data.repositories.UserRepository;
 import host.galactic.data.repositories.VotingRepository;
 import host.galactic.stellar.rest.mappers.VotingEntityMapper;
+import host.galactic.stellar.rest.requests.voting.AddVotersRequest;
 import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
 import host.galactic.stellar.rest.responses.voting.VotingResponse;
 import io.quarkus.logging.Log;
@@ -15,7 +15,6 @@ import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.NoContentException;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriBuilder;
 import org.eclipse.microprofile.jwt.JsonWebToken;
@@ -41,19 +40,23 @@ public class StellarVotingRest {
         Log.info("create()");
         Log.debugf("create(): user = \"%s\", createVotingRequest = %s", jwt.getName(), createVotingRequest.toString());
 
-        return userRepository.createIfNotExists(jwt.getClaim("email"))
+        return userRepository.findByEmail(jwt.getClaim("email"))
                 .onItem()
                 .transformToUni(u -> votingRepository.createFrom(createVotingRequest, u))
                 .map(StellarVotingRest::toCreatedResponse);
     }
 
-    @Path("/addvoters/{id}")
+    @Path("/addvoters/{votingId}")
     @POST
     @Authenticated
     @Consumes(MediaType.APPLICATION_JSON)
-    public Uni<Response> addVoters(Long votingId) {
-        // TODO
-        return Uni.createFrom().failure(NotSupportedException::new);
+    public Uni<Response> addVoters(Long votingId, @Valid AddVotersRequest addVotersRequest) {
+        Log.info("addVoters()");
+        Log.debugf("addVoters(): votingId = %s, addVotersRequest = %s", votingId, addVotersRequest);
+
+        return userRepository.createIfNotExist(addVotersRequest.emails())
+                .map(l -> Response.noContent().build())
+                .onItem().failWith(() -> new NotSupportedException());
     }
 
     @Path("/{id}")
@@ -61,8 +64,6 @@ public class StellarVotingRest {
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<VotingResponse> get(Long id) {
         Log.infof("get(): id = %s", id);
-
-        String email = jwt.getClaim("email");
 
         return votingRepository.getById(id)
                 .onItem()
