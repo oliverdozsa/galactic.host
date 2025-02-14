@@ -20,15 +20,15 @@ import static host.galactic.data.mappers.CreateVotingRequestMapper.from;
 public class VotingRepository implements PanacheRepository<VotingEntity> {
     @WithTransaction
     public Uni<VotingEntity> createFrom(CreateVotingRequest createVotingRequest, UserEntity user) {
-        Log.info("createFrom()");
-        Log.debugf("createFrom(): createVotingRequest = %s", createVotingRequest.toString());
+        Log.info("createFrom(): Creating a voting entity.");
+        Log.debugf("createFrom(): Details of voting entity to be created: user.email = \"%s\", createVotingRequest = %s", user.email, createVotingRequest.toString());
 
         VotingEntity entity = from(createVotingRequest, user);
         return persist(entity);
     }
 
     public Uni<VotingEntity> getById(Long id) {
-        Log.infof("getById(): id = %s", id);
+        Log.infof("getById(): Getting voting entity by id = %s", id);
         return findById(id);
     }
 

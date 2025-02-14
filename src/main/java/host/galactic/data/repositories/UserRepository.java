@@ -14,7 +14,7 @@ import java.util.List;
 public class UserRepository implements PanacheRepository<UserEntity> {
     @WithTransaction
     public Uni<UserEntity> createIfNotExists(String email) {
-        Log.infof("createIfNotExists(): email = %s", email);
+        Log.infof("createIfNotExists(): Creating user entity by email = \"%s\" if not already in DB.", email);
         return find("email = ?1", email)
                 .singleResult()
                 .onFailure(NoResultException.class)
@@ -22,7 +22,7 @@ public class UserRepository implements PanacheRepository<UserEntity> {
     }
 
     public Uni<List<UserEntity>> createIfNotExist(List<String> emails) {
-        Log.infof("createIfNotExist(): emails = %s", emails);
+        Log.infof("createIfNotExist(): Creating user entities by emails. Already existing users will be ignored. emails = \"%s\"", emails);
         return find("where email in ?1", emails)
                 .list()
                 .onItem()
@@ -30,7 +30,7 @@ public class UserRepository implements PanacheRepository<UserEntity> {
     }
 
     public Uni<UserEntity> findByEmail(String email) {
-        Log.infof("findByEmail(): email = %s", email);
+        Log.infof("findByEmail(): Finding user by email = \"%s\".", email);
         return find("email = ?1", email)
                 .singleResult();
     }

@@ -37,13 +37,15 @@ public class StellarVotingRest {
     @Authenticated
     @Consumes(MediaType.APPLICATION_JSON)
     public Uni<Response> create(@Valid CreateVotingRequest createVotingRequest) {
-        Log.info("create()");
-        Log.debugf("create(): user = \"%s\", createVotingRequest = %s", jwt.getName(), createVotingRequest.toString());
+        Log.info("create(): Got request to create a voting.");
+        Log.debugf("create(): Details of voting request: user = \"%s\", createVotingRequest = %s", jwt.getName(), createVotingRequest.toString());
 
         return userRepository.findByEmail(jwt.getClaim("email"))
                 .onItem()
                 .transformToUni(u -> votingRepository.createFrom(createVotingRequest, u))
-                .map(StellarVotingRest::toCreatedResponse);
+                .map(StellarVotingRest::toCreatedResponse)
+                .onFailure()
+                .invoke(t -> Log.warn("create(): Could not create voting!", t));
     }
 
     @Path("/addvoters/{votingId}")
@@ -64,7 +66,7 @@ public class StellarVotingRest {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<VotingResponse> get(Long id) {
-        Log.infof("get(): id = %s", id);
+        Log.infof("get(): Got request to get voting by id = %s", id);
 
         return votingRepository.getById(id)
                 .onItem()
@@ -73,7 +75,9 @@ public class StellarVotingRest {
                 .onItem()
                 .call(e -> Mutiny.fetch(e.voters))
                 .invoke(e -> checkIfUserIsAllowedToGetVoting(e, jwt.getClaim("email")))
-                .map(VotingEntityMapper::from);
+                .map(VotingEntityMapper::from)
+                .onFailure()
+                .invoke(t -> Log.warn("get(): Could not get voting!", t));
     }
 
     @Path("/of-vote-caller")

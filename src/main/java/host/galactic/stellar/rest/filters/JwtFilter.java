@@ -36,6 +36,8 @@ public class JwtFilter {
             return Uni.createFrom().item(Response.status(Response.Status.FORBIDDEN).build());
         }
 
+        Log.info("filter(): JWT is OK, will create user entity if not already in DB.");
+
         return userRepository.createIfNotExists(jwt.getClaim("email"))
                 .map(u -> null);
     }
