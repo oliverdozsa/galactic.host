@@ -36,7 +36,7 @@ public class UserRepository implements PanacheRepository<UserEntity> {
     }
 
     private Uni<UserEntity> createWithEmail(String email) {
-        Log.infof("createWithEmail(): email = %s", email);
+        Log.debugf("createWithEmail(): email = %s", email);
         UserEntity userEntity = new UserEntity();
         userEntity.email = email;
         return persistAndFlush(userEntity);

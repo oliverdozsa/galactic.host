@@ -55,8 +55,9 @@ public class StellarVotingRest {
         Log.debugf("addVoters(): votingId = %s, addVotersRequest = %s", votingId, addVotersRequest);
 
         return userRepository.createIfNotExist(addVotersRequest.emails())
-                .map(l -> Response.noContent().build())
-                .onItem().failWith(() -> new NotSupportedException());
+                .onItem()
+                .transformToUni(v -> votingRepository.addVotersTo(votingId, v))
+                .map(l -> Response.noContent().build());
     }
 
     @Path("/{id}")
@@ -71,7 +72,7 @@ public class StellarVotingRest {
                 .failWith(new NotFoundException())
                 .onItem()
                 .call(e -> Mutiny.fetch(e.voters))
-                .invoke(e -> checkIfUserIsAllowedToGetVoting(e, jwt.getName()))
+                .invoke(e -> checkIfUserIsAllowedToGetVoting(e, jwt.getClaim("email")))
                 .map(VotingEntityMapper::from);
     }
 

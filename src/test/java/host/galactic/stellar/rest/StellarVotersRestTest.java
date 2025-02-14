@@ -84,7 +84,7 @@ public class StellarVotersRestTest {
                 .body(addVotersRequest)
                 .post(stellarVotingRest + "/addvoters/" + id)
                 .then()
-                .statusCode(201);
+                .statusCode(204);
 
         given()
                 .auth().oauth2(keycloakClient.getAccessToken("emily"))

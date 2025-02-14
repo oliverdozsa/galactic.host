@@ -26,7 +26,10 @@ public class AddVotersRequestTests extends ValidationTestsBase {
         var emptyEmailsRequest = new AddVotersRequest(new ArrayList<>());
 
         var violations = validator.validateProperty(emptyEmailsRequest, "emails");
-        assertThat("Expected to have no violation for empty emails, but there is.", violations, hasSize(0));
+        assertThat("Expected to have 1 violation for empty emails, but there isn't.", violations, hasSize(1));
+
+        var violationMessages = extractViolationMessages(violations);
+        assertThat(violationMessages, hasItems("Must have at least 1 email."));
     }
 
     @Test

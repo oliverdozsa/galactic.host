@@ -3,7 +3,9 @@ package host.galactic.data.entities;
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -17,15 +19,10 @@ public class UserEntity extends PanacheEntityBase {
     public String email;
 
     @OneToMany(mappedBy = "createdBy")
-    public List<VotingEntity> createdVotings;
+    public Set<VotingEntity> createdVotings;
 
-    @ManyToMany
-    @JoinTable(
-            name = "votings_partipicants",
-            joinColumns = {@JoinColumn(name = "user_id")},
-            inverseJoinColumns = {@JoinColumn(name = "voting_id")}
-    )
-    public List<VotingEntity> votings;
+    @ManyToMany(mappedBy = "voters")
+    public Set<VotingEntity> votings;
 
     @Override
     public String toString() {

@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "voting")
@@ -65,6 +66,11 @@ public class VotingEntity extends PanacheEntityBase {
     @OneToMany(mappedBy = "voting", cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
     public List<VotingPollEntity> polls;
 
-    @ManyToMany(mappedBy = "votings")
-    public List<UserEntity> voters;
+    @ManyToMany
+    @JoinTable(
+            name = "votings_partipicants",
+            joinColumns = {@JoinColumn(name = "voting_id")},
+            inverseJoinColumns = {@JoinColumn(name = "user_id")}
+    )
+    public Set<UserEntity> voters;
 }

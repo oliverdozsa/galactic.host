@@ -10,6 +10,9 @@ import io.quarkus.logging.Log;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.NotFoundException;
+import org.hibernate.reactive.mutiny.Mutiny;
+
+import java.util.List;
 
 import static host.galactic.data.mappers.CreateVotingRequestMapper.from;
 
@@ -29,14 +32,19 @@ public class VotingRepository implements PanacheRepository<VotingEntity> {
         return findById(id);
     }
 
-    public Uni<VotingEntity> addVotersByEmailTo(Long votingId, AddVotersRequest request) {
-        findById(votingId)
+    @WithTransaction
+    public Uni<VotingEntity> addVotersTo(Long votingId, List<UserEntity> voters) {
+        Log.info("addVotersByEmailTo()");
+        Log.debugf("addVotersTo(): votingId = %s, voters = %s", voters);
+
+        return findById(votingId)
                 .onItem()
-                .ifNotNull()
-                .failWith(new NotFoundException());
-
-
-        // TODO
-        return null;
+                .ifNull()
+                .failWith(new NotFoundException())
+                .onItem()
+                .call(v -> Mutiny.fetch(v.voters))
+                .invoke(v -> {
+                    v.voters.addAll(voters);
+                });
     }
 }
