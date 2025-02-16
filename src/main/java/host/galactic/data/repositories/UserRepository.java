@@ -36,7 +36,7 @@ public class UserRepository implements PanacheRepository<UserEntity> {
     }
 
     private Uni<UserEntity> createWithEmail(String email) {
-        Log.debugf("createWithEmail(): email = %s", email);
+        Log.debugf("createWithEmail(): User with email = \"%s\" is not in DB, creating entry.", email);
         UserEntity userEntity = new UserEntity();
         userEntity.email = email;
         return persistAndFlush(userEntity);
@@ -46,7 +46,7 @@ public class UserRepository implements PanacheRepository<UserEntity> {
         List<String> dbEmails = usersInDb.stream().map(u -> u.email).toList();
         List<String> emailsNotInDb = allEmailsToPersist.stream().filter(e -> !dbEmails.contains(e))
                 .toList();
-        Log.debugf("persistEmailsNotAlreadyInDb(): email not in DB: %s", emailsNotInDb);
+        Log.debugf("persistEmailsNotAlreadyInDb(): emails not in DB: %s", emailsNotInDb);
         List<UserEntity> entitiesToPersist = emailsNotInDb.stream()
                 .map(e -> {
                     UserEntity user = new UserEntity();

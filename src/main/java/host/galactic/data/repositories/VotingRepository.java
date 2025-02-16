@@ -2,17 +2,19 @@ package host.galactic.data.repositories;
 
 import host.galactic.data.entities.UserEntity;
 import host.galactic.data.entities.VotingEntity;
-import host.galactic.stellar.rest.requests.voting.AddVotersRequest;
 import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
 import io.quarkus.hibernate.reactive.panache.PanacheRepository;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.quarkus.logging.Log;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotFoundException;
 import org.hibernate.reactive.mutiny.Mutiny;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static host.galactic.data.mappers.CreateVotingRequestMapper.from;
 
@@ -34,8 +36,8 @@ public class VotingRepository implements PanacheRepository<VotingEntity> {
 
     @WithTransaction
     public Uni<VotingEntity> addVotersTo(Long votingId, List<UserEntity> voters) {
-        Log.info("addVotersByEmailTo()");
-        Log.debugf("addVotersTo(): votingId = %s, voters = %s", voters);
+        Log.info("addVotersTo(): About to add voters to a voting.");
+        Log.debugf("addVotersTo(): Details: votingId = %s, voters = %s", votingId, voters);
 
         return findById(votingId)
                 .onItem()
@@ -44,7 +46,17 @@ public class VotingRepository implements PanacheRepository<VotingEntity> {
                 .onItem()
                 .call(v -> Mutiny.fetch(v.voters))
                 .invoke(v -> {
+                    checkIfMaxVotersWouldBeExceeded(v, voters);
                     v.voters.addAll(voters);
                 });
+    }
+
+    private void checkIfMaxVotersWouldBeExceeded(VotingEntity voting, List<UserEntity> usersToAdd){
+        Set<UserEntity> usersToAddAsSet = new HashSet<>(usersToAdd);
+        usersToAddAsSet.addAll(voting.voters);
+        if(usersToAddAsSet.size() >= voting.maxVoters) {
+            Log.warnf("checkIfMaxVotersWouldBeExceeded(): Can't add voters to voting \"%s\" as maximum voters would be exceeded.", voting.id);
+            throw new BadRequestException("Can't add voters to voting \"" + voting.id + "\" as max. voters would be exceeded.");
+        }
     }
 }

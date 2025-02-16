@@ -95,6 +95,32 @@ public class StellarVotersRestTest {
         Log.info("[  END TEST]: testGetPrivateVotingByParticipant()\n\n");
     }
 
+    @Test
+    public void testMaxVotersExceeded() {
+        Log.info("[START TEST]: testMaxVotersExceeded()");
+
+        String location = createPrivateVotingByAlice();
+        String[] locationParts = location.split("/");
+        Long id = Long.parseLong(locationParts[locationParts.length - 1]);
+
+        AddVotersRequest addVotersRequest = new AddVotersRequest(List.of(
+                "emily@galactic.pub",
+                "duke@galactic.pub",
+                "alice@galactic.pub",
+                "charlie@galactic.pub",
+                "frank@galactic.pub",
+                "bob@galactic.pub"));
+        given()
+                .auth().oauth2(keycloakClient.getAccessToken("alice"))
+                .contentType(ContentType.JSON)
+                .body(addVotersRequest)
+                .post(stellarVotingRest + "/addvoters/" + id)
+                .then()
+                .statusCode(400);
+
+        Log.info("[  END TEST]: testMaxVotersExceeded()\n\n");
+    }
+
     private String createPrivateVotingByAlice() {
         ObjectNode createRequest = JsonUtils.readJsonFile("valid-voting-request.json");
         createRequest.put("visibility", CreateVotingRequest.Visibility.PRIVATE.name());

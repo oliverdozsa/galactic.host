@@ -53,13 +53,15 @@ public class StellarVotingRest {
     @Authenticated
     @Consumes(MediaType.APPLICATION_JSON)
     public Uni<Response> addVoters(Long votingId, @Valid AddVotersRequest addVotersRequest) {
-        Log.info("addVoters()");
-        Log.debugf("addVoters(): votingId = %s, addVotersRequest = %s", votingId, addVotersRequest);
+        Log.info("addVoters(): Got request to add voters to voting.");
+        Log.debugf("addVoters(): Request details: votingId = %s, addVotersRequest = %s", votingId, addVotersRequest);
 
         return userRepository.createIfNotExist(addVotersRequest.emails())
                 .onItem()
                 .transformToUni(v -> votingRepository.addVotersTo(votingId, v))
-                .map(l -> Response.noContent().build());
+                .map(l -> Response.noContent().build())
+                .onFailure()
+                .invoke(t -> Log.warn("addVoters(): Could not add voters!", t));
     }
 
     @Path("/{id}")
