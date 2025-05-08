@@ -9,7 +9,7 @@
   "useTestNet": true,
   "fundingAccountSecret": "SBIH7SPTIV4P4PDMBFKLDU5ZFGR45RKG7H64GWMMHDEGHWNWZ7YGM6Y4",
   "dates": {
-    "encryptedUntil": "2100-04-20T04:20:42.0Z",
+    "encryptedUntil": "2100-04-20T04:20:42.000Z",
     "startDate": "2099-02-20T04:20:42.0Z",
     "endDate": "2100-04-20T04:20:42.0Z"
   },

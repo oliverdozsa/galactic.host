@@ -57,6 +57,9 @@ public class VotingEntity extends PanacheEntityBase {
     @Column(name = "user_given_funding_account_secret", columnDefinition = "text")
     public String userGivenFundingAccountSecret;
 
+    @Column(name = "internal_funding_account_secret", columnDefinition = "text")
+    public String internalFundingAccountSecret;
+
     @Column(name = "asset_code", length = 20)
     public String assetCode;
 
