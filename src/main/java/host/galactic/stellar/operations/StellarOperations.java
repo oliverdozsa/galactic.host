@@ -1,6 +1,7 @@
 package host.galactic.stellar.operations;
 
 import io.smallrye.mutiny.Uni;
+import io.quarkus.logging.Log;
 
 public class StellarOperations {
     private final String url;
@@ -13,8 +14,16 @@ public class StellarOperations {
         }
     }
 
-    public Uni<String> deductEstimatedCostFrom(String fundingAccountSecret, int numOfVoters) {
+    public Uni<Void> transferXlmFrom(String sourceAccountSecret, double xlm, String targetAccountSecret) {
         // TODO
         return null;
+    }
+
+    private static String toTruncatedAccountPublic(String accountSecret) {
+        return toAccountPublic(accountSecret).substring(0, 10) + "...";
+    }
+
+    private static String toAccountPublic(String accountSecret) {
+        return "";
     }
 }

@@ -4,6 +4,7 @@ import host.galactic.data.entities.Visibility;
 import host.galactic.data.entities.VotingEntity;
 import host.galactic.data.repositories.UserRepository;
 import host.galactic.data.repositories.VotingRepository;
+import host.galactic.stellar.operations.StellarOperationsProducer;
 import host.galactic.stellar.rest.mappers.VotingEntityMapper;
 import host.galactic.stellar.rest.requests.voting.AddVotersRequest;
 import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
@@ -33,12 +34,17 @@ public class StellarVotingRest {
     @Inject
     JsonWebToken jwt;
 
+    @Inject
+    StellarOperationsProducer stellarOperationsProducer;
+
     @POST
     @Authenticated
     @Consumes(MediaType.APPLICATION_JSON)
     public Uni<Response> create(@Valid CreateVotingRequest createVotingRequest) {
         Log.info("create(): Got request to create a voting.");
         Log.debugf("create(): Details of voting request: user = \"%s\", createVotingRequest = %s", jwt.getName(), createVotingRequest.toString());
+
+        stellarOperationsProducer.create(true);
 
         return userRepository.findByEmail(jwt.getClaim("email"))
                 .onItem()
