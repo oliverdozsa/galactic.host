@@ -15,8 +15,9 @@ public class StellarOperations {
     }
 
     public Uni<Void> transferXlmFrom(String sourceAccountSecret, double xlm, String targetAccountSecret) {
+        Log.infof("transferXlmFrom(): Transferring %s XLMs", xlm);
         // TODO
-        return null;
+        return Uni.createFrom().voidItem();
     }
 
     private static String toTruncatedAccountPublic(String accountSecret) {

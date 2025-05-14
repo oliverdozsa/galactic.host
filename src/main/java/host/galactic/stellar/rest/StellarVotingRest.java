@@ -4,12 +4,14 @@ import host.galactic.data.entities.Visibility;
 import host.galactic.data.entities.VotingEntity;
 import host.galactic.data.repositories.UserRepository;
 import host.galactic.data.repositories.VotingRepository;
+import host.galactic.stellar.operations.StellarOperations;
 import host.galactic.stellar.operations.StellarOperationsProducer;
 import host.galactic.stellar.rest.mappers.VotingEntityMapper;
 import host.galactic.stellar.rest.requests.voting.AddVotersRequest;
 import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
 import host.galactic.stellar.rest.responses.voting.VotingResponse;
 import io.quarkus.logging.Log;
+import io.quarkus.runtime.configuration.ConfigUtils;
 import io.quarkus.security.Authenticated;
 import io.smallrye.mutiny.Uni;
 import jakarta.inject.Inject;
@@ -44,7 +46,8 @@ public class StellarVotingRest {
         Log.info("create(): Got request to create a voting.");
         Log.debugf("create(): Details of voting request: user = \"%s\", createVotingRequest = %s", jwt.getName(), createVotingRequest.toString());
 
-        stellarOperationsProducer.create(true);
+        StellarOperations stellarOperations = stellarOperationsProducer.create(createVotingRequest.useTestNet());
+
 
         return userRepository.findByEmail(jwt.getClaim("email"))
                 .onItem()
