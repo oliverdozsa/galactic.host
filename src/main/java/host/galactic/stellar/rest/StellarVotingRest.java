@@ -4,6 +4,7 @@ import host.galactic.data.entities.Visibility;
 import host.galactic.data.entities.VotingEntity;
 import host.galactic.data.repositories.UserRepository;
 import host.galactic.data.repositories.VotingRepository;
+import host.galactic.stellar.operations.StellarInternalFundingAccount;
 import host.galactic.stellar.operations.StellarOperations;
 import host.galactic.stellar.operations.StellarOperationsProducer;
 import host.galactic.stellar.rest.mappers.VotingEntityMapper;
@@ -11,7 +12,6 @@ import host.galactic.stellar.rest.requests.voting.AddVotersRequest;
 import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
 import host.galactic.stellar.rest.responses.voting.VotingResponse;
 import io.quarkus.logging.Log;
-import io.quarkus.runtime.configuration.ConfigUtils;
 import io.quarkus.security.Authenticated;
 import io.smallrye.mutiny.Uni;
 import jakarta.inject.Inject;
@@ -22,6 +22,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriBuilder;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.hibernate.reactive.mutiny.Mutiny;
+import org.stellar.sdk.KeyPair;
 
 import java.net.URI;
 
@@ -39,6 +40,9 @@ public class StellarVotingRest {
     @Inject
     StellarOperationsProducer stellarOperationsProducer;
 
+    @Inject
+    StellarInternalFundingAccount stellarInternalFundingAccount;
+
     @POST
     @Authenticated
     @Consumes(MediaType.APPLICATION_JSON)
@@ -46,10 +50,8 @@ public class StellarVotingRest {
         Log.info("create(): Got request to create a voting.");
         Log.debugf("create(): Details of voting request: user = \"%s\", createVotingRequest = %s", jwt.getName(), createVotingRequest.toString());
 
-        StellarOperations stellarOperations = stellarOperationsProducer.create(createVotingRequest.useTestNet());
-
-
-        return userRepository.findByEmail(jwt.getClaim("email"))
+        return deductEstimatedCost(createVotingRequest).onItem()
+                .transformToUni(v -> userRepository.findByEmail(jwt.getClaim("email")))
                 .onItem()
                 .transformToUni(u -> votingRepository.createFrom(createVotingRequest, u))
                 .map(StellarVotingRest::toCreatedResponse)
@@ -122,5 +124,14 @@ public class StellarVotingRest {
         return entity.voters.stream()
                 .map(u -> u.email)
                 .noneMatch(e -> e.equals(email));
+    }
+
+    private Uni<Void> deductEstimatedCost(CreateVotingRequest request) {
+        StellarOperations stellarOperations = stellarOperationsProducer.create(request.useTestNet());
+        KeyPair internalFundingAccount = stellarInternalFundingAccount.get();
+        String internalFundingAccountSecret = new String(internalFundingAccount.getSecretSeed());
+        double estimatedCost = request.maxVoters() * 4 + 110;
+
+        return stellarOperations.transferXlmFrom(request.fundingAccountSecret(), estimatedCost, internalFundingAccountSecret);
     }
 }
