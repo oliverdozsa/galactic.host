@@ -2,6 +2,7 @@ package host.galactic.stellar.operations;
 
 import io.smallrye.mutiny.Uni;
 import io.quarkus.logging.Log;
+import org.stellar.sdk.KeyPair;
 
 public class StellarOperations {
     private final String url;
@@ -15,16 +16,19 @@ public class StellarOperations {
     }
 
     public Uni<Void> transferXlmFrom(String sourceAccountSecret, double xlm, String targetAccountSecret) {
-        Log.infof("transferXlmFrom(): Transferring %s XLMs", xlm);
+        String sourceAccountId = toTruncatedAccountId(sourceAccountSecret);
+        String targetAccountId = toTruncatedAccountId(targetAccountSecret);
+
+        Log.infof("transferXlmFrom(): Transferring: %s -> %s XLMs -> %s", sourceAccountId, xlm, targetAccountId);
         // TODO
         return Uni.createFrom().voidItem();
     }
 
-    private static String toTruncatedAccountPublic(String accountSecret) {
-        return toAccountPublic(accountSecret).substring(0, 10) + "...";
+    private static String toTruncatedAccountId(String accountSecret) {
+        return toAccountId(accountSecret).substring(0, 10) + "...";
     }
 
-    private static String toAccountPublic(String accountSecret) {
-        return "";
+    private static String toAccountId(String accountSecret) {
+        return KeyPair.fromSecretSeed(accountSecret).getAccountId();
     }
 }
