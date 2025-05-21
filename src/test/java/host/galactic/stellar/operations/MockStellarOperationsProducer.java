@@ -11,6 +11,6 @@ public class MockStellarOperationsProducer extends StellarOperationsProducer {
     @Override
     public StellarOperations create(boolean isOnTestNet) {
         Log.info("Using mock stellar operations.");
-        return null;
+        return new MockStellarOperationsImp();
     }
 }
