@@ -1,6 +1,7 @@
 package host.galactic.stellar.rest;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import host.galactic.stellar.operations.MockStellarOperations;
 import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
 import host.galactic.stellar.rest.responses.voting.VotingPollOptionResponse;
 import host.galactic.stellar.rest.responses.voting.VotingResponse;
@@ -11,6 +12,7 @@ import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.keycloak.client.KeycloakTestClient;
 import io.restassured.http.ContentType;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 
 import java.net.URL;
@@ -98,6 +100,31 @@ public class StellarCreateVotingRestTest {
                 .statusCode(404);
 
         Log.info("[  END TEST]: testNotExistingVoting()\n\n");
+    }
+
+    @Test
+    public void testFailedToDeductCostWhileCreatingVoting() {
+        Log.info("[START TEST]: testFailedToDeductCostWhileCreatingVoting()");
+
+        CreateVotingRequest createRequest = makeCreateVotingRequest();
+
+        MockStellarOperations.failTransferXlm();
+
+        given()
+                .auth().oauth2(keycloakClient.getAccessToken("alice"))
+                .contentType(ContentType.JSON)
+                .body(createRequest)
+                .when()
+                .post(stellarVotingRest)
+                .then()
+                .statusCode(500);
+
+        Log.info("[  END TEST]: testFailedToDeductCostWhileCreatingVoting()\n\n");
+    }
+
+    @AfterAll
+    public static void tearDown() {
+        MockStellarOperations.succeedTransferXlm();
     }
 
     private CreateVotingRequest makeInvalidCreateVotingRequest() {
