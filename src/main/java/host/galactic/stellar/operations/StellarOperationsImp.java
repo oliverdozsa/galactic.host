@@ -2,6 +2,7 @@ package host.galactic.stellar.operations;
 
 import io.smallrye.mutiny.Uni;
 import io.quarkus.logging.Log;
+import io.smallrye.mutiny.infrastructure.Infrastructure;
 import org.stellar.sdk.*;
 import org.stellar.sdk.operations.PaymentOperation;
 
@@ -20,32 +21,32 @@ class StellarOperationsImp implements StellarOperations {
     }
 
     public Uni<Void> transferXlmFrom(String sourceAccountSecret, double xlm, String targetAccountSecret) {
-        String sourceAccountId = toTruncatedAccountId(sourceAccountSecret);
-        String targetAccountId = toTruncatedAccountId(targetAccountSecret);
+        return Uni.createFrom().<Void>item(() -> {
+            String sourceAccountId = toTruncatedAccountId(sourceAccountSecret);
+            String targetAccountId = toTruncatedAccountId(targetAccountSecret);
 
-        Log.infof("transferXlmFrom(): Transferring: %s -> %s XLMs -> %s", sourceAccountId, xlm, targetAccountId);
+            Log.infof("transferXlmFrom(): Transferring: %s -> %s XLMs -> %s", sourceAccountId, xlm, targetAccountId);
 
-        TransactionBuilderAccount sourceAccount = server.loadAccount(sourceAccountId);
+            TransactionBuilderAccount sourceAccount = server.loadAccount(sourceAccountId);
 
-        PaymentOperation paymentOperation = PaymentOperation.builder()
-                .destination(targetAccountId)
-                .asset(Asset.createNativeAsset())
-                .amount(new BigDecimal(xlm))
-                .build();
+            PaymentOperation paymentOperation = PaymentOperation.builder()
+                    .destination(targetAccountId)
+                    .asset(Asset.createNativeAsset())
+                    .amount(new BigDecimal(xlm))
+                    .build();
 
-        Transaction transaction = new TransactionBuilder(sourceAccount, network)
-                .setBaseFee(MIN_BASE_FEE)
-                .setTimeout(30)
-                .addOperation(paymentOperation)
-                .build();
+            Transaction transaction = new TransactionBuilder(sourceAccount, network)
+                    .setBaseFee(MIN_BASE_FEE)
+                    .setTimeout(30)
+                    .addOperation(paymentOperation)
+                    .build();
 
-        KeyPair sourceKeyPair = KeyPair.fromSecretSeed(sourceAccountSecret);
-        transaction.sign(sourceKeyPair);
+            KeyPair sourceKeyPair = KeyPair.fromSecretSeed(sourceAccountSecret);
+            transaction.sign(sourceKeyPair);
 
-        server.submitTransaction(transaction);
-
-        // TODO: Wrap operation in a Uni
-        return Uni.createFrom().voidItem();
+            server.submitTransaction(transaction);
+            return null;
+        }).runSubscriptionOn(Infrastructure.getDefaultExecutor());
     }
 
     public void done() {
