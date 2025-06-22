@@ -3,12 +3,12 @@ package host.galactic.stellar.rest;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import host.galactic.stellar.rest.requests.voting.AddVotersRequest;
 import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
+import host.galactic.testutils.AuthForTest;
 import host.galactic.testutils.JsonUtils;
 import io.quarkus.logging.Log;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.keycloak.client.KeycloakTestClient;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
 
@@ -23,15 +23,16 @@ public class StellarVotersRestTest {
     @TestHTTPResource
     private URL stellarVotingRest;
 
-    KeycloakTestClient keycloakClient = new KeycloakTestClient();
+    private AuthForTest authForTest = new AuthForTest();
 
     @Test
     public void testGetPrivateVotingAsNonParticipant() {
         Log.info("[START TEST]: testGetPrivateVotingAsNonParticipant()");
         String location = createPrivateVotingByAlice();
 
+        String withAccessToken = authForTest.loginAs("charlie");
         given()
-                .auth().oauth2(keycloakClient.getAccessToken("charlie"))
+                .auth().oauth2(withAccessToken)
                 .get(location)
                 .then()
                 .statusCode(403);
@@ -40,33 +41,19 @@ public class StellarVotersRestTest {
     }
 
     @Test
-    public void testGetVotingWithEmailNotVerifiedClaim() {
-        Log.info("[START TEST]: testGetVotingWithEmailNotVerifiedClaim()");
+    public void testGetVotingWithEmailNotPresent() {
+        Log.info("[START TEST]: testGetVotingWithEmailNotPresent()");
 
         String location = createUnlistedVotingByAlice();
 
+        String withAccessToken = authForTest.loginAs("helena");
         given()
-                .auth().oauth2(keycloakClient.getAccessToken("george"))
+                .auth().oauth2(withAccessToken)
                 .get(location)
                 .then()
                 .statusCode(403);
 
-        Log.info("[  END TEST]: testGetVotingWithEmailNotVerifiedClaim()\n\n");
-    }
-
-    @Test
-    public void testGetVotingWithEmailNotPresentClaim() {
-        Log.info("[START TEST]: testGetVotingWithEmailNotPresentClaim()");
-
-        String location = createUnlistedVotingByAlice();
-
-        given()
-                .auth().oauth2(keycloakClient.getAccessToken("helena"))
-                .get(location)
-                .then()
-                .statusCode(403);
-
-        Log.info("[  END TEST]: testGetVotingWithEmailNotPresentClaim()\n\n");
+        Log.info("[  END TEST]: testGetVotingWithEmailNotPresent()\n\n");
     }
 
     @Test
@@ -78,16 +65,18 @@ public class StellarVotersRestTest {
         Long id = Long.parseLong(locationParts[locationParts.length - 1]);
 
         AddVotersRequest addVotersRequest = new AddVotersRequest(List.of("emily@galactic.pub", "duke@galactic.pub", "alice@galactic.pub"));
+        String withAccessTokenForAlice = authForTest.loginAs("alice");
         given()
-                .auth().oauth2(keycloakClient.getAccessToken("alice"))
+                .auth().oauth2(withAccessTokenForAlice)
                 .contentType(ContentType.JSON)
                 .body(addVotersRequest)
                 .post(stellarVotingRest + "/addvoters/" + id)
                 .then()
                 .statusCode(204);
 
+        String withAccessTokenForEmily = authForTest.loginAs("emily");
         given()
-                .auth().oauth2(keycloakClient.getAccessToken("emily"))
+                .auth().oauth2(withAccessTokenForEmily)
                 .get(location)
                 .then()
                 .statusCode(200);
@@ -110,8 +99,10 @@ public class StellarVotersRestTest {
                 "charlie@galactic.pub",
                 "frank@galactic.pub",
                 "bob@galactic.pub"));
+
+        String withAccessToken = authForTest.loginAs("alice");
         given()
-                .auth().oauth2(keycloakClient.getAccessToken("alice"))
+                .auth().oauth2(withAccessToken)
                 .contentType(ContentType.JSON)
                 .body(addVotersRequest)
                 .post(stellarVotingRest + "/addvoters/" + id)
@@ -125,8 +116,9 @@ public class StellarVotersRestTest {
         ObjectNode createRequest = JsonUtils.readJsonFile("valid-voting-request.json");
         createRequest.put("visibility", CreateVotingRequest.Visibility.PRIVATE.name());
 
+        String withAccessToken = authForTest.loginAs("alice");
         return given()
-                .auth().oauth2(keycloakClient.getAccessToken("alice"))
+                .auth().oauth2(withAccessToken)
                 .contentType(ContentType.JSON)
                 .body(createRequest)
                 .when()
@@ -141,8 +133,9 @@ public class StellarVotersRestTest {
         ObjectNode createRequest = JsonUtils.readJsonFile("valid-voting-request.json");
         createRequest.put("visibility", CreateVotingRequest.Visibility.UNLISTED.name());
 
+        String withAccessToken = authForTest.loginAs("alice");
         return given()
-                .auth().oauth2(keycloakClient.getAccessToken("alice"))
+                .auth().oauth2(withAccessToken)
                 .contentType(ContentType.JSON)
                 .body(createRequest)
                 .when()

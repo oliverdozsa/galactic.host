@@ -12,6 +12,7 @@ import host.galactic.stellar.rest.requests.voting.AddVotersRequest;
 import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
 import host.galactic.stellar.rest.responses.voting.VotingResponse;
 import io.quarkus.logging.Log;
+import io.quarkus.oidc.UserInfo;
 import io.quarkus.security.Authenticated;
 import io.smallrye.mutiny.Uni;
 import jakarta.inject.Inject;
@@ -20,7 +21,6 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriBuilder;
-import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.hibernate.reactive.mutiny.Mutiny;
 import org.stellar.sdk.KeyPair;
 
@@ -35,7 +35,7 @@ public class StellarVotingRest {
     UserRepository userRepository;
 
     @Inject
-    JsonWebToken jwt;
+    UserInfo userInfo;
 
     @Inject
     StellarOperationsProducer stellarOperationsProducer;
@@ -48,10 +48,10 @@ public class StellarVotingRest {
     @Consumes(MediaType.APPLICATION_JSON)
     public Uni<Response> create(@Valid CreateVotingRequest createVotingRequest) {
         Log.info("create(): Got request to create a voting.");
-        Log.debugf("create(): Details of voting request: user = \"%s\", createVotingRequest = %s", jwt.getName(), createVotingRequest.toString());
+        Log.debugf("create(): Details of voting request: user = \"%s\", createVotingRequest = %s", userInfo.getEmail(), createVotingRequest.toString());
 
         return deductEstimatedCost(createVotingRequest).onItem()
-                .transformToUni(v -> userRepository.findByEmail(jwt.getClaim("email")))
+                .transformToUni(v -> userRepository.findByEmail(userInfo.getEmail()))
                 .onItem()
                 .transformToUni(u -> votingRepository.createFrom(createVotingRequest, u))
                 .map(StellarVotingRest::toCreatedResponse)
@@ -87,7 +87,7 @@ public class StellarVotingRest {
                 .failWith(new NotFoundException())
                 .onItem()
                 .call(e -> Mutiny.fetch(e.voters))
-                .invoke(e -> checkIfUserIsAllowedToGetVoting(e, jwt.getClaim("email")))
+                .invoke(e -> checkIfUserIsAllowedToGetVoting(e, userInfo.getEmail()))
                 .map(VotingEntityMapper::from)
                 .onFailure()
                 .invoke(t -> Log.warn("get(): Could not get voting!", t));
