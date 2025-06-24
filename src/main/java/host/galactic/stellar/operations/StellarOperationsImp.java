@@ -22,13 +22,14 @@ class StellarOperationsImp implements StellarOperations {
 
     public Uni<Void> transferXlmFrom(String sourceAccountSecret, double xlm, String targetAccountSecret) {
         return Uni.createFrom().<Void>item(() -> {
-            String sourceAccountId = toTruncatedAccountId(sourceAccountSecret);
-            String targetAccountId = toTruncatedAccountId(targetAccountSecret);
+            String truncatedSourceAccountId = toTruncatedAccountId(sourceAccountSecret);
+            String truncatedTargetAccountId = toTruncatedAccountId(targetAccountSecret);
+            Log.infof("transferXlmFrom(): Transferring: %s -> %s XLMs -> %s", truncatedSourceAccountId, xlm, truncatedTargetAccountId);
 
-            Log.infof("transferXlmFrom(): Transferring: %s -> %s XLMs -> %s", sourceAccountId, xlm, targetAccountId);
+            String sourceAccountId = toAccountId(sourceAccountSecret);
+            String targetAccountId = toAccountId(targetAccountSecret);
 
             TransactionBuilderAccount sourceAccount = server.loadAccount(sourceAccountId);
-
             PaymentOperation paymentOperation = PaymentOperation.builder()
                     .destination(targetAccountId)
                     .asset(Asset.createNativeAsset())
@@ -45,11 +46,13 @@ class StellarOperationsImp implements StellarOperations {
             transaction.sign(sourceKeyPair);
 
             server.submitTransaction(transaction);
+            Log.infof("transferXlmFrom(): Transfer successful: %s -> %s XLMs -> %s", truncatedSourceAccountId, xlm, truncatedTargetAccountId);
             return null;
         }).runSubscriptionOn(Infrastructure.getDefaultExecutor());
     }
 
     public void done() {
+        // TODO: call this upon shutdown.
         server.close();
     }
 

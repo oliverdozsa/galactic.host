@@ -18,7 +18,6 @@ public class AuthenticationFilter {
 
     @ServerRequestFilter()
     public Uni<Response> filter(ContainerRequestContext context) {
-        Log.infof("filter(): auth scheme = %s", context.getSecurityContext().getAuthenticationScheme());
         if (context.getSecurityContext().getAuthenticationScheme() == null) {
             return null;
         }
