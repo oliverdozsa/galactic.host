@@ -15,7 +15,7 @@ public class StellarInternalFundingAccount {
 
     private KeyPair internalFundingAccount;
 
-    public KeyPair get() {
+    public KeyPair keypair() {
         if(internalFundingAccount == null) {
             determineAccount();
         }
@@ -35,6 +35,4 @@ public class StellarInternalFundingAccount {
             internalFundingAccount = KeyPair.fromSecretSeed(internalFundingAccountSecret);
         }
     }
-
-
 }

@@ -11,12 +11,14 @@ import java.math.BigDecimal;
 import static org.stellar.sdk.AbstractTransaction.MIN_BASE_FEE;
 
 class StellarOperationsImp implements StellarOperations {
+    private static final Server testServer = new Server("https://horizon-testnet.stellar.org");
+    private static final Server mainServer = new Server("https://horizon.stellar.org");
+
     private final Server server;
     private final Network network;
 
     public StellarOperationsImp(boolean isOnTestNet) {
-        String serverUri = isOnTestNet ? "https://horizon-testnet.stellar.org" : "https://horizon.stellar.org";
-        server = new Server(serverUri);
+        server = isOnTestNet ? testServer : mainServer;
         network = isOnTestNet ? Network.TESTNET : Network.PUBLIC;
     }
 
@@ -49,11 +51,6 @@ class StellarOperationsImp implements StellarOperations {
             Log.infof("transferXlmFrom(): Transfer successful: %s -> %s XLMs -> %s", truncatedSourceAccountId, xlm, truncatedTargetAccountId);
             return null;
         }).runSubscriptionOn(Infrastructure.getDefaultExecutor());
-    }
-
-    public void done() {
-        // TODO: call this upon shutdown.
-        server.close();
     }
 
     private static String toTruncatedAccountId(String accountSecret) {

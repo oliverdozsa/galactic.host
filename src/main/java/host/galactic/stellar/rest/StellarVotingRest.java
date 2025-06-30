@@ -128,7 +128,7 @@ public class StellarVotingRest {
 
     private Uni<Void> deductEstimatedCost(CreateVotingRequest request) {
         StellarOperations stellarOperations = stellarOperationsProducer.create(request.useTestNet());
-        KeyPair internalFundingAccount = stellarInternalFundingAccount.get();
+        KeyPair internalFundingAccount = stellarInternalFundingAccount.keypair();
         String internalFundingAccountSecret = new String(internalFundingAccount.getSecretSeed());
         double estimatedCost = request.maxVoters() * 4 + 110;
 
