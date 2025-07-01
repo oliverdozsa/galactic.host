@@ -50,10 +50,9 @@ public class StellarVotingRest {
         Log.info("create(): Got request to create a voting.");
         Log.debugf("create(): Details of voting request: user = \"%s\", createVotingRequest = %s", userInfo.getEmail(), createVotingRequest.toString());
 
-        return deductEstimatedCost(createVotingRequest).onItem()
-                .transformToUni(v -> userRepository.findByEmail(userInfo.getEmail()))
-                .onItem()
-                .transformToUni(u -> votingRepository.createFrom(createVotingRequest, u))
+        return deductEstimatedCost(createVotingRequest)
+                .chain(v -> userRepository.findByEmail(userInfo.getEmail()))
+                .chain(u -> votingRepository.createFrom(createVotingRequest, u))
                 .map(StellarVotingRest::toCreatedResponse)
                 .onFailure()
                 .invoke(t -> Log.warn("create(): Could not create voting!", t));

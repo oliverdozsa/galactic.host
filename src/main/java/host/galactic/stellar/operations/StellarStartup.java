@@ -8,7 +8,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
-import java.net.URI;
 import java.util.List;
 
 @ApplicationScoped
@@ -26,8 +25,9 @@ public class StellarStartup {
         List<String> profiles = ConfigUtils.getProfiles();
         String mode = profiles.get(0);
         if(profiles.size() == 1 && (mode.equals("dev"))) {
-            Log.infof("get(): App is in %s mode; trying to create internal funding account.", mode);
-            friendBotClient.createAccount(internalFundingAccount.keypair().getAccountId());
+            String accountId = internalFundingAccount.keypair().getAccountId();
+            Log.infof("get(): App is in %s mode; trying to create internal funding account with id = %s", mode, accountId);
+            friendBotClient.createAccount(accountId);
         }
     }
 }

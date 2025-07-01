@@ -50,7 +50,7 @@ class StellarOperationsImp implements StellarOperations {
             server.submitTransaction(transaction);
             Log.infof("transferXlmFrom(): Transfer successful: %s -> %s XLMs -> %s", truncatedSourceAccountId, xlm, truncatedTargetAccountId);
             return null;
-        }).runSubscriptionOn(Infrastructure.getDefaultExecutor());
+        });
     }
 
     private static String toTruncatedAccountId(String accountSecret) {
