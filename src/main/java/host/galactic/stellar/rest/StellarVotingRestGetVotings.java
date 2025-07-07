@@ -3,7 +3,9 @@ package host.galactic.stellar.rest;
 import host.galactic.data.entities.Visibility;
 import host.galactic.data.entities.VotingEntity;
 import host.galactic.data.repositories.VotingRepository;
+import host.galactic.data.utils.Page;
 import host.galactic.stellar.rest.mappers.VotingEntityMapper;
+import host.galactic.stellar.rest.responses.voting.PageResponse;
 import host.galactic.stellar.rest.responses.voting.VotingResponse;
 import io.quarkus.hibernate.reactive.panache.common.WithSession;
 import io.quarkus.logging.Log;
@@ -13,6 +15,8 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import org.hibernate.reactive.mutiny.Mutiny;
+
+import java.util.List;
 
 @RequestScoped
 class StellarVotingRestGetVotings {
@@ -38,6 +42,12 @@ class StellarVotingRestGetVotings {
                 .invoke(t -> Log.warn("byId(): Could not get voting!", t));
     }
 
+    @WithSession
+    public Uni<PageResponse<VotingResponse>> getCreated(int page) {
+        return votingRepository.getVotingsOfUser(userInfo.getEmail(), page)
+                .map(this::toResponse);
+    }
+
     private void checkIfUserIsAllowedToGetVoting(VotingEntity voting, String email) {
         if (voting.visibility == Visibility.PRIVATE && doesUserNotParticipateIn(voting, email)) {
             Log.warnf("User \"%s\" is not allowed to get voting with id = %s", email, voting.id);
@@ -49,5 +59,13 @@ class StellarVotingRestGetVotings {
         return entity.voters.stream()
                 .map(u -> u.email)
                 .noneMatch(e -> e.equals(email));
+    }
+
+    private PageResponse<VotingResponse> toResponse(Page<VotingEntity> page) {
+        List<VotingResponse> items = page.items().stream()
+                .map(VotingEntityMapper::from)
+                .toList();
+
+        return new PageResponse<>(items, page.totalPages());
     }
 }

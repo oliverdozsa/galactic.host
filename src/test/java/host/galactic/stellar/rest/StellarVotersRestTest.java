@@ -10,6 +10,7 @@ import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
+import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 
 import java.net.URL;
@@ -35,9 +36,22 @@ public class StellarVotersRestTest {
                 .auth().oauth2(withAccessToken)
                 .get(location)
                 .then()
-                .statusCode(403);
+                .statusCode(Response.Status.FORBIDDEN.getStatusCode());
 
         Log.info("[  END TEST]: testGetPrivateVotingAsNonParticipant()\n\n");
+    }
+
+    @Test
+    public void testGetVotingUnauthenticated() {
+        Log.info("[START TEST]: testGetVotingUnauthenticated()");
+        String location = createPrivateVotingByAlice();
+
+        given()
+                .get(location)
+                .then()
+                .statusCode(Response.Status.UNAUTHORIZED.getStatusCode());
+
+        Log.info("[  END TEST]: testGetVotingUnauthenticated()\n\n");
     }
 
     @Test
@@ -51,7 +65,7 @@ public class StellarVotersRestTest {
                 .auth().oauth2(withAccessToken)
                 .get(location)
                 .then()
-                .statusCode(403);
+                .statusCode(Response.Status.FORBIDDEN.getStatusCode());
 
         Log.info("[  END TEST]: testGetVotingWithEmailNotPresent()\n\n");
     }
@@ -72,14 +86,14 @@ public class StellarVotersRestTest {
                 .body(addVotersRequest)
                 .post(stellarVotingRest + "/addvoters/" + id)
                 .then()
-                .statusCode(204);
+                .statusCode(Response.Status.NO_CONTENT.getStatusCode());
 
         String withAccessTokenForEmily = authForTest.loginAs("emily");
         given()
                 .auth().oauth2(withAccessTokenForEmily)
                 .get(location)
                 .then()
-                .statusCode(200);
+                .statusCode(Response.Status.OK.getStatusCode());
 
         Log.info("[  END TEST]: testGetPrivateVotingByParticipant()\n\n");
     }
@@ -107,7 +121,7 @@ public class StellarVotersRestTest {
                 .body(addVotersRequest)
                 .post(stellarVotingRest + "/addvoters/" + id)
                 .then()
-                .statusCode(400);
+                .statusCode(Response.Status.BAD_REQUEST.getStatusCode());
 
         Log.info("[  END TEST]: testMaxVotersExceeded()\n\n");
     }
@@ -124,7 +138,7 @@ public class StellarVotersRestTest {
                 .when()
                 .post(stellarVotingRest)
                 .then()
-                .statusCode(201)
+                .statusCode(Response.Status.CREATED.getStatusCode())
                 .extract()
                 .header("Location");
     }
@@ -141,7 +155,7 @@ public class StellarVotersRestTest {
                 .when()
                 .post(stellarVotingRest)
                 .then()
-                .statusCode(201)
+                .statusCode(Response.Status.CREATED.getStatusCode())
                 .extract()
                 .header("Location");
     }

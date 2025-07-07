@@ -1,11 +1,9 @@
 package host.galactic.stellar.rest;
 
-import host.galactic.data.repositories.UserRepository;
-import host.galactic.data.repositories.VotingRepository;
 import host.galactic.stellar.rest.requests.voting.AddVotersRequest;
 import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
+import host.galactic.stellar.rest.responses.voting.PageResponse;
 import host.galactic.stellar.rest.responses.voting.VotingResponse;
-import io.quarkus.logging.Log;
 import io.quarkus.security.Authenticated;
 import io.smallrye.mutiny.Uni;
 import jakarta.inject.Inject;
@@ -34,21 +32,25 @@ public class StellarVotingRest {
 
     @Path("/{id}")
     @GET
+    @Authenticated
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<VotingResponse> get(Long id) {
         return votingRestGet.byId(id);
     }
 
-    @Path("/of-vote-caller")
     @GET
-    public void getOfVoteCaller() {
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<Response> getOfVoter(@QueryParam("page") int page) {
         // TODO
+        return Uni.createFrom().item(Response.status(501).build());
     }
 
-    @Path("/of-voter")
+    @Path("/created")
     @GET
-    public void getOfVoter() {
-        // TODO
+    @Authenticated
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<PageResponse<VotingResponse>> getCreated(@QueryParam("page") int page) {
+        return votingRestGet.getCreated(page);
     }
 
     @Path("/addvoters/{votingId}")

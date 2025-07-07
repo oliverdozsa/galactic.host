@@ -3,7 +3,9 @@ package host.galactic.data.repositories;
 import host.galactic.data.entities.UserEntity;
 import host.galactic.data.entities.VotingEntity;
 import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
+import io.quarkus.hibernate.reactive.panache.PanacheQuery;
 import io.quarkus.hibernate.reactive.panache.PanacheRepository;
+import io.quarkus.hibernate.reactive.panache.common.WithSession;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.quarkus.logging.Log;
 import io.quarkus.panache.common.Page;
@@ -26,7 +28,7 @@ public class VotingRepository implements PanacheRepository<VotingEntity> {
         Log.info("createFrom(): Creating a voting entity.");
         Log.debugf("createFrom(): Details of voting entity to be created: user.email = \"%s\", createVotingRequest = %s", user.email, createVotingRequest.toString());
 
-        VotingEntity entity = from(createVotingRequest, user);
+        var entity = from(createVotingRequest, user);
         return persist(entity);
     }
 
@@ -50,6 +52,16 @@ public class VotingRepository implements PanacheRepository<VotingEntity> {
                     checkIfMaxVotersWouldBeExceeded(v, voters);
                     v.voters.addAll(voters);
                 });
+    }
+
+    public Uni<host.galactic.data.utils.Page<VotingEntity>> getVotingsOfUser(String email, int page) {
+        var query = find("createdBy.email", email)
+                .page(Page.of(page, 15));
+
+        var listUni = query.list();
+        var totalPagesUni = query.pageCount();
+        return Uni.combine().all().unis(listUni, totalPagesUni).asTuple()
+                .map(t -> new host.galactic.data.utils.Page<>(t.getItem1(), t.getItem2()));
     }
 
     private void checkIfMaxVotersWouldBeExceeded(VotingEntity voting, List<UserEntity> usersToAdd){

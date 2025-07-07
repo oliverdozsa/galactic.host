@@ -50,6 +50,7 @@ public class StellarCreateVotingRestTest {
         assertThat(locationHeader, not(blankOrNullString()));
 
         VotingResponse votingResponse = given()
+                .auth().oauth2(withAccessToken)
                 .get(locationHeader)
                 .then()
                 .statusCode(200)
