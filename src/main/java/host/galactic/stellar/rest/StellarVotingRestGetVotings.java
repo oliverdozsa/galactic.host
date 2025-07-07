@@ -5,6 +5,7 @@ import host.galactic.data.entities.VotingEntity;
 import host.galactic.data.repositories.VotingRepository;
 import host.galactic.stellar.rest.mappers.VotingEntityMapper;
 import host.galactic.stellar.rest.responses.voting.VotingResponse;
+import io.quarkus.hibernate.reactive.panache.common.WithSession;
 import io.quarkus.logging.Log;
 import io.quarkus.oidc.UserInfo;
 import io.smallrye.mutiny.Uni;
@@ -21,8 +22,9 @@ class StellarVotingRestGetVotings {
     @Inject
     UserInfo userInfo;
 
-    public Uni<VotingResponse> get(Long id) {
-        Log.infof("get(): Got request to get voting by id = %s", id);
+    @WithSession
+    public Uni<VotingResponse> byId(Long id) {
+        Log.infof("byId(): Got request to get voting by id = %s", id);
 
         return votingRepository.getById(id)
                 .onItem()
@@ -33,7 +35,7 @@ class StellarVotingRestGetVotings {
                 .invoke(e -> checkIfUserIsAllowedToGetVoting(e, userInfo.getEmail()))
                 .map(VotingEntityMapper::from)
                 .onFailure()
-                .invoke(t -> Log.warn("get(): Could not get voting!", t));
+                .invoke(t -> Log.warn("byId(): Could not get voting!", t));
     }
 
     private void checkIfUserIsAllowedToGetVoting(VotingEntity voting, String email) {

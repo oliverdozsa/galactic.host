@@ -7,6 +7,7 @@ import host.galactic.stellar.operations.StellarInternalFundingAccount;
 import host.galactic.stellar.operations.StellarOperations;
 import host.galactic.stellar.operations.StellarOperationsProducer;
 import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
+import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.quarkus.logging.Log;
 import io.quarkus.oidc.UserInfo;
 import io.smallrye.mutiny.Uni;
@@ -35,6 +36,7 @@ class StellarVotingRestCreateVotings {
     @Inject
     UserInfo userInfo;
 
+    @WithTransaction
     public Uni<Response> create(CreateVotingRequest createVotingRequest) {
         Log.info("create(): Got request to create a voting.");
         Log.debugf("create(): Details of voting request: user = \"%s\", createVotingRequest = %s", userInfo.getEmail(), createVotingRequest.toString());
