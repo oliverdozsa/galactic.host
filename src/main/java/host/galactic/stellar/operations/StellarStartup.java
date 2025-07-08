@@ -26,8 +26,13 @@ public class StellarStartup {
         String mode = profiles.get(0);
         if(profiles.size() == 1 && (mode.equals("dev"))) {
             String accountId = internalFundingAccount.keypair().getAccountId();
-            Log.infof("get(): App is in %s mode; trying to create internal funding account with id = %s", mode, accountId);
-            friendBotClient.createAccount(accountId);
+            Log.infof("onStartup(): App is in %s mode; trying to create internal funding account with id = %s", mode, accountId);
+
+            try {
+                friendBotClient.createAccount(accountId);
+            } catch (Exception e) {
+                Log.warn("onStartup(): Failed to create funding account on test network.", e);
+            }
         }
     }
 }

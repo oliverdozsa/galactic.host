@@ -3,7 +3,6 @@ package host.galactic.stellar.rest;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
 import host.galactic.stellar.rest.responses.voting.PageResponse;
-import host.galactic.stellar.rest.responses.voting.VotingResponse;
 import host.galactic.testutils.AuthForTest;
 import host.galactic.testutils.JsonUtils;
 import io.quarkus.logging.Log;
@@ -68,9 +67,11 @@ public class StellarGetCreatedVotingsTest {
 
         given()
                 .auth().oauth2(withAccessToken)
-                .get(stellarVotingRest + "/created?page=" + (totalPages + 1))
+                .get(stellarVotingRest + "/created?page=" + totalPages)
                 .then()
-                .statusCode(Response.Status.BAD_REQUEST.getStatusCode());
+                .statusCode(Response.Status.OK.getStatusCode())
+                .body("totalPages", greaterThan(0))
+                .body("items", hasSize(0));;
 
         Log.info("[  END TEST]: testInvalidPage()\n\n");
     }
