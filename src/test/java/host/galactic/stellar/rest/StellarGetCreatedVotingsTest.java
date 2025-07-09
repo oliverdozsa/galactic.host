@@ -57,8 +57,8 @@ public class StellarGetCreatedVotingsTest {
     }
 
     @Test
-    public void testInvalidPage() {
-        Log.info("[START TEST]: testInvalidPage()");
+    public void testGetCreatedInvalidPage() {
+        Log.info("[START TEST]: testGetCreatedInvalidPage()");
 
         createMultipleVotingsForPaging();
 
@@ -73,7 +73,7 @@ public class StellarGetCreatedVotingsTest {
                 .body("totalPages", greaterThan(0))
                 .body("items", hasSize(0));;
 
-        Log.info("[  END TEST]: testInvalidPage()\n\n");
+        Log.info("[  END TEST]: testGetCreatedInvalidPage()\n\n");
     }
 
     private void createMultipleVotingsForPaging() {

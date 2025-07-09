@@ -64,6 +64,16 @@ public class VotingRepository implements PanacheRepository<VotingEntity> {
                 .map(t -> new host.galactic.data.utils.Page<>(t.getItem1(), t.getItem2()));
     }
 
+    public Uni<host.galactic.data.utils.Page<VotingEntity>> getVotingsOfVoter(String email, int page) {
+        var query = find("select v from VotingEntity v join v.voters u where u.email = ?1", email)
+                .page(Page.of(page, 15));
+
+        var listUni = query.list();
+        var totalPagesUni = query.pageCount();
+        return Uni.combine().all().unis(listUni, totalPagesUni).asTuple()
+                .map(t -> new host.galactic.data.utils.Page<>(t.getItem1(), t.getItem2()));
+    }
+
     private void checkIfMaxVotersWouldBeExceeded(VotingEntity voting, List<UserEntity> usersToAdd){
         Set<UserEntity> usersToAddAsSet = new HashSet<>(usersToAdd);
         usersToAddAsSet.addAll(voting.voters);

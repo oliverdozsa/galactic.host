@@ -48,6 +48,12 @@ class StellarVotingRestGetVotings {
                 .map(this::toResponse);
     }
 
+    @WithSession
+    public Uni<PageResponse<VotingResponse>> getOfVoter(int page) {
+        return votingRepository.getVotingsOfVoter(userInfo.getEmail(), page)
+                .map(this::toResponse);
+    }
+
     private void checkIfUserIsAllowedToGetVoting(VotingEntity voting, String email) {
         if (voting.visibility == Visibility.PRIVATE && doesUserNotParticipateIn(voting, email)) {
             Log.warnf("User \"%s\" is not allowed to get voting with id = %s", email, voting.id);

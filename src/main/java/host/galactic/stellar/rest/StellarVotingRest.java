@@ -40,9 +40,8 @@ public class StellarVotingRest {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<Response> getOfVoter(@QueryParam("page") int page) {
-        // TODO
-        return Uni.createFrom().item(Response.status(501).build());
+    public Uni<PageResponse<VotingResponse>> getOfVoter(@QueryParam("page") int page) {
+        return votingRestGet.getOfVoter(page);
     }
 
     @Path("/created")
