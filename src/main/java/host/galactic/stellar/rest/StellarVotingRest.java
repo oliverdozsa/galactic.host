@@ -39,6 +39,7 @@ public class StellarVotingRest {
     }
 
     @GET
+    @Authenticated
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<PageResponse<VotingResponse>> getOfVoter(@QueryParam("page") int page) {
         return votingRestGet.getOfVoter(page);

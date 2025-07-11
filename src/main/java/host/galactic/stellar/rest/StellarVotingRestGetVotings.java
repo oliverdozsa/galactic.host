@@ -50,6 +50,7 @@ class StellarVotingRestGetVotings {
 
     @WithSession
     public Uni<PageResponse<VotingResponse>> getOfVoter(int page) {
+        Log.infof("getOfVoter(): Got request to get %s's votings as voter at page: %s", userInfo.getEmail(), page);
         return votingRepository.getVotingsOfVoter(userInfo.getEmail(), page)
                 .map(this::toResponse);
     }

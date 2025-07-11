@@ -65,6 +65,7 @@ public class VotingRepository implements PanacheRepository<VotingEntity> {
     }
 
     public Uni<host.galactic.data.utils.Page<VotingEntity>> getVotingsOfVoter(String email, int page) {
+        Log.infof("getVotingsOfVoter(): Getting %s's votings as voter from DB at page: %s", email, page);
         var query = find("select v from VotingEntity v join v.voters u where u.email = ?1", email)
                 .page(Page.of(page, 15));
 
