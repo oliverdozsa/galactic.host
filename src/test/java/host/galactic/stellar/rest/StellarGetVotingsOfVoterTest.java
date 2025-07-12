@@ -6,21 +6,21 @@ import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
 import host.galactic.stellar.rest.responses.voting.PageResponse;
 import host.galactic.testutils.AuthForTest;
 import host.galactic.testutils.JsonUtils;
+import host.galactic.testutils.TestRestUtils;
 import io.quarkus.logging.Log;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
-import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
-import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.Test;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
+import static host.galactic.testutils.TestRestUtils.*;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -30,9 +30,6 @@ class StellarGetVotingsOfVoterTest {
     @TestHTTPEndpoint(StellarVotingRest.class)
     @TestHTTPResource
     private URL stellarVotingRest;
-
-    @Inject
-    private SessionFactory sessionFactory;
 
     private AuthForTest authForTest = new AuthForTest();
 
@@ -53,12 +50,19 @@ class StellarGetVotingsOfVoterTest {
         Log.info("[START TEST]: testGetVotingsOfVoterWithPaging()");
 
         var createdVotingIds = createMultipleVotingsForPaging();
-        var votingIdsWhereAliceIsExpectedAsParticipant = createdVotingIds.stream().filter(id -> id % 2 == 0)
+
+        var votingIdsWhereAliceIsExpectedAsParticipant = createdVotingIds.stream()
+                .filter(id -> id % 2 == 0)
                 .toList()
                 .toArray(new Long[]{});
         var actualVotingIdsWhereAliceIsParticipant = getActualVotingIdsWhereAliceIsParticipantWithPaging();
-
         assertThat(actualVotingIdsWhereAliceIsParticipant, hasItems(votingIdsWhereAliceIsExpectedAsParticipant));
+
+        var votingIdsWhereAliceIsNotExpectedAsParticipant = createdVotingIds.stream()
+                .filter(id -> id % 2 == 1)
+                .toList()
+                .toArray(new Long[]{});
+        assertThat(actualVotingIdsWhereAliceIsParticipant, not(hasItems(votingIdsWhereAliceIsNotExpectedAsParticipant)));
 
         Log.info("[  END TEST]: testGetVotingsOfVoterWithPaging()\n\n");
     }
@@ -126,16 +130,7 @@ class StellarGetVotingsOfVoterTest {
     }
 
     private int getTotalPageCount() {
-        String withAccessToken = authForTest.loginAs("alice");
-
-        return given()
-                .auth().oauth2(withAccessToken)
-                .get(stellarVotingRest + "/")
-                .then()
-                .extract()
-                .body()
-                .as(PageResponse.class)
-                .totalPages();
+        return getPage(stellarVotingRest.toString(), "alice", 0).totalPages();
     }
 
     private void addAliceAsParticipantTo(Long votingId) {
@@ -151,40 +146,10 @@ class StellarGetVotingsOfVoterTest {
     }
 
     private List<Long> getActualVotingIdsWhereAliceIsParticipantWithPaging() {
-        var pageResponse = getPage(0);
-
-        List<Long> votingIds = new ArrayList<>();
-        addVotingIdsFrom(pageResponse, votingIds);
-
-        int currentPage = 1;
-        while (currentPage < pageResponse.totalPages()) {
-            pageResponse = getPage(currentPage);
-            addVotingIdsFrom(pageResponse, votingIds);
-            currentPage += 1;
-        }
-
-        return votingIds;
-    }
-
-    private PageResponse getPage(int page) {
-        String withAccessToken = authForTest.loginAs("alice");
-        return given()
-                .auth().oauth2(withAccessToken)
-                .get(stellarVotingRest + "/?page=" + page)
-                .then()
-                .statusCode(Response.Status.OK.getStatusCode())
-                .body("totalPages", equalTo(2))
-                .body("items", hasSize(15))
-                .extract()
-                .body()
-                .as(PageResponse.class);
-    }
-
-    private void addVotingIdsFrom(PageResponse response, List<Long> toList) {
-        response.items().forEach(item -> {
-            var itemAsMap = (Map)item;
-            var id = ((Integer)(itemAsMap.get("id"))).longValue();
-            toList.add(id);
-        });
+        List<PageResponse> aliceAsParticipantResponses = getPages(stellarVotingRest.toString(), "alice");
+        return aliceAsParticipantResponses.stream()
+                .map(TestRestUtils::getIdsFrom)
+                .flatMap(Collection::stream)
+                .toList();
     }
 }
