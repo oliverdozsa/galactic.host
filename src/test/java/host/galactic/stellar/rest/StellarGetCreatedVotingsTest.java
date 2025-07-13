@@ -5,6 +5,7 @@ import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
 import host.galactic.stellar.rest.responses.voting.PageResponse;
 import host.galactic.testutils.AuthForTest;
 import host.galactic.testutils.JsonUtils;
+import host.galactic.testutils.TestRestUtils;
 import io.quarkus.logging.Log;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.common.http.TestHTTPResource;
@@ -14,8 +15,14 @@ import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
+import static host.galactic.testutils.TestRestUtils.getIdsFrom;
+import static host.galactic.testutils.TestRestUtils.getPages;
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 @QuarkusTest
@@ -42,16 +49,19 @@ public class StellarGetCreatedVotingsTest {
     public void testGetCreatedWithPaging() {
         Log.info("[START TEST]: testGetCreatedWithPaging()");
 
-        createMultipleVotingsForPaging();
+        var votingsCreatedByAlice = createMultipleVotingsForPagingAs("alice")
+                .toArray(new Long[]{});
+        var votingsCreatedByCharlie = createMultipleVotingsForPagingAs("charlie")
+                .toArray(new Long[]{});
 
-        String withAccessToken = authForTest.loginAs("alice");
-        given()
-                .auth().oauth2(withAccessToken)
-                .get(stellarVotingRest + "/created")
-                .then()
-                .statusCode(Response.Status.OK.getStatusCode())
-                .body("totalPages", greaterThan(0))
-                .body("items", hasSize(15));
+        var votingsCreatedByAliceQueried = getPages(stellarVotingRest + "/created", "alice")
+                .stream()
+                .map(TestRestUtils::getIdsFrom)
+                .flatMap(Collection::stream)
+                .toList();
+
+        assertThat(votingsCreatedByAliceQueried, hasItems(votingsCreatedByAlice));
+        assertThat(votingsCreatedByAliceQueried, not(hasItems(votingsCreatedByCharlie)));
 
         Log.info("[  END TEST]: testGetCreatedWithPaging()\n\n");
     }
@@ -60,7 +70,7 @@ public class StellarGetCreatedVotingsTest {
     public void testGetCreatedInvalidPage() {
         Log.info("[START TEST]: testGetCreatedInvalidPage()");
 
-        createMultipleVotingsForPaging();
+        createMultipleVotingsForPagingAs("alice");
 
         String withAccessToken = authForTest.loginAs("alice");
         int totalPages = getTotalPageCount();
@@ -76,23 +86,31 @@ public class StellarGetCreatedVotingsTest {
         Log.info("[  END TEST]: testGetCreatedInvalidPage()\n\n");
     }
 
-    private void createMultipleVotingsForPaging() {
+    private List<Long> createMultipleVotingsForPagingAs(String user) {
+        var createdVotingIds = new ArrayList<Long>();
         for (int i = 0; i < 42; i++) {
-            this.createAVotingAsAlice();
+            createdVotingIds.add(this.createAVotingAs(user));
         }
+
+        return createdVotingIds;
     }
 
-    private void createAVotingAsAlice() {
+    private long createAVotingAs(String user) {
         CreateVotingRequest createRequest = makeCreateVotingRequest();
-        String withAccessToken = authForTest.loginAs("alice");
-        given()
+        String withAccessToken = authForTest.loginAs(user);
+        var location = given()
                 .auth().oauth2(withAccessToken)
                 .contentType(ContentType.JSON)
                 .body(createRequest)
                 .when()
                 .post(stellarVotingRest)
                 .then()
-                .statusCode(Response.Status.CREATED.getStatusCode());
+                .statusCode(Response.Status.CREATED.getStatusCode())
+                .extract()
+                .header("Location");
+
+        String[] locationParts = location.split("/");
+        return Long.parseLong(locationParts[locationParts.length - 1]);
     }
 
     private CreateVotingRequest makeCreateVotingRequest() {
