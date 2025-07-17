@@ -44,6 +44,7 @@ class StellarVotingRestGetVotings {
 
     @WithSession
     public Uni<PageResponse<VotingResponse>> getCreated(int page) {
+        Log.infof("getCreated(): Got request to get %s's votings as creator at page: %s", userInfo.getEmail(), page);
         return votingRepository.getVotingsOfUser(userInfo.getEmail(), page)
                 .map(this::toResponse);
     }
