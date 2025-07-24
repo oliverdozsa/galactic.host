@@ -24,9 +24,9 @@ public class StellarStartup {
 
         List<String> profiles = ConfigUtils.getProfiles();
         String mode = profiles.get(0);
-        if(profiles.size() == 1 && (mode.equals("dev"))) {
+        if(profiles.size() == 1 && (mode.equals("dev") || mode.equals("prod"))) {
             String accountId = internalFundingAccount.keypair().getAccountId();
-            Log.infof("onStartup(): App is in %s mode; trying to create internal funding account with id = %s", mode, accountId);
+            Log.infof("onStartup(): App is in %s mode; trying to create internal funding account on testnet with id = %s", mode, accountId);
 
             try {
                 friendBotClient.createAccount(accountId);
