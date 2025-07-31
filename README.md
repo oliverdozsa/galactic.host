@@ -4,8 +4,7 @@ This is the server part of [Galactic Pub](https://galactic.pub). Includes the fo
 ## Voting
 A privacy first voting platform powered by blockchain technology. Inspired by [stellot](https://github.com/stanbar/stellot).
 Work-in-progress.
-### What are the differences?
-One of the main goals would be to support multiple blockchains (currently only stellar).
+
 ### How does it work?
 #### Casting a vote
 It's based on [blind signatures](https://en.wikipedia.org/wiki/Blind_signature#Blind_RSA_signatures).
