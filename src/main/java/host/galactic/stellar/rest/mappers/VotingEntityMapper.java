@@ -24,6 +24,7 @@ public class VotingEntityMapper {
                 encryptionKeyOrBlankFrom(entity),
                 entity.startDate,
                 entity.endDate,
+                entity.encryptedUntil,
                 entity.assetCode,
                 entity.visibility.name(),
                 entity.ballotType.name(),

@@ -126,6 +126,32 @@ public class StellarVotersRestTest {
         Log.info("[  END TEST]: testMaxVotersExceeded()\n\n");
     }
 
+    @Test
+    public void testDuplicateEmailsInAddVotersRequest() {
+        Log.info("[START TEST]: testDuplicateEmailsInAddVotersRequest()\n\n");
+
+        String location = createPrivateVotingByAlice();
+        String[] locationParts = location.split("/");
+        Long id = Long.parseLong(locationParts[locationParts.length - 1]);
+
+        AddVotersRequest addVotersRequest = new AddVotersRequest(List.of(
+                "emily@galactic.pub",
+                "emily@galactic.pub",
+                "alice@galactic.pub",
+                "charlie@galactic.pub"));
+
+        String withAccessToken = authForTest.loginAs("alice");
+        given()
+                .auth().oauth2(withAccessToken)
+                .contentType(ContentType.JSON)
+                .body(addVotersRequest)
+                .post(stellarVotingRest + "/addvoters/" + id)
+                .then()
+                .statusCode(Response.Status.NO_CONTENT.getStatusCode());
+
+        Log.info("[  END TEST]: testDuplicateEmailsInAddVotersRequest()\n\n");
+    }
+
     private String createPrivateVotingByAlice() {
         ObjectNode createRequest = JsonUtils.readJsonFile("valid-voting-request.json");
         createRequest.put("visibility", CreateVotingRequest.Visibility.PRIVATE.name());

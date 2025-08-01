@@ -36,11 +36,11 @@ public class UserEntity extends PanacheEntityBase {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         UserEntity that = (UserEntity) o;
-        return Objects.equals(id, that.id);
+        return Objects.equals(email, that.email);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return Objects.hashCode(email);
     }
 }
