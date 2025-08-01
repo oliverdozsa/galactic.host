@@ -12,6 +12,7 @@ public record VotingResponse (
         String decryptionKey,
         Instant startDate,
         Instant endDate,
+        Instant encryptedUntil,
         String assetCode,
         String visibility,
         String ballotType,

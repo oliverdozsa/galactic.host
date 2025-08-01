@@ -9,6 +9,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.NoResultException;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class UserRepository implements PanacheRepository<UserEntity> {
@@ -44,8 +46,9 @@ public class UserRepository implements PanacheRepository<UserEntity> {
 
     private Uni<List<UserEntity>> persistEmailsNotAlreadyInDb(List<UserEntity> usersInDb, List<String> allEmailsToPersist) {
         List<String> dbEmails = usersInDb.stream().map(u -> u.email).toList();
-        List<String> emailsNotInDb = allEmailsToPersist.stream().filter(e -> !dbEmails.contains(e))
-                .toList();
+        Set<String> emailsNotInDb = allEmailsToPersist.stream().filter(e -> !dbEmails.contains(e))
+                .collect(Collectors.toSet());
+        Log.debugf("persistEmailsNotAlreadyInDb(): emails already in DB: %s", dbEmails);
         Log.debugf("persistEmailsNotAlreadyInDb(): emails not in DB: %s", emailsNotInDb);
         List<UserEntity> entitiesToPersist = emailsNotInDb.stream()
                 .map(e -> {
