@@ -18,6 +18,7 @@ public record VotingResponse (
         String ballotType,
         Integer maxChoices,
         Boolean isOnTestNetwork,
-        List<VotingPollResponse> polls
+        List<VotingPollResponse> polls,
+        Integer numOfVoters
 ) {
 }

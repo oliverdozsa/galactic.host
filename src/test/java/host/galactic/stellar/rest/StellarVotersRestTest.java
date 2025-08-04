@@ -3,6 +3,7 @@ package host.galactic.stellar.rest;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import host.galactic.stellar.rest.requests.voting.AddVotersRequest;
 import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
+import host.galactic.stellar.rest.responses.voting.VotingResponse;
 import host.galactic.testutils.AuthForTest;
 import host.galactic.testutils.JsonUtils;
 import io.quarkus.logging.Log;
@@ -17,6 +18,8 @@ import java.net.URL;
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 
 @QuarkusTest
 public class StellarVotersRestTest {
@@ -148,6 +151,17 @@ public class StellarVotersRestTest {
                 .post(stellarVotingRest + "/addvoters/" + id)
                 .then()
                 .statusCode(Response.Status.NO_CONTENT.getStatusCode());
+
+        VotingResponse votingResponse = given()
+                .auth().oauth2(withAccessToken)
+                .get(location)
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(VotingResponse.class);
+
+        assertThat(votingResponse.numOfVoters(), equalTo(3));
 
         Log.info("[  END TEST]: testDuplicateEmailsInAddVotersRequest()\n\n");
     }

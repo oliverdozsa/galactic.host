@@ -49,6 +49,7 @@ public class VotingRepository implements PanacheRepository<VotingEntity> {
                 .invoke(v -> {
                     checkIfMaxVotersWouldBeExceeded(v, voters);
                     v.voters.addAll(voters);
+                    v.numOfVoters = v.voters.size();
                 });
     }
 

@@ -30,7 +30,8 @@ public class VotingEntityMapper {
                 entity.ballotType.name(),
                 entity.maxChoices,
                 entity.isOnTestNetwork,
-                polls
+                polls,
+                entity.numOfVoters
         );
     }
 
