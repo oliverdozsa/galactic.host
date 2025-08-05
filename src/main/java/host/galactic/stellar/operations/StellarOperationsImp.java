@@ -3,6 +3,8 @@ package host.galactic.stellar.operations;
 import io.smallrye.mutiny.Uni;
 import io.quarkus.logging.Log;
 import io.smallrye.mutiny.infrastructure.Infrastructure;
+import io.smallrye.mutiny.vertx.MutinyHelper;
+import io.vertx.core.Vertx;
 import org.stellar.sdk.*;
 import org.stellar.sdk.operations.PaymentOperation;
 
@@ -24,33 +26,35 @@ class StellarOperationsImp implements StellarOperations {
 
     public Uni<Void> transferXlmFrom(String sourceAccountSecret, double xlm, String targetAccountSecret) {
         return Uni.createFrom().<Void>item(() -> {
-            String truncatedSourceAccountId = toTruncatedAccountId(sourceAccountSecret);
-            String truncatedTargetAccountId = toTruncatedAccountId(targetAccountSecret);
-            Log.infof("transferXlmFrom(): Transferring: %s -> %s XLMs -> %s", truncatedSourceAccountId, xlm, truncatedTargetAccountId);
+                    String truncatedSourceAccountId = toTruncatedAccountId(sourceAccountSecret);
+                    String truncatedTargetAccountId = toTruncatedAccountId(targetAccountSecret);
+                    Log.infof("transferXlmFrom(): Transferring: %s -> %s XLMs -> %s", truncatedSourceAccountId, xlm, truncatedTargetAccountId);
 
-            String sourceAccountId = toAccountId(sourceAccountSecret);
-            String targetAccountId = toAccountId(targetAccountSecret);
+                    String sourceAccountId = toAccountId(sourceAccountSecret);
+                    String targetAccountId = toAccountId(targetAccountSecret);
 
-            TransactionBuilderAccount sourceAccount = server.loadAccount(sourceAccountId);
-            PaymentOperation paymentOperation = PaymentOperation.builder()
-                    .destination(targetAccountId)
-                    .asset(Asset.createNativeAsset())
-                    .amount(new BigDecimal(xlm))
-                    .build();
+                    TransactionBuilderAccount sourceAccount = server.loadAccount(sourceAccountId);
+                    PaymentOperation paymentOperation = PaymentOperation.builder()
+                            .destination(targetAccountId)
+                            .asset(Asset.createNativeAsset())
+                            .amount(new BigDecimal(xlm))
+                            .build();
 
-            Transaction transaction = new TransactionBuilder(sourceAccount, network)
-                    .setBaseFee(MIN_BASE_FEE)
-                    .setTimeout(30)
-                    .addOperation(paymentOperation)
-                    .build();
+                    Transaction transaction = new TransactionBuilder(sourceAccount, network)
+                            .setBaseFee(MIN_BASE_FEE)
+                            .setTimeout(30)
+                            .addOperation(paymentOperation)
+                            .build();
 
-            KeyPair sourceKeyPair = KeyPair.fromSecretSeed(sourceAccountSecret);
-            transaction.sign(sourceKeyPair);
+                    KeyPair sourceKeyPair = KeyPair.fromSecretSeed(sourceAccountSecret);
+                    transaction.sign(sourceKeyPair);
 
-            server.submitTransaction(transaction);
-            Log.infof("transferXlmFrom(): Transfer successful: %s -> %s XLMs -> %s", truncatedSourceAccountId, xlm, truncatedTargetAccountId);
-            return null;
-        });
+                    server.submitTransaction(transaction);
+                    Log.infof("transferXlmFrom(): Transfer successful: %s -> %s XLMs -> %s", truncatedSourceAccountId, xlm, truncatedTargetAccountId);
+                    return null;
+                })
+                .runSubscriptionOn(Infrastructure.getDefaultExecutor())
+                .emitOn(MutinyHelper.executor(Vertx.currentContext()));
     }
 
     private static String toTruncatedAccountId(String accountSecret) {
