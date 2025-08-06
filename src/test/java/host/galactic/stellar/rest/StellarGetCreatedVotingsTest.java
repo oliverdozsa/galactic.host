@@ -86,6 +86,18 @@ public class StellarGetCreatedVotingsTest {
         Log.info("[  END TEST]: testGetCreatedInvalidPage()\n\n");
     }
 
+    @Test
+    public void testGetSingleByCreator() {
+        var votingId = createPrivateVotingAs("alice");
+
+        String withAccessToken = authForTest.loginAs("alice");
+        given()
+                .auth().oauth2(withAccessToken)
+                .get(stellarVotingRest + "/" + votingId)
+                .then()
+                .statusCode(Response.Status.OK.getStatusCode());
+    }
+
     private List<Long> createMultipleVotingsForPagingAs(String user) {
         var createdVotingIds = new ArrayList<Long>();
         for (int i = 0; i < 42; i++) {
@@ -97,11 +109,23 @@ public class StellarGetCreatedVotingsTest {
 
     private long createAVotingAs(String user) {
         CreateVotingRequest createRequest = makeCreateVotingRequest();
+        return createVoting(createRequest, user);
+    }
+
+    private long createPrivateVotingAs(String user) {
+        ObjectNode votingRequestJson = JsonUtils.readJsonFile("valid-voting-request.json");
+        votingRequestJson.put("visibility", "PRIVATE");
+
+        var createRequest = JsonUtils.convertJsonNodeTo(CreateVotingRequest.class, votingRequestJson);
+        return createVoting(createRequest, user);
+    }
+
+    private long createVoting(CreateVotingRequest request, String user) {
         String withAccessToken = authForTest.loginAs(user);
         var location = given()
                 .auth().oauth2(withAccessToken)
                 .contentType(ContentType.JSON)
-                .body(createRequest)
+                .body(request)
                 .when()
                 .post(stellarVotingRest)
                 .then()

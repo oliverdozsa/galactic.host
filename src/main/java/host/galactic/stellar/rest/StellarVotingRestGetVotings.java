@@ -57,7 +57,9 @@ class StellarVotingRestGetVotings {
     }
 
     private void checkIfUserIsAllowedToGetVoting(VotingEntity voting, String email) {
-        if (voting.visibility == Visibility.PRIVATE && doesUserNotParticipateIn(voting, email)) {
+        if (voting.visibility == Visibility.PRIVATE &&
+                doesUserNotParticipateIn(voting, email) &&
+                isUserNotCreatorOf(voting, email)) {
             Log.warnf("User \"%s\" is not allowed to get voting with id = %s", email, voting.id);
             throw new ForbiddenException();
         }
@@ -67,6 +69,10 @@ class StellarVotingRestGetVotings {
         return entity.voters.stream()
                 .map(u -> u.email)
                 .noneMatch(e -> e.equals(email));
+    }
+
+    private boolean isUserNotCreatorOf(VotingEntity voting, String email) {
+        return !voting.createdBy.email.equals(email);
     }
 
     private PageResponse<VotingResponse> toResponse(Page<VotingEntity> page) {
