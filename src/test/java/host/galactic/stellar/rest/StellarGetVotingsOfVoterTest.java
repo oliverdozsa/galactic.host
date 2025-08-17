@@ -1,20 +1,14 @@
 package host.galactic.stellar.rest;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import host.galactic.stellar.rest.requests.voting.AddVotersRequest;
 import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
 import host.galactic.stellar.rest.responses.voting.PageResponse;
-import host.galactic.testutils.AuthForTest;
-import host.galactic.testutils.JsonUtils;
 import io.quarkus.logging.Log;
-import io.quarkus.test.common.http.TestHTTPEndpoint;
-import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -25,11 +19,6 @@ import static org.hamcrest.Matchers.*;
 
 @QuarkusTest
 class StellarGetVotingsOfVoterTest extends StellarRestTestBase {
-    @TestHTTPEndpoint(StellarVotingRest.class)
-    @TestHTTPResource
-    private URL stellarVotingRest;
-
-    private AuthForTest authForTest = new AuthForTest();
 
     @Test
     public void testGetVotingsOfVoterNotAuthenticated() {

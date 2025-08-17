@@ -5,7 +5,6 @@ import host.galactic.stellar.operations.MockStellarOperations;
 import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
 import host.galactic.stellar.rest.responses.voting.VotingPollOptionResponse;
 import host.galactic.stellar.rest.responses.voting.VotingResponse;
-import host.galactic.testutils.AuthForTest;
 import host.galactic.testutils.JsonUtils;
 import io.quarkus.logging.Log;
 import io.quarkus.test.junit.QuarkusTest;
@@ -19,7 +18,6 @@ import static org.hamcrest.Matchers.*;
 
 @QuarkusTest
 public class StellarCreateVotingRestTest extends StellarRestTestBase {
-    private AuthForTest authForTest = new AuthForTest();
 
     @Test
     public void testCreateVoting() {

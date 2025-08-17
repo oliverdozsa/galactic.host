@@ -3,7 +3,6 @@ package host.galactic.stellar.rest;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
 import host.galactic.stellar.rest.responses.voting.PageResponse;
-import host.galactic.testutils.AuthForTest;
 import host.galactic.testutils.JsonUtils;
 import io.quarkus.logging.Log;
 import io.quarkus.test.junit.QuarkusTest;
@@ -20,7 +19,6 @@ import static org.hamcrest.Matchers.*;
 
 @QuarkusTest
 public class StellarGetCreatedVotingsTest extends StellarRestTestBase {
-    private AuthForTest authForTest = new AuthForTest();
 
     @Test
     public void testGetCreatedNotAuthenticated() {

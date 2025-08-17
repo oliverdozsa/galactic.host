@@ -4,17 +4,13 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import host.galactic.stellar.rest.requests.voting.AddVotersRequest;
 import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
 import host.galactic.stellar.rest.responses.voting.VotingResponse;
-import host.galactic.testutils.AuthForTest;
 import host.galactic.testutils.JsonUtils;
 import io.quarkus.logging.Log;
-import io.quarkus.test.common.http.TestHTTPEndpoint;
-import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 
-import java.net.URL;
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
@@ -22,12 +18,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 @QuarkusTest
-public class StellarVotersRestTest {
-    @TestHTTPEndpoint(StellarVotingRest.class)
-    @TestHTTPResource
-    private URL stellarVotingRest;
-
-    private AuthForTest authForTest = new AuthForTest();
+public class StellarVotersRestTest extends StellarRestTestBase {
 
     @Test
     public void testGetPrivateVotingAsNonParticipant() {
