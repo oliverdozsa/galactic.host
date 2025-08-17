@@ -23,7 +23,7 @@ public class StellarRestTestBase {
     @TestHTTPResource
     protected URL stellarVotingRest;
 
-    private AuthForTest authForTest = new AuthForTest();
+    protected AuthForTest authForTest = new AuthForTest();
 
     public List<PageResponse> getPages(String url, String asUser) {
         var pageResponse = getPage(url, asUser,0);
