@@ -23,6 +23,9 @@ public class StellarVotingRest {
     @Inject
     StellarVotingRestVotersOperations votingRestVotersOperations;
 
+    @Inject
+    StellarVotingRestDelete votingRestDelete;
+
     @POST
     @Authenticated
     @Consumes(MediaType.APPLICATION_JSON)
@@ -36,6 +39,13 @@ public class StellarVotingRest {
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<VotingResponse> get(Long id) {
         return votingRestGet.byId(id);
+    }
+
+    @Path("/{id}")
+    @DELETE
+    @Authenticated
+    public Uni<Response> delete(Long id) {
+        return votingRestDelete.byId(id);
     }
 
     @GET

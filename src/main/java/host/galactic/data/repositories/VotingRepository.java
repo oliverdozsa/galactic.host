@@ -10,6 +10,7 @@ import io.quarkus.panache.common.Page;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.NotFoundException;
 import org.hibernate.reactive.mutiny.Mutiny;
 
@@ -32,7 +33,7 @@ public class VotingRepository implements PanacheRepository<VotingEntity> {
 
     public Uni<VotingEntity> getById(Long id) {
         Log.infof("getById(): Getting voting entity by id = %s", id);
-        return findById(id);
+        return findAndAssertById(id);
     }
 
     @WithTransaction
@@ -40,10 +41,7 @@ public class VotingRepository implements PanacheRepository<VotingEntity> {
         Log.info("addVotersTo(): About to add voters to a voting.");
         Log.debugf("addVotersTo(): Details: votingId = %s, voters = %s", votingId, voters);
 
-        return findById(votingId)
-                .onItem()
-                .ifNull()
-                .failWith(new NotFoundException())
+        return findAndAssertById(votingId)
                 .onItem()
                 .call(v -> Mutiny.fetch(v.voters))
                 .invoke(v -> {
@@ -74,6 +72,20 @@ public class VotingRepository implements PanacheRepository<VotingEntity> {
                 .map(t -> new host.galactic.data.utils.Page<>(t.getItem1(), t.getItem2()));
     }
 
+    @WithTransaction
+    public Uni<Void> deleteById(long id, String email) {
+        return findAndAssertById(id)
+                .onItem()
+                .call(v -> Mutiny.fetch(v.createdBy))
+                .invoke(v -> {
+                    if(!v.createdBy.email.equals(email)) {
+                        throw new ForbiddenException("User " + email + " is not the creator of voting with id =" + id + ".");
+                    }
+                })
+                .chain(v -> deleteById(v.id))
+                .map(b -> null);
+    }
+
     private void checkIfMaxVotersWouldBeExceeded(VotingEntity voting, List<UserEntity> usersToAdd){
         Set<UserEntity> usersToAddAsSet = new HashSet<>(usersToAdd);
         usersToAddAsSet.addAll(voting.voters);
@@ -81,5 +93,12 @@ public class VotingRepository implements PanacheRepository<VotingEntity> {
             Log.warnf("checkIfMaxVotersWouldBeExceeded(): Can't add voters to voting \"%s\" as maximum voters would be exceeded.", voting.id);
             throw new BadRequestException("Can't add voters to voting \"" + voting.id + "\" as max. voters would be exceeded.");
         }
+    }
+
+    private Uni<VotingEntity> findAndAssertById(long id) {
+        return findById(id)
+                .onItem()
+                .ifNull()
+                .failWith(new NotFoundException());
     }
 }
