@@ -5,32 +5,21 @@ import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
 import host.galactic.stellar.rest.responses.voting.PageResponse;
 import host.galactic.testutils.AuthForTest;
 import host.galactic.testutils.JsonUtils;
-import host.galactic.testutils.TestRestUtils;
 import io.quarkus.logging.Log;
-import io.quarkus.test.common.http.TestHTTPEndpoint;
-import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
-import io.restassured.http.ContentType;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static host.galactic.testutils.TestRestUtils.getIdsFrom;
-import static host.galactic.testutils.TestRestUtils.getPages;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 @QuarkusTest
-public class StellarGetCreatedVotingsTest {
-    @TestHTTPEndpoint(StellarVotingRest.class)
-    @TestHTTPResource
-    private URL stellarVotingRest;
-
+public class StellarGetCreatedVotingsTest extends StellarRestTestBase {
     private AuthForTest authForTest = new AuthForTest();
 
     @Test
@@ -56,7 +45,7 @@ public class StellarGetCreatedVotingsTest {
 
         var votingsCreatedByAliceQueried = getPages(stellarVotingRest + "/created", "alice")
                 .stream()
-                .map(TestRestUtils::getIdsFrom)
+                .map(this::getIdsFrom)
                 .flatMap(Collection::stream)
                 .toList();
 
@@ -101,15 +90,10 @@ public class StellarGetCreatedVotingsTest {
     private List<Long> createMultipleVotingsForPagingAs(String user) {
         var createdVotingIds = new ArrayList<Long>();
         for (int i = 0; i < 42; i++) {
-            createdVotingIds.add(this.createAVotingAs(user));
+            createdVotingIds.add(createAVotingAs(user));
         }
 
         return createdVotingIds;
-    }
-
-    private long createAVotingAs(String user) {
-        CreateVotingRequest createRequest = makeCreateVotingRequest();
-        return createVoting(createRequest, user);
     }
 
     private long createPrivateVotingAs(String user) {
@@ -118,28 +102,6 @@ public class StellarGetCreatedVotingsTest {
 
         var createRequest = JsonUtils.convertJsonNodeTo(CreateVotingRequest.class, votingRequestJson);
         return createVoting(createRequest, user);
-    }
-
-    private long createVoting(CreateVotingRequest request, String user) {
-        String withAccessToken = authForTest.loginAs(user);
-        var location = given()
-                .auth().oauth2(withAccessToken)
-                .contentType(ContentType.JSON)
-                .body(request)
-                .when()
-                .post(stellarVotingRest)
-                .then()
-                .statusCode(Response.Status.CREATED.getStatusCode())
-                .extract()
-                .header("Location");
-
-        String[] locationParts = location.split("/");
-        return Long.parseLong(locationParts[locationParts.length - 1]);
-    }
-
-    private CreateVotingRequest makeCreateVotingRequest() {
-        ObjectNode votingRequestJson = JsonUtils.readJsonFile("valid-voting-request.json");
-        return JsonUtils.convertJsonNodeTo(CreateVotingRequest.class, votingRequestJson);
     }
 
     private int getTotalPageCount() {

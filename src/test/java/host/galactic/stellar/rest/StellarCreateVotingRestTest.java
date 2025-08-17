@@ -8,25 +8,17 @@ import host.galactic.stellar.rest.responses.voting.VotingResponse;
 import host.galactic.testutils.AuthForTest;
 import host.galactic.testutils.JsonUtils;
 import io.quarkus.logging.Log;
-import io.quarkus.test.common.http.TestHTTPEndpoint;
-import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
-
-import java.net.URL;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 @QuarkusTest
-public class StellarCreateVotingRestTest {
-    @TestHTTPEndpoint(StellarVotingRest.class)
-    @TestHTTPResource
-    private URL stellarVotingRest;
-
+public class StellarCreateVotingRestTest extends StellarRestTestBase {
     private AuthForTest authForTest = new AuthForTest();
 
     @Test
@@ -135,11 +127,6 @@ public class StellarCreateVotingRestTest {
     private CreateVotingRequest makeInvalidCreateVotingRequest() {
         ObjectNode votingRequestJson = JsonUtils.readJsonFile("valid-voting-request.json");
         votingRequestJson.put("title", "a");
-        return JsonUtils.convertJsonNodeTo(CreateVotingRequest.class, votingRequestJson);
-    }
-
-    private CreateVotingRequest makeCreateVotingRequest() {
-        ObjectNode votingRequestJson = JsonUtils.readJsonFile("valid-voting-request.json");
         return JsonUtils.convertJsonNodeTo(CreateVotingRequest.class, votingRequestJson);
     }
 }

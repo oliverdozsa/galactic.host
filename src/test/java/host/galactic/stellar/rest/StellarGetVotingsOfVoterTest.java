@@ -6,7 +6,6 @@ import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
 import host.galactic.stellar.rest.responses.voting.PageResponse;
 import host.galactic.testutils.AuthForTest;
 import host.galactic.testutils.JsonUtils;
-import host.galactic.testutils.TestRestUtils;
 import io.quarkus.logging.Log;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.common.http.TestHTTPResource;
@@ -20,13 +19,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static host.galactic.testutils.TestRestUtils.*;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 @QuarkusTest
-class StellarGetVotingsOfVoterTest {
+class StellarGetVotingsOfVoterTest extends StellarRestTestBase {
     @TestHTTPEndpoint(StellarVotingRest.class)
     @TestHTTPResource
     private URL stellarVotingRest;
@@ -124,11 +122,6 @@ class StellarGetVotingsOfVoterTest {
         return votingId;
     }
 
-    private CreateVotingRequest makeCreateVotingRequest() {
-        ObjectNode votingRequestJson = JsonUtils.readJsonFile("valid-voting-request.json");
-        return JsonUtils.convertJsonNodeTo(CreateVotingRequest.class, votingRequestJson);
-    }
-
     private int getTotalPageCount() {
         return getPage(stellarVotingRest.toString(), "alice", 0).totalPages();
     }
@@ -148,7 +141,7 @@ class StellarGetVotingsOfVoterTest {
     private List<Long> getActualVotingIdsWhereAliceIsParticipantWithPaging() {
         List<PageResponse> aliceAsParticipantResponses = getPages(stellarVotingRest.toString(), "alice");
         return aliceAsParticipantResponses.stream()
-                .map(TestRestUtils::getIdsFrom)
+                .map(this::getIdsFrom)
                 .flatMap(Collection::stream)
                 .toList();
     }
