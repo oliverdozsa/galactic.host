@@ -85,6 +85,16 @@ public class StellarGetCreatedVotingsTest extends StellarRestTestBase {
                 .statusCode(Response.Status.OK.getStatusCode());
     }
 
+    @Test
+    public void testGetNotExisting() {
+        String asAlice = authForTest.loginAs("alice");
+        given()
+                .auth().oauth2(asAlice)
+                .get(stellarVotingRest + "/-1")
+                .then()
+                .statusCode(Response.Status.NOT_FOUND.getStatusCode());
+    }
+
     private List<Long> createMultipleVotingsForPagingAs(String user) {
         var createdVotingIds = new ArrayList<Long>();
         for (int i = 0; i < 42; i++) {
