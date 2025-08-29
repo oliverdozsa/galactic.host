@@ -10,4 +10,17 @@ public class ChannelGeneratorEntity extends PanacheEntityBase {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     public Long id;
+
+    @Column(name = "account_secret", columnDefinition = "text")
+    public String accountSecret;
+
+    @Column(name = "max_voters")
+    public Integer maxVoters;
+
+    @Column(name = "is_refunded")
+    public boolean isRefunded;
+
+    @ManyToOne
+    @JoinColumn(name = "voting_id")
+    public VotingEntity voting;
 }

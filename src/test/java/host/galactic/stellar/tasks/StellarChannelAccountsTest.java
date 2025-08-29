@@ -3,6 +3,7 @@ package host.galactic.stellar.tasks;
 import host.galactic.stellar.rest.StellarRestTestBase;
 import host.galactic.stellar.rest.requests.voting.AddVotersRequest;
 import io.quarkus.logging.Log;
+import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Assertions;
@@ -12,10 +13,17 @@ import java.util.List;
 
 import static io.restassured.RestAssured.given;
 
+@QuarkusTest
 public class StellarChannelAccountsTest extends StellarRestTestBase {
     @Test
     public void testChannelAccountsCreated() {
         Log.info("[START TEST]: testChannelAccountsCreated()");
+
+        try {
+            Thread.sleep(1500);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
 
         createAVotingWithThreeParticipants();
         Assertions.fail("Implement testChannelAccountsCreated()");
