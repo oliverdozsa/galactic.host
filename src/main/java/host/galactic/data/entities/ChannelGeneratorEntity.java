@@ -14,8 +14,8 @@ public class ChannelGeneratorEntity extends PanacheEntityBase {
     @Column(name = "account_secret", columnDefinition = "text")
     public String accountSecret;
 
-    @Column(name = "max_voters")
-    public Integer maxVoters;
+    @Column(name = "accounts_left_to_create")
+    public Integer accountsLeftToCreate;
 
     @Column(name = "is_refunded")
     public boolean isRefunded;

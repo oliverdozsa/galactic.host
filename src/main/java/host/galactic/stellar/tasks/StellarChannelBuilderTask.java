@@ -15,7 +15,7 @@ public class StellarChannelBuilderTask implements Function<ScheduledExecution, U
 
     @Override
     public Uni<Void> apply(ScheduledExecution execution) {
-        Log.infof("%s", execution.getTrigger().getId());
+        Log.tracef("%s", execution.getTrigger().getId());
         return Uni.createFrom().item(() -> null);
     }
 }

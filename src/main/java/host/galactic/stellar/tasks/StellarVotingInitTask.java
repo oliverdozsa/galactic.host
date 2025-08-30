@@ -16,7 +16,7 @@ public class StellarVotingInitTask implements Function<ScheduledExecution, Uni<V
 
     @Override
     public Uni<Void> apply(ScheduledExecution execution) {
-        Log.infof("%s", execution.getTrigger().getId());
+        Log.tracef("%s", execution.getTrigger().getId());
         return Uni.createFrom().item(() -> null);
     }
 }
