@@ -2,6 +2,8 @@ package host.galactic.stellar.operations;
 
 import io.smallrye.mutiny.Uni;
 
+import java.util.List;
+
 class MockStellarOperationsImp implements StellarOperations {
 
     @Override
@@ -12,5 +14,11 @@ class MockStellarOperationsImp implements StellarOperations {
             var exception = new StellarOperationsException("Mock failure has been thrown to test failure of transferXlmFrom()!");
             return Uni.createFrom().failure(exception);
         }
+    }
+
+    @Override
+    public Uni<List<StellarChannelGenerator>> createChannelGenerators(String fundingAccountSecret, int maxVoters) {
+        // TODO
+        return null;
     }
 }

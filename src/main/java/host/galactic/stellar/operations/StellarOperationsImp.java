@@ -9,7 +9,10 @@ import org.stellar.sdk.*;
 import org.stellar.sdk.operations.PaymentOperation;
 
 import java.math.BigDecimal;
+import java.util.List;
 
+import static host.galactic.stellar.operations.StellarUtils.toAccountId;
+import static host.galactic.stellar.operations.StellarUtils.toTruncatedAccountId;
 import static org.stellar.sdk.AbstractTransaction.MIN_BASE_FEE;
 
 class StellarOperationsImp implements StellarOperations {
@@ -25,43 +28,13 @@ class StellarOperationsImp implements StellarOperations {
     }
 
     public Uni<Void> transferXlmFrom(String sourceAccountSecret, double xlm, String targetAccountSecret) {
-        return Uni.createFrom().<Void>item(() -> {
-                    String truncatedSourceAccountId = toTruncatedAccountId(sourceAccountSecret);
-                    String truncatedTargetAccountId = toTruncatedAccountId(targetAccountSecret);
-                    Log.infof("transferXlmFrom(): Transferring: %s -> %s XLMs -> %s", truncatedSourceAccountId, xlm, truncatedTargetAccountId);
-
-                    String sourceAccountId = toAccountId(sourceAccountSecret);
-                    String targetAccountId = toAccountId(targetAccountSecret);
-
-                    TransactionBuilderAccount sourceAccount = server.loadAccount(sourceAccountId);
-                    PaymentOperation paymentOperation = PaymentOperation.builder()
-                            .destination(targetAccountId)
-                            .asset(Asset.createNativeAsset())
-                            .amount(new BigDecimal(xlm))
-                            .build();
-
-                    Transaction transaction = new TransactionBuilder(sourceAccount, network)
-                            .setBaseFee(MIN_BASE_FEE)
-                            .setTimeout(30)
-                            .addOperation(paymentOperation)
-                            .build();
-
-                    KeyPair sourceKeyPair = KeyPair.fromSecretSeed(sourceAccountSecret);
-                    transaction.sign(sourceKeyPair);
-
-                    server.submitTransaction(transaction);
-                    Log.infof("transferXlmFrom(): Transfer successful: %s -> %s XLMs -> %s", truncatedSourceAccountId, xlm, truncatedTargetAccountId);
-                    return null;
-                })
-                .runSubscriptionOn(Infrastructure.getDefaultExecutor())
-                .emitOn(MutinyHelper.executor(Vertx.currentContext()));
+        return new StellarTransferXlmOperation(server, network)
+                .transfer(sourceAccountSecret, xlm, targetAccountSecret);
     }
 
-    private static String toTruncatedAccountId(String accountSecret) {
-        return toAccountId(accountSecret).substring(0, 10) + "...";
-    }
-
-    private static String toAccountId(String accountSecret) {
-        return KeyPair.fromSecretSeed(accountSecret).getAccountId();
+    @Override
+    public Uni<List<StellarChannelGenerator>> createChannelGenerators(String fundingAccountSecret, int maxVoters) {
+        // TODO
+        return null;
     }
 }
