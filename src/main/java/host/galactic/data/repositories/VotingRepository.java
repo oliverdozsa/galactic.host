@@ -4,6 +4,7 @@ import host.galactic.data.entities.UserEntity;
 import host.galactic.data.entities.VotingEntity;
 import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
 import io.quarkus.hibernate.reactive.panache.PanacheRepository;
+import io.quarkus.hibernate.reactive.panache.common.WithSession;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.quarkus.logging.Log;
 import io.quarkus.panache.common.Page;
@@ -84,6 +85,11 @@ public class VotingRepository implements PanacheRepository<VotingEntity> {
                 })
                 .chain(v -> deleteById(v.id))
                 .map(b -> null);
+    }
+
+    public Uni<VotingEntity> getAnUninitializedVoting() {
+        Log.info("getAnUninitializedVoting(): Getting an uninitialized voting.");
+        return find("select v from VotingEntity v join v.channelGenerators cg where cg.voting is null").firstResult();
     }
 
     private void checkIfMaxVotersWouldBeExceeded(VotingEntity voting, List<UserEntity> usersToAdd){

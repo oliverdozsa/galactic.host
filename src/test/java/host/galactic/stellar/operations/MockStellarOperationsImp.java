@@ -1,10 +1,17 @@
 package host.galactic.stellar.operations;
 
 import io.smallrye.mutiny.Uni;
+import org.stellar.sdk.KeyPair;
 
+import java.util.ArrayList;
 import java.util.List;
 
 class MockStellarOperationsImp implements StellarOperations {
+    private int voteBuckets;
+
+    public MockStellarOperationsImp(int voteBuckets) {
+        this.voteBuckets = voteBuckets;
+    }
 
     @Override
     public Uni<Void> transferXlmFrom(String sourceAccountSecret, double xlm, String targetAccountSecret) {
@@ -17,8 +24,19 @@ class MockStellarOperationsImp implements StellarOperations {
     }
 
     @Override
-    public Uni<List<StellarChannelGenerator>> createChannelGenerators(String fundingAccountSecret, int maxVoters) {
-        // TODO
-        return null;
+    public Uni<List<StellarChannelGenerator>> createChannelGenerators(String fundingAccountSecret, int maxVoters, Long votingId) {
+        List<StellarChannelGenerator> channelGenerators = new ArrayList<>(voteBuckets);
+
+        int numOfVotersPerBucket = maxVoters / voteBuckets;
+        int remainingVoters = maxVoters % voteBuckets;
+
+        for(int i = 0; i < voteBuckets - 1; i++) {
+            KeyPair account = KeyPair.random();
+            channelGenerators.add(new StellarChannelGenerator(new String(account.getSecretSeed()), numOfVotersPerBucket, votingId));
+        }
+
+        channelGenerators.add(new StellarChannelGenerator(fundingAccountSecret, numOfVotersPerBucket + remainingVoters, votingId));
+
+        return Uni.createFrom().item(channelGenerators);
     }
 }

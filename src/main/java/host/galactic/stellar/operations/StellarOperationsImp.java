@@ -33,7 +33,7 @@ class StellarOperationsImp implements StellarOperations {
     }
 
     @Override
-    public Uni<List<StellarChannelGenerator>> createChannelGenerators(String fundingAccountSecret, int maxVoters) {
+    public Uni<List<StellarChannelGenerator>> createChannelGenerators(String fundingAccountSecret, int maxVoters, Long votingId) {
         // TODO
         return null;
     }

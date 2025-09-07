@@ -79,4 +79,7 @@ public class VotingEntity extends PanacheEntityBase {
             inverseJoinColumns = {@JoinColumn(name = "user_id")}
     )
     public Set<UserEntity> voters;
+
+    @OneToMany(mappedBy = "voting")
+    public List<ChannelGeneratorEntity> channelGenerators;
 }
