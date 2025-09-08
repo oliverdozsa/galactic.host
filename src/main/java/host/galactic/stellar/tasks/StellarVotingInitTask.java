@@ -2,6 +2,7 @@ package host.galactic.stellar.tasks;
 
 import host.galactic.data.entities.VotingEntity;
 import host.galactic.stellar.operations.StellarChannelGenerator;
+import host.galactic.stellar.operations.StellarChannelGeneratorOperationPayload;
 import io.quarkus.logging.Log;
 import io.quarkus.scheduler.ScheduledExecution;
 import io.smallrye.mutiny.Uni;
@@ -31,13 +32,20 @@ public class StellarVotingInitTask implements Function<ScheduledExecution, Uni<V
             Log.infof("%s: Found an uninitialized voting with id = %s!", taskId, votingEntity.id);
 
             var stellarOperations = context.operationsProducer().create(votingEntity.isOnTestNetwork);
-            var channelGenerators = stellarOperations.createChannelGenerators(context.fundingAccountSecret(), votingEntity.maxVoters, votingEntity.id);
+
+            var payload = new StellarChannelGeneratorOperationPayload(
+                    context.fundingAccountSecret(),
+                    votingEntity.maxVoters,
+                    votingEntity.id,
+                    context.voteBuckets()
+            );
+            var channelGenerators = stellarOperations.createChannelGenerators(payload);
 
             return channelGenerators
                     .chain(this::createChannelGeneratorEntitiesFrom);
         } else {
             Log.tracef("%s: Not found any uninitialized voting.", taskId);
-            return Uni.createFrom().item(null);
+            return Uni.createFrom().item(() -> null);
         }
     }
 
