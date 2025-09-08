@@ -24,18 +24,18 @@ class MockStellarOperationsImp implements StellarOperations {
     }
 
     @Override
-    public Uni<List<StellarChannelGenerator>> createChannelGenerators(String fundingAccountSecret, int maxVoters, Long votingId) {
-        List<StellarChannelGenerator> channelGenerators = new ArrayList<>(voteBuckets);
+    public Uni<List<StellarChannelGenerator>> createChannelGenerators(StellarChannelGeneratorOperationPayload payload) {
+        List<StellarChannelGenerator> channelGenerators = new ArrayList<>(payload.numOfGeneratorsToCreate());
 
-        int numOfVotersPerBucket = maxVoters / voteBuckets;
-        int remainingVoters = maxVoters % voteBuckets;
+        int numOfVotersPerChannelGen = payload.maxVoters() / payload.numOfGeneratorsToCreate();
+        int remainingVoters = payload.maxVoters() % payload.numOfGeneratorsToCreate();
 
-        for(int i = 0; i < voteBuckets - 1; i++) {
+        for(int i = 0; i < payload.numOfGeneratorsToCreate() - 1; i++) {
             KeyPair account = KeyPair.random();
-            channelGenerators.add(new StellarChannelGenerator(new String(account.getSecretSeed()), numOfVotersPerBucket, votingId));
+            channelGenerators.add(new StellarChannelGenerator(new String(account.getSecretSeed()), numOfVotersPerChannelGen, payload.votingId()));
         }
 
-        channelGenerators.add(new StellarChannelGenerator(fundingAccountSecret, numOfVotersPerBucket + remainingVoters, votingId));
+        channelGenerators.add(new StellarChannelGenerator(payload.fundingAccountSecret(), numOfVotersPerChannelGen + remainingVoters, payload.votingId()));
 
         return Uni.createFrom().item(channelGenerators);
     }

@@ -55,7 +55,8 @@ public class StellarTasks {
 
     private void addVotingInitTask(int id) {
         StellarVotingInitContext context = new StellarVotingInitContext(
-                votingRepository, channelGeneratorRepository, stellarOperationsProducer, internalFundingAccountSecret, sessionFactory
+                votingRepository, channelGeneratorRepository, stellarOperationsProducer,
+                internalFundingAccountSecret, sessionFactory, voteBuckets
         );
 
         scheduler.newJob("stellar-voting-init-" + id)

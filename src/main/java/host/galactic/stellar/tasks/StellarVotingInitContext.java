@@ -8,5 +8,6 @@ import org.hibernate.reactive.mutiny.Mutiny;
 public record StellarVotingInitContext(VotingRepository votingRepository,
                                        ChannelGeneratorRepository channelGeneratorRepository,
                                        StellarOperationsProducer operationsProducer, String fundingAccountSecret,
-                                       Mutiny.SessionFactory sessionFactory) {
+                                       Mutiny.SessionFactory sessionFactory,
+                                       Integer voteBuckets) {
 }
