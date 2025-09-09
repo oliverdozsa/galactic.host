@@ -4,11 +4,10 @@ import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.infrastructure.Infrastructure;
 import io.smallrye.mutiny.vertx.MutinyHelper;
 import io.vertx.core.Vertx;
-import org.stellar.sdk.Network;
-import org.stellar.sdk.Server;
+import org.stellar.sdk.*;
+import org.stellar.sdk.operations.CreateAccountOperation;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class StellarChannelGeneratorOperation {
@@ -22,18 +21,51 @@ public class StellarChannelGeneratorOperation {
 
     public Uni<List<StellarChannelGenerator>> create(StellarChannelGeneratorOperationPayload payload) {
         return Uni.createFrom().item(() -> {
-            int numOfAccountsPerChannelGenerator = payload.maxVoters() / payload.numOfGeneratorsToCreate();
-            int numOfAccountPerChannelGeneratorRemainder = payload.maxVoters() % payload.numOfGeneratorsToCreate();
+                    int numOfAccountsPerChannelGenerator = payload.maxVoters() / payload.numOfGeneratorsToCreate();
+                    int numOfAccountPerChannelGeneratorRemainder = payload.maxVoters() % payload.numOfGeneratorsToCreate();
 
-            List<StellarChannelGenerator> generators = new ArrayList<>();
+                    List<StellarChannelGenerator> generators = new ArrayList<>();
 
-            // TODO
+                    KeyPair fundingKeyPair = KeyPair.fromSecretSeed(payload.fundingAccountSecret());
 
-            return generators;
-        })
+                    var fundingAccount = server.loadAccount(fundingKeyPair.getAccountId());
+                    var transactionBuilder = new TransactionBuilder(fundingAccount, network);
+
+                    for(int i = 0; i < payload.numOfGeneratorsToCreate() - 1; i++) {
+                        var channelGenKeyPair = prepareAccountCreationOn(transactionBuilder, numOfAccountsPerChannelGenerator);
+                        var channelGenSecret = new String(channelGenKeyPair.getSecretSeed());
+                        generators.add(
+                                new StellarChannelGenerator(channelGenSecret, numOfAccountsPerChannelGenerator, payload.votingId())
+                        );
+                    }
+
+                    var lastChannelGenNumOfAccounts = numOfAccountsPerChannelGenerator + numOfAccountPerChannelGeneratorRemainder;
+                    var channelGenKeyPair = prepareAccountCreationOn(transactionBuilder, lastChannelGenNumOfAccounts);
+                    var channelGenSecret = new String(channelGenKeyPair.getSecretSeed());
+                    generators.add(
+                            new StellarChannelGenerator(channelGenSecret, lastChannelGenNumOfAccounts, payload.votingId())
+                    );
+
+                    var transaction = transactionBuilder.build();
+                    transaction.sign(fundingKeyPair);
+
+                    server.submitTransaction(transaction);
+
+                    return generators;
+                })
                 .runSubscriptionOn(Infrastructure.getDefaultExecutor())
                 .emitOn(MutinyHelper.executor(Vertx.currentContext()));
+    }
 
+    private KeyPair prepareAccountCreationOn(TransactionBuilder txBuilder, int numOfAccountsPerChannel) {
+        KeyPair keyPair = KeyPair.random();
+        String startingBalance = Integer.toString(numOfAccountsPerChannel * 2 + 10);
 
+        var createAccountOperation = CreateAccountOperation.builder()
+                .destination(keyPair.getAccountId())
+                .build();
+        txBuilder.addOperation(createAccountOperation);
+
+        return keyPair;
     }
 }
