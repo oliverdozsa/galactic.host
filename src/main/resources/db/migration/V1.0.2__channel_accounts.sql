@@ -11,3 +11,6 @@ alter table if exists channel_generator
    add constraint cstr_channel_generator_voting_id
    foreign key (voting_id)
    references voting;
+
+alter table if exists voting
+    add funding_account_secret text;

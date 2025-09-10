@@ -31,8 +31,17 @@ public class StellarTasks {
     @ConfigProperty(name = "galactic.host.vote.buckets")
     private Integer voteBuckets;
 
-    @ConfigProperty(name = "galactic.pub.internal.funding.account.secret")
-    private String internalFundingAccountSecret;
+    @ConfigProperty(name = "galactic.host.voting.init.task.delay")
+    private String votingInitTaskDelay;
+
+    @ConfigProperty(name = "galactic.host.voting.init.task.interval")
+    private String votingInitTaskInterval;
+
+    @ConfigProperty(name = "galactic.host.channel.task.delay")
+    private String channelTaskDelay;
+
+    @ConfigProperty(name = "galactic.host.channel.task.interval")
+    private String channelTaskInterval;
 
     @Startup
     public void init() {
@@ -46,8 +55,8 @@ public class StellarTasks {
 
     private void addChannelBuilderTask(int id) {
         scheduler.newJob("stellar-channel-builder-" + id)
-                .setDelayed("5s")
-                .setInterval("7s")
+                .setDelayed(channelTaskDelay)
+                .setInterval(channelTaskInterval)
                 .setAsyncTask(new StellarChannelBuilderTask(id))
 
                 .schedule();
@@ -56,12 +65,12 @@ public class StellarTasks {
     private void addVotingInitTask(int id) {
         StellarVotingInitContext context = new StellarVotingInitContext(
                 votingRepository, channelGeneratorRepository, stellarOperationsProducer,
-                internalFundingAccountSecret, sessionFactory, voteBuckets
+                sessionFactory, voteBuckets
         );
 
         scheduler.newJob("stellar-voting-init-" + id)
-                .setDelayed("3s")
-                .setInterval("5s")
+                .setDelayed(votingInitTaskDelay)
+                .setInterval(votingInitTaskInterval)
                 .setAsyncTask(new StellarVotingInitTask(context))
                 .schedule();
     }

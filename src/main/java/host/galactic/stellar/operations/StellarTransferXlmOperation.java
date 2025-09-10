@@ -27,7 +27,7 @@ class StellarTransferXlmOperation {
         return Uni.createFrom().<Void>item(() -> {
                     String truncatedSourceAccountId = toTruncatedAccountId(sourceAccountSecret);
                     String truncatedTargetAccountId = toTruncatedAccountId(targetAccountSecret);
-                    Log.infof("transferXlmFrom(): Transferring: %s -> %s XLMs -> %s", truncatedSourceAccountId, xlm, truncatedTargetAccountId);
+                    Log.infof("[STELLAR]: Transferring: %s -> %s XLMs -> %s", truncatedSourceAccountId, xlm, truncatedTargetAccountId);
 
                     String sourceAccountId = toAccountId(sourceAccountSecret);
                     String targetAccountId = toAccountId(targetAccountSecret);
@@ -49,7 +49,7 @@ class StellarTransferXlmOperation {
                     transaction.sign(sourceKeyPair);
 
                     server.submitTransaction(transaction);
-                    Log.infof("transferXlmFrom(): Transfer successful: %s -> %s XLMs -> %s", truncatedSourceAccountId, xlm, truncatedTargetAccountId);
+                    Log.infof("[STELLAR]: Transfer successful: %s -> %s XLMs -> %s", truncatedSourceAccountId, xlm, truncatedTargetAccountId);
                     return null;
                 })
                 .runSubscriptionOn(Infrastructure.getDefaultExecutor())

@@ -7,6 +7,7 @@ import io.vertx.core.Vertx;
 import org.stellar.sdk.*;
 import org.stellar.sdk.operations.CreateAccountOperation;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,10 +60,11 @@ public class StellarChannelGeneratorOperation {
 
     private KeyPair prepareAccountCreationOn(TransactionBuilder txBuilder, int numOfAccountsPerChannel) {
         KeyPair keyPair = KeyPair.random();
-        String startingBalance = Integer.toString(numOfAccountsPerChannel * 2 + 10);
+        BigDecimal startingBalance = new BigDecimal(numOfAccountsPerChannel * 2 + 10);
 
         var createAccountOperation = CreateAccountOperation.builder()
                 .destination(keyPair.getAccountId())
+                .startingBalance(startingBalance)
                 .build();
         txBuilder.addOperation(createAccountOperation);
 
