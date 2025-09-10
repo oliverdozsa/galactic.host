@@ -82,4 +82,7 @@ public class VotingEntity extends PanacheEntityBase {
 
     @OneToMany(mappedBy = "voting")
     public List<ChannelGeneratorEntity> channelGenerators;
+
+    @Column(name = "funding_account_secret", columnDefinition = "text")
+    public String fundingAccountSecret;
 }

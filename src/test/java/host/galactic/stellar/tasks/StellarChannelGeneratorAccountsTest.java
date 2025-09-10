@@ -20,7 +20,7 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
 
 @QuarkusTest
-public class StellarChannelAccountsTest extends StellarRestTestBase {
+public class StellarChannelGeneratorAccountsTest extends StellarRestTestBase {
     @Inject
     EntityManager entityManager;
 
@@ -28,13 +28,13 @@ public class StellarChannelAccountsTest extends StellarRestTestBase {
     public void testChannelAccountsCreated() {
         Log.info("[START TEST]: testChannelAccountsCreated()");
 
+        var votingId = createAVotingWithThreeParticipants();
+
         try {
-            Thread.sleep(1500);
+            Thread.sleep(2500);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-
-        var votingId = createAVotingWithThreeParticipants();
 
         var channelGenerators = entityManager.createQuery("select c from ChannelGeneratorEntity c where voting.id = :id", ChannelGeneratorEntity.class)
                 .setParameter("id", votingId)

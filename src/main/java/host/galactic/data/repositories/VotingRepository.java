@@ -4,7 +4,6 @@ import host.galactic.data.entities.UserEntity;
 import host.galactic.data.entities.VotingEntity;
 import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
 import io.quarkus.hibernate.reactive.panache.PanacheRepository;
-import io.quarkus.hibernate.reactive.panache.common.WithSession;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.quarkus.logging.Log;
 import io.quarkus.panache.common.Page;
@@ -24,11 +23,11 @@ import static host.galactic.data.mappers.CreateVotingRequestMapper.from;
 @ApplicationScoped
 public class VotingRepository implements PanacheRepository<VotingEntity> {
     @WithTransaction
-    public Uni<VotingEntity> createFrom(CreateVotingRequest createVotingRequest, UserEntity user) {
+    public Uni<VotingEntity> createFrom(CreateVotingRequest createVotingRequest, UserEntity user, String internalFundingAccountSecret) {
         Log.info("createFrom(): Creating a voting entity.");
         Log.debugf("createFrom(): Details of voting entity to be created: user.email = \"%s\", createVotingRequest = %s", user.email, createVotingRequest.toString());
 
-        var entity = from(createVotingRequest, user);
+        var entity = from(createVotingRequest, user, internalFundingAccountSecret);
         return persist(entity);
     }
 

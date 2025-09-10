@@ -34,7 +34,7 @@ public class StellarVotingInitTask implements Function<ScheduledExecution, Uni<V
             var stellarOperations = context.operationsProducer().create(votingEntity.isOnTestNetwork);
 
             var payload = new StellarChannelGeneratorOperationPayload(
-                    context.fundingAccountSecret(),
+                    votingEntity.fundingAccountSecret,
                     votingEntity.maxVoters,
                     votingEntity.id,
                     context.voteBuckets()

@@ -9,7 +9,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 
 public class CreateVotingRequestMapper {
-    public static VotingEntity from(CreateVotingRequest request, UserEntity user) {
+    public static VotingEntity from(CreateVotingRequest request, UserEntity user, String fundingAccountSecret) {
         VotingEntity votingEntity = new VotingEntity();
 
         votingEntity.ballotType = from(request.ballotType());
@@ -26,6 +26,7 @@ public class CreateVotingRequestMapper {
         votingEntity.assetCode = request.tokenId();
         votingEntity.userGivenFundingAccountSecret = request.fundingAccountSecret();
         votingEntity.isOnTestNetwork = request.useTestNet();
+        votingEntity.fundingAccountSecret = fundingAccountSecret;
         votingEntity.polls = new ArrayList<>();
 
         for (int i = 0; i < request.polls().size(); i++) {
