@@ -87,8 +87,8 @@ public class VotingRepository implements PanacheRepository<VotingEntity> {
     }
 
     public Uni<VotingEntity> getAnUninitializedVoting() {
-        Log.info("getAnUninitializedVoting(): Getting an uninitialized voting.");
-        return find("select v from VotingEntity v join v.channelGenerators cg where cg.voting is null").firstResult();
+        Log.debug("getAnUninitializedVoting(): Finding an uninitialized voting.");
+        return find("select v from VotingEntity v left join v.channelGenerators cg where cg.voting is null").firstResult();
     }
 
     private void checkIfMaxVotersWouldBeExceeded(VotingEntity voting, List<UserEntity> usersToAdd){

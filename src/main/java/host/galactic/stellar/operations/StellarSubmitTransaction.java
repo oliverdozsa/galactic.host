@@ -3,22 +3,25 @@ package host.galactic.stellar.operations;
 import io.quarkus.logging.Log;
 import org.stellar.sdk.Server;
 import org.stellar.sdk.Transaction;
-import org.stellar.sdk.responses.TransactionResponse;
+import org.stellar.sdk.exception.BadRequestException;
 
-import java.util.List;
 import java.util.StringJoiner;
 
 public class StellarSubmitTransaction {
     public static void submit(String name, Transaction transaction, Server server) {
-        Log.infof("[STELLAR]: Submitting {} transaction with operations: {}", name, collectionOperationsOf(transaction));
-        var response = server.submitTransaction(transaction);
+        Log.infof("[STELLAR]: Submitting %s transaction with operations: %s", name, collectionOperationsOf(transaction));
 
-        if (response.getSuccessful()) {
-            Log.info("[STELLAR]: Successfully submitted transaction!");
-        } else {
-            String logMessage = String.format("[STELLAR]: Failed to submit transaction!");
-            Log.error(logMessage);
-            throw new StellarOperationsException(logMessage);
+        try {
+            var response = server.submitTransaction(transaction);
+            if(response.getSuccessful()) {
+                Log.info("[STELLAR]: Successfully submitted transaction!");
+            }
+        } catch (BadRequestException badRequestException) {
+            Log.errorf("[STELLAR]: Transaction failed: bad request.");
+            Log.errorf("[STELLAR]: Problem details: %s", badRequestException.getProblem());
+            throw new StellarOperationsException("[STELLAR]: bad request", badRequestException);
+        } catch (Exception e) {
+            throw new StellarOperationsException("[STELLAR]: Submitting transaction failed.", e);
         }
     }
 
@@ -28,7 +31,7 @@ public class StellarSubmitTransaction {
             String operationName =
                     operation.getClass().getCanonicalName()
                             .replace("Operation", "")
-                            .replace("org.stellar.sdk.", "");
+                            .replace("org.stellar.sdk.operations", "");
             joiner.add(operationName);
         }
 

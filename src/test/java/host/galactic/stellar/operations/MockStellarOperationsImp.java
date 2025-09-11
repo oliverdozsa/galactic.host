@@ -14,7 +14,7 @@ class MockStellarOperationsImp implements StellarOperations {
     }
 
     @Override
-    public Uni<Void> transferXlmFrom(String sourceAccountSecret, double xlm, String targetAccountSecret) {
+    public Uni<Void> createInternalFunding(String sourceAccountSecret, double startingXlm, String targetAccountSecret) {
         if (MockStellarOperations.transferXlmShouldSucceed) {
             return Uni.createFrom().voidItem();
         } else {
