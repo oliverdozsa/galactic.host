@@ -5,6 +5,6 @@ import io.smallrye.mutiny.Uni;
 import java.util.List;
 
 public interface StellarOperations {
-    Uni<Void> transferXlmFrom(String sourceAccountSecret, double xlm, String targetAccountSecret);
+    Uni<Void> createInternalFunding(String sourceAccountSecret, double startingXlm, String targetAccountSecret);
     Uni<List<StellarChannelGenerator>> createChannelGenerators(StellarChannelGeneratorOperationPayload payload);
 }

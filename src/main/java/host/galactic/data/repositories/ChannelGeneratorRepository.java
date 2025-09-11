@@ -15,7 +15,7 @@ import java.util.List;
 public class ChannelGeneratorRepository implements PanacheRepository<ChannelGeneratorEntity> {
     @WithTransaction
     public Uni<Void> createFrom(List<StellarChannelGenerator> channelGenerators) {
-        Log.info("create()");
+        Log.infof("create(): Storing %d channel generators for voting %d.", channelGenerators.size(), channelGenerators.get(0).votingId());
 
         var entities = channelGenerators.stream().map(this::from);
         return persist(entities);

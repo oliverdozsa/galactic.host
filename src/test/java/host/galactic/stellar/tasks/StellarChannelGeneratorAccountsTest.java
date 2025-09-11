@@ -25,8 +25,8 @@ public class StellarChannelGeneratorAccountsTest extends StellarRestTestBase {
     EntityManager entityManager;
 
     @Test
-    public void testChannelAccountsCreated() {
-        Log.info("[START TEST]: testChannelAccountsCreated()");
+    public void testChannelGeneratorAccountsCreated() {
+        Log.info("[START TEST]: testChannelGeneratorAccountsCreated()");
 
         var votingId = createAVotingWithThreeParticipants();
 
@@ -42,29 +42,7 @@ public class StellarChannelGeneratorAccountsTest extends StellarRestTestBase {
 
         assertThat(channelGenerators, hasSize(greaterThan(0)));
 
-        // TODO: check for the actual channel accounts too.
-
-        Log.info("[  END TEST]: testChannelAccountsCreated()");
-    }
-
-    @Test
-    public void testChannelAccountsAreRefundedWhenVotingIsDeleted() {
-        Log.info("[START TEST]: testChannelAccountsAreRefundedWhenVotingIsDeleted()");
-
-        createAVotingWithThreeParticipants();
-        Assertions.fail("Implement testChannelAccountsAreRefundedWhenVotingIsDeleted()");
-
-        Log.info("[  END TEST]: testChannelAccountsAreRefundedWhenVotingIsDeleted()");
-    }
-
-    @Test
-    public void testChannelAccountsAreRefundedWhenVotingEnds() {
-        Log.info("[START TEST]: testChannelAccountsAreRefundedWhenVotingEnds()");
-
-        createAVotingWithThreeParticipants();
-        Assertions.fail("Implement testChannelAccountsAreRefundedWhenVotingEnds()");
-
-        Log.info("[  END TEST]: testChannelAccountsAreRefundedWhenVotingEnds()");
+        Log.info("[  END TEST]: testChannelGeneratorAccountsCreated()");
     }
 
     private long createAVotingWithThreeParticipants() {

@@ -23,11 +23,12 @@ public class StellarVotingInitTask implements Function<ScheduledExecution, Uni<V
         return context.sessionFactory().withSession(s -> {
             taskId = execution.getTrigger().getId();
             return context.votingRepository().getAnUninitializedVoting()
-                    .chain(this::createChannelGeneratorsForVotingIfNeeded);
+                    .chain(this::createChannelGeneratorsForVotingIfNeeded)
+                    .chain(this::createChannelGeneratorEntitiesFromIfNeeded);
         });
     }
 
-    private Uni<Void> createChannelGeneratorsForVotingIfNeeded(VotingEntity votingEntity) {
+    private Uni<List<StellarChannelGenerator>> createChannelGeneratorsForVotingIfNeeded(VotingEntity votingEntity) {
         if (votingEntity != null) {
             Log.infof("%s: Found an uninitialized voting with id = %s!", taskId, votingEntity.id);
 
@@ -39,17 +40,19 @@ public class StellarVotingInitTask implements Function<ScheduledExecution, Uni<V
                     votingEntity.id,
                     context.voteBuckets()
             );
-            var channelGenerators = stellarOperations.createChannelGenerators(payload);
 
-            return channelGenerators
-                    .chain(this::createChannelGeneratorEntitiesFrom);
+            return stellarOperations.createChannelGenerators(payload);
         } else {
-            Log.tracef("%s: Not found any uninitialized voting.", taskId);
+            Log.debugf("%s: Not found any uninitialized voting.", taskId);
             return Uni.createFrom().item(() -> null);
         }
     }
 
-    private Uni<Void> createChannelGeneratorEntitiesFrom(List<StellarChannelGenerator> stellarChannelGenerators) {
-        return context.channelGeneratorRepository().createFrom(stellarChannelGenerators);
+    private Uni<Void> createChannelGeneratorEntitiesFromIfNeeded(List<StellarChannelGenerator> stellarChannelGenerators) {
+        if(stellarChannelGenerators != null) {
+            return context.channelGeneratorRepository().createFrom(stellarChannelGenerators);
+        } else {
+            return Uni.createFrom().item(() -> null);
+        }
     }
 }

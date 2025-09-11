@@ -53,7 +53,7 @@ class StellarVotingRestCreateVotings {
         String internalFundingAccountSecret = new String(internalFundingAccount.getSecretSeed());
         double estimatedCost = request.maxVoters() * 4 + 110;
 
-        return stellarOperations.transferXlmFrom(request.fundingAccountSecret(), estimatedCost, internalFundingAccountSecret);
+        return stellarOperations.createInternalFunding(request.fundingAccountSecret(), estimatedCost, internalFundingAccountSecret);
     }
 
     private static Response toCreatedResponse(VotingEntity entity) {
