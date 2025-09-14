@@ -56,7 +56,7 @@ public class StellarChannelGeneratorOperation {
 
                     var transaction = transactionBuilder
                             .setBaseFee(MIN_BASE_FEE)
-                            .setTimeout(30)
+                            .setTimeout(15)
                             .build();
 
                     transaction.sign(fundingKeyPair);
