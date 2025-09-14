@@ -6,6 +6,7 @@ import host.galactic.data.entities.VotingPollOptionEntity;
 import host.galactic.stellar.rest.responses.voting.VotingPollOptionResponse;
 import host.galactic.stellar.rest.responses.voting.VotingPollResponse;
 import host.galactic.stellar.rest.responses.voting.VotingResponse;
+import org.stellar.sdk.KeyPair;
 
 import java.time.Instant;
 import java.util.List;
@@ -14,6 +15,8 @@ import java.util.stream.Collectors;
 public class VotingEntityMapper {
     public static VotingResponse from(VotingEntity entity) {
         List<VotingPollResponse> polls = pollsFrom(entity);
+
+        var fundingAccountId = KeyPair.fromSecretSeed(entity.fundingAccountSecret).getAccountId();
 
         return new VotingResponse(
                 entity.id,
@@ -31,7 +34,8 @@ public class VotingEntityMapper {
                 entity.maxChoices,
                 entity.isOnTestNetwork,
                 polls,
-                entity.numOfVoters
+                entity.numOfVoters,
+                fundingAccountId
         );
     }
 

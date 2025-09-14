@@ -1,15 +1,18 @@
 package host.galactic.stellar.tasks;
 
 import host.galactic.data.entities.ChannelGeneratorEntity;
+import host.galactic.data.entities.VotingEntity;
 import host.galactic.stellar.rest.StellarRestTestBase;
 import host.galactic.stellar.rest.requests.voting.AddVotersRequest;
+import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.quarkus.logging.Log;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -23,6 +26,15 @@ import static org.hamcrest.Matchers.hasSize;
 public class StellarChannelGeneratorAccountsTest extends StellarRestTestBase {
     @Inject
     EntityManager entityManager;
+
+    @BeforeEach
+    @Transactional
+    public void deleteAllVotings() {
+        var votings = entityManager.createQuery("select v from VotingEntity v", VotingEntity.class)
+                .getResultList();
+        votings.forEach(v -> entityManager.remove(v));
+
+    }
 
     @Test
     public void testChannelGeneratorAccountsCreated() {
