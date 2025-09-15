@@ -26,7 +26,7 @@ class StellarCreateInternalFunding {
     public Uni<Void> create(String sourceAccountSecret, double startingXlm, String targetAccountSecret) {
         return Uni.createFrom().<Void>item(() -> {
                     String truncatedTargetAccountId = toTruncatedAccountId(targetAccountSecret);
-                    Log.infof("[STELLAR]: Creating internal funding %s with starting balance: %d XLMs", truncatedTargetAccountId, startingXlm);
+                    Log.infof("[STELLAR]: Creating internal funding %s with starting balance: %f XLMs", truncatedTargetAccountId, startingXlm);
 
                     String sourceAccountId = toAccountId(sourceAccountSecret);
                     String targetAccountId = toAccountId(targetAccountSecret);
