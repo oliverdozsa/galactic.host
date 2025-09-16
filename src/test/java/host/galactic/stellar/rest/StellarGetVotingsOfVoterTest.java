@@ -60,7 +60,7 @@ class StellarGetVotingsOfVoterTest extends StellarRestTestBase {
 
         createMultipleVotingsForPaging();
 
-        String withAccessToken = authForTest.loginAs("alice");
+        var withAccessToken = authForTest.loginAs("alice");
         int totalPages = getTotalPageCount();
 
         given()
@@ -88,10 +88,10 @@ class StellarGetVotingsOfVoterTest extends StellarRestTestBase {
     }
 
     private long createAVotingAsCharlieWithParticipantAsAlice() {
-        CreateVotingRequest createRequest = makeCreateVotingRequest();
-        String withAccessToken = authForTest.loginAs("charlie");
+        var createRequest = makeCreateVotingRequest();
+        var withAccessToken = authForTest.loginAs("charlie");
 
-        String location = given()
+        var location = given()
                 .auth().oauth2(withAccessToken)
                 .contentType(ContentType.JSON)
                 .body(createRequest)
@@ -116,8 +116,8 @@ class StellarGetVotingsOfVoterTest extends StellarRestTestBase {
     }
 
     private void addAliceAsParticipantTo(Long votingId) {
-        AddVotersRequest addVotersRequest = new AddVotersRequest(List.of("alice@galactic.pub"));
-        String withAccessTokenForAlice = authForTest.loginAs("charlie");
+        var addVotersRequest = new AddVotersRequest(List.of("alice@galactic.pub"));
+        var withAccessTokenForAlice = authForTest.loginAs("charlie");
         given()
                 .auth().oauth2(withAccessTokenForAlice)
                 .contentType(ContentType.JSON)

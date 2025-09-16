@@ -59,6 +59,5 @@ public class UserRepository implements PanacheRepository<UserEntity> {
         return persist(entitiesToPersist)
                 .onItem()
                 .transformToUni(v -> find("where email in ?1", allEmailsToPersist).list());
-
     }
 }

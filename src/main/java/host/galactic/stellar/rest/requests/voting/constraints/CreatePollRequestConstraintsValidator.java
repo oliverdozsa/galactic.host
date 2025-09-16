@@ -25,7 +25,7 @@ public class CreatePollRequestConstraintsValidator implements
     }
 
     private int countUniqueOptionCodes(CreatePollRequest pollRequest) {
-        Set<Integer> uniqueCodes = pollRequest.options().stream()
+        var uniqueCodes = pollRequest.options().stream()
                 .map(CreatePollOptionRequest::code)
                 .collect(Collectors.toSet());
         return uniqueCodes.size();

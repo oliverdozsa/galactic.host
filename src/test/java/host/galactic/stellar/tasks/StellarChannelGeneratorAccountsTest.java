@@ -60,7 +60,7 @@ public class StellarChannelGeneratorAccountsTest extends StellarRestTestBase {
     private long createAVotingWithThreeParticipants() {
         var id = createAVotingAs("alice");
 
-        AddVotersRequest addVotersRequest = new AddVotersRequest(List.of("emily@galactic.pub", "duke@galactic.pub", "alice@galactic.pub"));
+        var addVotersRequest = new AddVotersRequest(List.of("emily@galactic.pub", "duke@galactic.pub", "alice@galactic.pub"));
         String withAccessTokenForAlice = authForTest.loginAs("alice");
         given()
                 .auth().oauth2(withAccessTokenForAlice)

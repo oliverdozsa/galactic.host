@@ -59,7 +59,7 @@ public class StellarGetCreatedVotingsTest extends StellarRestTestBase {
 
         createMultipleVotingsForPagingAs("alice");
 
-        String withAccessToken = authForTest.loginAs("alice");
+        var withAccessToken = authForTest.loginAs("alice");
         int totalPages = getTotalPageCount();
 
         given()
@@ -77,7 +77,7 @@ public class StellarGetCreatedVotingsTest extends StellarRestTestBase {
     public void testGetSingleByCreator() {
         var votingId = createPrivateVotingAs("alice");
 
-        String withAccessToken = authForTest.loginAs("alice");
+        var withAccessToken = authForTest.loginAs("alice");
         given()
                 .auth().oauth2(withAccessToken)
                 .get(stellarVotingRest + "/" + votingId)
@@ -87,7 +87,7 @@ public class StellarGetCreatedVotingsTest extends StellarRestTestBase {
 
     @Test
     public void testGetNotExisting() {
-        String asAlice = authForTest.loginAs("alice");
+        var asAlice = authForTest.loginAs("alice");
         given()
                 .auth().oauth2(asAlice)
                 .get(stellarVotingRest + "/-1")
@@ -113,7 +113,7 @@ public class StellarGetCreatedVotingsTest extends StellarRestTestBase {
     }
 
     private int getTotalPageCount() {
-        String withAccessToken = authForTest.loginAs("alice");
+        var withAccessToken = authForTest.loginAs("alice");
 
         return given()
                 .auth().oauth2(withAccessToken)

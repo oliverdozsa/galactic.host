@@ -23,7 +23,7 @@ public class StellarCreateVotingRestTest extends StellarRestTestBase {
     public void testCreateVoting() {
         Log.info("[START TEST]: testCreateVoting()");
 
-        CreateVotingRequest createRequest = makeCreateVotingRequest();
+        var createRequest = makeCreateVotingRequest();
 
         String withAccessToken = authForTest.loginAs("alice");
         String locationHeader = given()
@@ -66,7 +66,7 @@ public class StellarCreateVotingRestTest extends StellarRestTestBase {
     public void testCreateInvalidVoting() {
         Log.info("[START TEST]: testCreateInvalidVoting()");
 
-        CreateVotingRequest invalidCreateRequest = makeInvalidCreateVotingRequest();
+        var invalidCreateRequest = makeInvalidCreateVotingRequest();
 
         String withAccessToken = authForTest.loginAs("alice");
         given()
@@ -100,7 +100,7 @@ public class StellarCreateVotingRestTest extends StellarRestTestBase {
     public void testFailedToDeductCostWhileCreatingVoting() {
         Log.info("[START TEST]: testFailedToDeductCostWhileCreatingVoting()");
 
-        CreateVotingRequest createRequest = makeCreateVotingRequest();
+        var createRequest = makeCreateVotingRequest();
 
         MockStellarOperations.failTransferXlm();
 
@@ -123,7 +123,7 @@ public class StellarCreateVotingRestTest extends StellarRestTestBase {
     }
 
     private CreateVotingRequest makeInvalidCreateVotingRequest() {
-        ObjectNode votingRequestJson = JsonUtils.readJsonFile("valid-voting-request.json");
+        var votingRequestJson = JsonUtils.readJsonFile("valid-voting-request.json");
         votingRequestJson.put("title", "a");
         return JsonUtils.convertJsonNodeTo(CreateVotingRequest.class, votingRequestJson);
     }

@@ -34,10 +34,10 @@ public class ValidationTestsBase {
     }
 
     protected static String generateRandomStringOfLength(int value) {
-        String abc = "abcdefghijklmnopqrstuvxyz";
-        Random random = new Random();
+        var abc = "abcdefghijklmnopqrstuvxyz";
+        var random = new Random();
 
-        StringBuilder stringBuilder = new StringBuilder();
+        var stringBuilder = new StringBuilder();
         for(int i = 0; i < value; i++) {
             int randomIndex = random.nextInt(abc.length());
             char randomLetter = abc.charAt(randomIndex);

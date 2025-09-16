@@ -92,7 +92,7 @@ public class VotingRepository implements PanacheRepository<VotingEntity> {
     }
 
     private void checkIfMaxVotersWouldBeExceeded(VotingEntity voting, List<UserEntity> usersToAdd){
-        Set<UserEntity> usersToAddAsSet = new HashSet<>(usersToAdd);
+        var usersToAddAsSet = new HashSet<>(usersToAdd);
         usersToAddAsSet.addAll(voting.voters);
         if(usersToAddAsSet.size() > voting.maxVoters) {
             Log.warnf("checkIfMaxVotersWouldBeExceeded(): Can't add voters to voting \"%s\" as maximum voters would be exceeded.", voting.id);
