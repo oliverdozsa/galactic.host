@@ -20,7 +20,7 @@ public class JsonUtils {
     }
 
     public static ObjectNode readJsonFile(String fileName) {
-        File jsonFile = new File(
+        var jsonFile = new File(
                 Objects.requireNonNull(JsonUtils.class.getClassLoader().getResource(fileName)).getFile());
         try {
             return (ObjectNode) mapper.readTree(jsonFile);

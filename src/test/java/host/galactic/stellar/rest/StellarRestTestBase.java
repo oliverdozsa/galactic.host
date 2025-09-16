@@ -47,7 +47,7 @@ public class StellarRestTestBase {
     }
 
     public PageResponse getPage(String url, String asUser, int page) {
-        String withAccessToken = authForTest.loginAs("alice");
+        var withAccessToken = authForTest.loginAs("alice");
         return given()
                 .auth().oauth2(withAccessToken)
                 .get(url + "/?page=" + page)
@@ -59,17 +59,17 @@ public class StellarRestTestBase {
     }
 
     public long createAVotingAs(String user) {
-        CreateVotingRequest createRequest = makeCreateVotingRequest();
+        var createRequest = makeCreateVotingRequest();
         return createVoting(createRequest, user);
     }
 
     public CreateVotingRequest makeCreateVotingRequest() {
-        ObjectNode votingRequestJson = JsonUtils.readJsonFile("valid-voting-request.json");
+        var votingRequestJson = JsonUtils.readJsonFile("valid-voting-request.json");
         return JsonUtils.convertJsonNodeTo(CreateVotingRequest.class, votingRequestJson);
     }
 
     public long createVoting(CreateVotingRequest request, String user) {
-        String withAccessToken = authForTest.loginAs(user);
+        var withAccessToken = authForTest.loginAs(user);
         var location = given()
                 .auth().oauth2(withAccessToken)
                 .contentType(ContentType.JSON)

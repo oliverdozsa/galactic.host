@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 public class CreateVotingRequestMapper {
     public static VotingEntity from(CreateVotingRequest request, UserEntity user, String fundingAccountSecret) {
-        VotingEntity votingEntity = new VotingEntity();
+        var votingEntity = new VotingEntity();
 
         votingEntity.ballotType = from(request.ballotType());
         votingEntity.createdAt = Instant.now();
@@ -51,7 +51,7 @@ public class CreateVotingRequestMapper {
     }
 
     private static void addPollRequestTo(VotingEntity entity, CreatePollRequest request, int index) {
-        VotingPollEntity pollEntity = new VotingPollEntity();
+        var pollEntity = new VotingPollEntity();
 
         pollEntity.description = request.description();
         pollEntity.index = index;
@@ -65,7 +65,7 @@ public class CreateVotingRequestMapper {
     }
 
     private static void addPollOptionTo(VotingPollEntity pollEntity, CreatePollOptionRequest request) {
-        VotingPollOptionEntity pollOptionEntity = new VotingPollOptionEntity();
+        var pollOptionEntity = new VotingPollOptionEntity();
 
         pollOptionEntity.code = request.code();
         pollOptionEntity.name = request.name();

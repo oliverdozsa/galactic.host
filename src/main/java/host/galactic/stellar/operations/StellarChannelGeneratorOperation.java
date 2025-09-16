@@ -71,8 +71,8 @@ public class StellarChannelGeneratorOperation {
     }
 
     private KeyPair prepareAccountCreationOn(TransactionBuilder txBuilder, int numOfAccountsPerChannel) {
-        KeyPair keyPair = KeyPair.random();
-        BigDecimal startingBalance = new BigDecimal(numOfAccountsPerChannel * 2 + 10);
+        var keyPair = KeyPair.random();
+        var startingBalance = new BigDecimal(numOfAccountsPerChannel * 2 + 10);
 
         var createAccountOperation = CreateAccountOperation.builder()
                 .destination(keyPair.getAccountId())

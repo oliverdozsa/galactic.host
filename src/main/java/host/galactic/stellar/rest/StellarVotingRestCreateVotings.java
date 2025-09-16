@@ -37,7 +37,7 @@ class StellarVotingRestCreateVotings {
         Log.info("create(): Got request to create a voting.");
         Log.debugf("create(): Details of voting request: user = \"%s\", createVotingRequest = %s", userInfo.getEmail(), createVotingRequest.toString());
 
-        KeyPair internalFundingAccount = KeyPair.random();
+        var internalFundingAccount = KeyPair.random();
         var internalFundingAccountSecret = new String(internalFundingAccount.getSecretSeed());
 
         return deductEstimatedCost(createVotingRequest, internalFundingAccount)
@@ -49,15 +49,15 @@ class StellarVotingRestCreateVotings {
     }
 
     private Uni<Void> deductEstimatedCost(CreateVotingRequest request, KeyPair internalFundingAccount) {
-        StellarOperations stellarOperations = stellarOperationsProducer.create(request.useTestNet());
-        String internalFundingAccountSecret = new String(internalFundingAccount.getSecretSeed());
+        var stellarOperations = stellarOperationsProducer.create(request.useTestNet());
+        var internalFundingAccountSecret = new String(internalFundingAccount.getSecretSeed());
         double estimatedCost = request.maxVoters() * 4 + 110;
 
         return stellarOperations.createInternalFunding(request.fundingAccountSecret(), estimatedCost, internalFundingAccountSecret);
     }
 
     private static Response toCreatedResponse(VotingEntity entity) {
-        URI entityId = UriBuilder
+        var entityId = UriBuilder
                 .fromResource(StellarVotingRest.class)
                 .path("/{id}")
                 .build(entity.id);

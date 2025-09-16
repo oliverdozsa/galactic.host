@@ -63,7 +63,7 @@ public class StellarTasks {
     }
 
     private void addVotingInitTask(int id) {
-        StellarVotingInitContext context = new StellarVotingInitContext(
+        var context = new StellarVotingInitContext(
                 votingRepository, channelGeneratorRepository, stellarOperationsProducer,
                 sessionFactory, voteBuckets
         );

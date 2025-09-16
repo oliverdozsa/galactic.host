@@ -25,27 +25,27 @@ class StellarCreateInternalFunding {
 
     public Uni<Void> create(String sourceAccountSecret, double startingXlm, String targetAccountSecret) {
         return Uni.createFrom().<Void>item(() -> {
-                    String truncatedTargetAccountId = toTruncatedAccountId(targetAccountSecret);
+                    var truncatedTargetAccountId = toTruncatedAccountId(targetAccountSecret);
                     Log.infof("[STELLAR]: Creating internal funding %s with starting balance: %f XLMs", truncatedTargetAccountId, startingXlm);
 
-                    String sourceAccountId = toAccountId(sourceAccountSecret);
-                    String targetAccountId = toAccountId(targetAccountSecret);
+                    var sourceAccountId = toAccountId(sourceAccountSecret);
+                    var targetAccountId = toAccountId(targetAccountSecret);
 
 
-                    TransactionBuilderAccount sourceAccount = server.loadAccount(sourceAccountId);
+                    var sourceAccount = server.loadAccount(sourceAccountId);
 
                     var createAccountOperation = CreateAccountOperation.builder()
                             .destination(targetAccountId)
                             .startingBalance(new BigDecimal(startingXlm))
                             .build();
 
-                    Transaction transaction = new TransactionBuilder(sourceAccount, network)
+                    var transaction = new TransactionBuilder(sourceAccount, network)
                             .setBaseFee(MIN_BASE_FEE)
                             .setTimeout(30)
                             .addOperation(createAccountOperation)
                             .build();
 
-                    KeyPair sourceKeyPair = KeyPair.fromSecretSeed(sourceAccountSecret);
+                    var sourceKeyPair = KeyPair.fromSecretSeed(sourceAccountSecret);
                     transaction.sign(sourceKeyPair);
 
                     StellarSubmitTransaction.submit("internal funding", transaction, server);

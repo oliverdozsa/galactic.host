@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 public class VotingEntityMapper {
     public static VotingResponse from(VotingEntity entity) {
-        List<VotingPollResponse> polls = pollsFrom(entity);
+        var polls = pollsFrom(entity);
 
         var fundingAccountId = KeyPair.fromSecretSeed(entity.fundingAccountSecret).getAccountId();
 
@@ -54,7 +54,7 @@ public class VotingEntityMapper {
     }
 
     private static VotingPollResponse from(VotingPollEntity pollEntity) {
-        List<VotingPollOptionResponse> options = optionsFrom(pollEntity);
+        var options = optionsFrom(pollEntity);
 
         return new VotingPollResponse(
                 pollEntity.index,

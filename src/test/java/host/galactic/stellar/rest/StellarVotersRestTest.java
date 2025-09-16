@@ -23,9 +23,9 @@ public class StellarVotersRestTest extends StellarRestTestBase {
     @Test
     public void testGetPrivateVotingAsNonParticipant() {
         Log.info("[START TEST]: testGetPrivateVotingAsNonParticipant()");
-        String location = createPrivateVotingByAlice();
+        var location = createPrivateVotingByAlice();
 
-        String withAccessToken = authForTest.loginAs("charlie");
+        var withAccessToken = authForTest.loginAs("charlie");
         given()
                 .auth().oauth2(withAccessToken)
                 .get(location)
@@ -38,7 +38,7 @@ public class StellarVotersRestTest extends StellarRestTestBase {
     @Test
     public void testGetVotingUnauthenticated() {
         Log.info("[START TEST]: testGetVotingUnauthenticated()");
-        String location = createPrivateVotingByAlice();
+        var location = createPrivateVotingByAlice();
 
         given()
                 .get(location)
@@ -52,9 +52,9 @@ public class StellarVotersRestTest extends StellarRestTestBase {
     public void testGetVotingWithEmailNotPresent() {
         Log.info("[START TEST]: testGetVotingWithEmailNotPresent()");
 
-        String location = createUnlistedVotingByAlice();
+        var location = createUnlistedVotingByAlice();
 
-        String withAccessToken = authForTest.loginAs("helena");
+        var withAccessToken = authForTest.loginAs("helena");
         given()
                 .auth().oauth2(withAccessToken)
                 .get(location)
@@ -68,12 +68,12 @@ public class StellarVotersRestTest extends StellarRestTestBase {
     public void testGetPrivateVotingByParticipant() {
         Log.info("[START TEST]: testGetPrivateVotingByParticipant()");
 
-        String location = createPrivateVotingByAlice();
+        var location = createPrivateVotingByAlice();
         String[] locationParts = location.split("/");
         Long id = Long.parseLong(locationParts[locationParts.length - 1]);
 
         AddVotersRequest addVotersRequest = new AddVotersRequest(List.of("emily@galactic.pub", "duke@galactic.pub", "alice@galactic.pub"));
-        String withAccessTokenForAlice = authForTest.loginAs("alice");
+        var withAccessTokenForAlice = authForTest.loginAs("alice");
         given()
                 .auth().oauth2(withAccessTokenForAlice)
                 .contentType(ContentType.JSON)
@@ -82,7 +82,7 @@ public class StellarVotersRestTest extends StellarRestTestBase {
                 .then()
                 .statusCode(Response.Status.NO_CONTENT.getStatusCode());
 
-        String withAccessTokenForEmily = authForTest.loginAs("emily");
+        var withAccessTokenForEmily = authForTest.loginAs("emily");
         given()
                 .auth().oauth2(withAccessTokenForEmily)
                 .get(location)
@@ -96,11 +96,11 @@ public class StellarVotersRestTest extends StellarRestTestBase {
     public void testMaxVotersExceeded() {
         Log.info("[START TEST]: testMaxVotersExceeded()");
 
-        String location = createPrivateVotingByAlice();
+        var location = createPrivateVotingByAlice();
         String[] locationParts = location.split("/");
         Long id = Long.parseLong(locationParts[locationParts.length - 1]);
 
-        AddVotersRequest addVotersRequest = new AddVotersRequest(List.of(
+        var addVotersRequest = new AddVotersRequest(List.of(
                 "emily@galactic.pub",
                 "duke@galactic.pub",
                 "alice@galactic.pub",
@@ -108,7 +108,7 @@ public class StellarVotersRestTest extends StellarRestTestBase {
                 "frank@galactic.pub",
                 "bob@galactic.pub"));
 
-        String withAccessToken = authForTest.loginAs("alice");
+        var withAccessToken = authForTest.loginAs("alice");
         given()
                 .auth().oauth2(withAccessToken)
                 .contentType(ContentType.JSON)
@@ -124,17 +124,17 @@ public class StellarVotersRestTest extends StellarRestTestBase {
     public void testDuplicateEmailsInAddVotersRequest() {
         Log.info("[START TEST]: testDuplicateEmailsInAddVotersRequest()\n\n");
 
-        String location = createPrivateVotingByAlice();
+        var location = createPrivateVotingByAlice();
         String[] locationParts = location.split("/");
         Long id = Long.parseLong(locationParts[locationParts.length - 1]);
 
-        AddVotersRequest addVotersRequest = new AddVotersRequest(List.of(
+        var addVotersRequest = new AddVotersRequest(List.of(
                 "emily@galactic.pub",
                 "emily@galactic.pub",
                 "alice@galactic.pub",
                 "charlie@galactic.pub"));
 
-        String withAccessToken = authForTest.loginAs("alice");
+        var withAccessToken = authForTest.loginAs("alice");
         given()
                 .auth().oauth2(withAccessToken)
                 .contentType(ContentType.JSON)
@@ -143,7 +143,7 @@ public class StellarVotersRestTest extends StellarRestTestBase {
                 .then()
                 .statusCode(Response.Status.NO_CONTENT.getStatusCode());
 
-        VotingResponse votingResponse = given()
+        var votingResponse = given()
                 .auth().oauth2(withAccessToken)
                 .get(location)
                 .then()
@@ -158,10 +158,10 @@ public class StellarVotersRestTest extends StellarRestTestBase {
     }
 
     private String createPrivateVotingByAlice() {
-        ObjectNode createRequest = JsonUtils.readJsonFile("valid-voting-request.json");
+        var createRequest = JsonUtils.readJsonFile("valid-voting-request.json");
         createRequest.put("visibility", CreateVotingRequest.Visibility.PRIVATE.name());
 
-        String withAccessToken = authForTest.loginAs("alice");
+        var withAccessToken = authForTest.loginAs("alice");
         return given()
                 .auth().oauth2(withAccessToken)
                 .contentType(ContentType.JSON)
@@ -178,7 +178,7 @@ public class StellarVotersRestTest extends StellarRestTestBase {
         ObjectNode createRequest = JsonUtils.readJsonFile("valid-voting-request.json");
         createRequest.put("visibility", CreateVotingRequest.Visibility.UNLISTED.name());
 
-        String withAccessToken = authForTest.loginAs("alice");
+        var withAccessToken = authForTest.loginAs("alice");
         return given()
                 .auth().oauth2(withAccessToken)
                 .contentType(ContentType.JSON)

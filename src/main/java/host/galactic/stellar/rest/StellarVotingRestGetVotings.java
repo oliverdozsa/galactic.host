@@ -76,7 +76,7 @@ class StellarVotingRestGetVotings {
     }
 
     private PageResponse<VotingResponse> toResponse(Page<VotingEntity> page) {
-        List<VotingResponse> items = page.items().stream()
+        var items = page.items().stream()
                 .map(VotingEntityMapper::from)
                 .toList();
 

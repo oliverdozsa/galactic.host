@@ -26,9 +26,9 @@ public class StellarSubmitTransaction {
     }
 
     private static String collectionOperationsOf(Transaction transaction) {
-        StringJoiner joiner = new StringJoiner(", ");
+        var joiner = new StringJoiner(", ");
         for (var operation : transaction.getOperations()) {
-            String operationName =
+            var operationName =
                     operation.getClass().getCanonicalName()
                             .replace("Operation", "")
                             .replace("org.stellar.sdk.operations", "");

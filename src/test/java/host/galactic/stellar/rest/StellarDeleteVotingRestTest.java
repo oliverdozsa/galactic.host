@@ -26,7 +26,7 @@ public class StellarDeleteVotingRestTest extends StellarRestTestBase {
         long id = createAVotingAs("alice");
         assertVotingWithIdExists(id);
 
-        String asAlice = authForTest.loginAs("alice");
+        var asAlice = authForTest.loginAs("alice");
         given().auth().oauth2(asAlice)
                 .when()
                 .delete(stellarVotingRest + "/" + id)
@@ -44,7 +44,7 @@ public class StellarDeleteVotingRestTest extends StellarRestTestBase {
 
         assertVotingWithIdDoesNotExist(-1);
 
-        String asAlice = authForTest.loginAs("alice");
+        var asAlice = authForTest.loginAs("alice");
         given().auth().oauth2(asAlice)
                 .when()
                 .delete(stellarVotingRest + "/-1")
@@ -61,7 +61,7 @@ public class StellarDeleteVotingRestTest extends StellarRestTestBase {
         long id = createAVotingAs("alice");
         assertVotingWithIdExists(id);
 
-        String asBob = authForTest.loginAs("bob");
+        var asBob = authForTest.loginAs("bob");
         given().auth().oauth2(asBob)
                 .when()
                 .delete(stellarVotingRest + "/" + id)
