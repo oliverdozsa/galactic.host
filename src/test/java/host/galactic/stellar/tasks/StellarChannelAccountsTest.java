@@ -1,5 +1,6 @@
 package host.galactic.stellar.tasks;
 
+import host.galactic.data.entities.ChannelAccountEntity;
 import host.galactic.data.entities.VotingEntity;
 import host.galactic.stellar.rest.StellarRestTestBase;
 import host.galactic.stellar.rest.requests.voting.AddVotersRequest;
@@ -13,13 +14,15 @@ import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
-import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.fail;
 
 @QuarkusTest
@@ -36,12 +39,18 @@ public class StellarChannelAccountsTest extends StellarRestTestBase {
     }
 
     @Test
-    public void testChannelAccountsCreated() {
+    public void testChannelAccountsCreated() throws InterruptedException {
         Log.info("[START TEST]: testChannelAccountsCreated()");
 
         var votingId = createAVotingWithMultipleParticipants();
 
-        fail("Implement testChannelAccountsCreated.");
+        Thread.sleep(4000);
+
+        var channelAccountsOfVoting = entityManager.createQuery("select c from ChannelAccountEntity c where voting.id = :id", ChannelAccountEntity.class)
+                .setParameter("id", votingId)
+                .getResultList();
+
+        assertThat(channelAccountsOfVoting, hasSize(42));
 
         Log.info("[  END TEST]: testChannelAccountsCreated()");
     }
