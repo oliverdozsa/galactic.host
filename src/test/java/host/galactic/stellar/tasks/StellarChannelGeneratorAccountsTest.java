@@ -4,7 +4,6 @@ import host.galactic.data.entities.ChannelGeneratorEntity;
 import host.galactic.data.entities.VotingEntity;
 import host.galactic.stellar.rest.StellarRestTestBase;
 import host.galactic.stellar.rest.requests.voting.AddVotersRequest;
-import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.quarkus.logging.Log;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
@@ -37,16 +36,12 @@ public class StellarChannelGeneratorAccountsTest extends StellarRestTestBase {
     }
 
     @Test
-    public void testChannelGeneratorAccountsCreated() {
+    public void testChannelGeneratorAccountsCreated() throws InterruptedException {
         Log.info("[START TEST]: testChannelGeneratorAccountsCreated()");
 
         var votingId = createAVotingWithThreeParticipants();
 
-        try {
-            Thread.sleep(2500);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        Thread.sleep(2500);
 
         var channelGenerators = entityManager.createQuery("select c from ChannelGeneratorEntity c where voting.id = :id", ChannelGeneratorEntity.class)
                 .setParameter("id", votingId)
