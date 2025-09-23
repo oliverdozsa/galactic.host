@@ -1,5 +1,6 @@
 package host.galactic.stellar.tasks;
 
+import host.galactic.data.repositories.ChannelAccountRepository;
 import host.galactic.data.repositories.ChannelGeneratorRepository;
 import host.galactic.data.repositories.VotingRepository;
 import host.galactic.stellar.operations.StellarOperationsProducer;
@@ -21,6 +22,9 @@ public class StellarTasks {
 
     @Inject
     VotingRepository votingRepository;
+
+    @Inject
+    ChannelAccountRepository channelAccountRepository;
 
     @Inject
     StellarOperationsProducer stellarOperationsProducer;
@@ -54,11 +58,14 @@ public class StellarTasks {
     }
 
     private void addChannelBuilderTask(int id) {
+        var context = new StellarChannelBuilderContext(voteBuckets, channelGeneratorRepository,
+                channelAccountRepository, sessionFactory
+        );
+
         scheduler.newJob("stellar-channel-builder-" + id)
                 .setDelayed(channelTaskDelay)
                 .setInterval(channelTaskInterval)
-                .setAsyncTask(new StellarChannelBuilderTask(id))
-
+                .setAsyncTask(new StellarChannelBuilderTask(id, context))
                 .schedule();
     }
 
