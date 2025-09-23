@@ -21,6 +21,12 @@ public class ChannelGeneratorRepository implements PanacheRepository<ChannelGene
         return persist(entities);
     }
 
+    public Uni<List<ChannelGeneratorEntity>> notFinishedSampleOf(int sampleSize) {
+        return find("where accountsLeftToCreate > 0")
+                .page(0, sampleSize)
+                .list();
+    }
+
     private ChannelGeneratorEntity from(StellarChannelGenerator stellarChannelGenerator) {
         var entity = new ChannelGeneratorEntity();
         entity.accountSecret = stellarChannelGenerator.accountSecret();
