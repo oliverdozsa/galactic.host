@@ -29,7 +29,7 @@ class StellarOperationsImp implements StellarOperations {
     }
 
     @Override
-    public Uni<List<StellarChannelAccount>> createChannelAccounts() {
-        return null;
+    public Uni<List<StellarChannelAccount>> createChannelAccounts(StellarChannelAccountOperationPayload payload) {
+        return Uni.createFrom().item(() -> null);
     }
 }
