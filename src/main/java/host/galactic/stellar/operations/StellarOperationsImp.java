@@ -27,4 +27,9 @@ class StellarOperationsImp implements StellarOperations {
         return new StellarChannelGeneratorOperation(server, network)
                 .create(payload);
     }
+
+    @Override
+    public Uni<List<StellarChannelAccount>> createChannelAccounts() {
+        return null;
+    }
 }
