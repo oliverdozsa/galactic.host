@@ -65,6 +65,10 @@ public class StellarChannelBuilderTask implements Function<ScheduledExecution, U
     }
 
     private Uni<Void> channelAccountsCreated(List<StellarChannelAccount> accountsCreated) {
-        return context.channelAccountRepository().channelAccountsCreated(accountsCreated);
+        if(!accountsCreated.isEmpty()) {
+            return context.channelAccountRepository().channelAccountsCreated(accountsCreated);
+        } else {
+            return Uni.createFrom().item(() -> null);
+        }
     }
 }

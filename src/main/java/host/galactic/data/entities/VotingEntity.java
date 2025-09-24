@@ -83,6 +83,9 @@ public class VotingEntity extends PanacheEntityBase {
     @OneToMany(mappedBy = "voting", cascade = CascadeType.REMOVE)
     public List<ChannelGeneratorEntity> channelGenerators;
 
+    @OneToMany(mappedBy = "voting", cascade = CascadeType.REMOVE)
+    public List<ChannelAccountEntity> channelAccounts;
+
     @Column(name = "funding_account_secret", columnDefinition = "text")
     public String fundingAccountSecret;
 }

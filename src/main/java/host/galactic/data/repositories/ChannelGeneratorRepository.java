@@ -17,7 +17,7 @@ public class ChannelGeneratorRepository implements PanacheRepository<ChannelGene
     public Uni<Void> createFrom(List<StellarChannelGenerator> channelGenerators) {
         Log.infof("create(): Storing %d channel generators for voting %d.", channelGenerators.size(), channelGenerators.get(0).votingId());
 
-        var entities = channelGenerators.stream().map(this::from);
+        var entities = channelGenerators.stream().map(this::toEntity);
         return persist(entities);
     }
 
@@ -27,7 +27,7 @@ public class ChannelGeneratorRepository implements PanacheRepository<ChannelGene
                 .list();
     }
 
-    private ChannelGeneratorEntity from(StellarChannelGenerator stellarChannelGenerator) {
+    private ChannelGeneratorEntity toEntity(StellarChannelGenerator stellarChannelGenerator) {
         var entity = new ChannelGeneratorEntity();
         entity.accountSecret = stellarChannelGenerator.accountSecret();
         entity.accountsLeftToCreate = stellarChannelGenerator.accountsToCreate();
