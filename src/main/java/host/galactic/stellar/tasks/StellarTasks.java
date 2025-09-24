@@ -59,7 +59,7 @@ public class StellarTasks {
 
     private void addChannelBuilderTask(int id) {
         var context = new StellarChannelBuilderContext(voteBuckets, channelGeneratorRepository,
-                channelAccountRepository, sessionFactory
+                channelAccountRepository, sessionFactory, stellarOperationsProducer
         );
 
         scheduler.newJob("stellar-channel-builder-" + id)

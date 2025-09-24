@@ -30,7 +30,7 @@ class MockStellarOperationsImp implements StellarOperations {
         int numOfVotersPerChannelGen = payload.maxVoters() / payload.numOfGeneratorsToCreate();
         int remainingVoters = payload.maxVoters() % payload.numOfGeneratorsToCreate();
 
-        for(int i = 0; i < payload.numOfGeneratorsToCreate() - 1; i++) {
+        for (int i = 0; i < payload.numOfGeneratorsToCreate() - 1; i++) {
             KeyPair account = KeyPair.random();
             channelGenerators.add(new StellarChannelGenerator(new String(account.getSecretSeed()), numOfVotersPerChannelGen, payload.votingId()));
         }
@@ -38,5 +38,17 @@ class MockStellarOperationsImp implements StellarOperations {
         channelGenerators.add(new StellarChannelGenerator(payload.fundingAccountSecret(), numOfVotersPerChannelGen + remainingVoters, payload.votingId()));
 
         return Uni.createFrom().item(channelGenerators);
+    }
+
+    @Override
+    public Uni<List<StellarChannelAccount>> createChannelAccounts(StellarChannelAccountOperationPayload payload) {
+        List<StellarChannelAccount> channelAccounts = new ArrayList<>();
+
+        for (int i = 0; i < payload.numOfAccountsToCreate(); i++) {
+            var accountSecret = new String(KeyPair.random().getSecretSeed());
+            channelAccounts.add(new StellarChannelAccount(accountSecret, payload.votingId()));
+        }
+
+        return Uni.createFrom().item(channelAccounts);
     }
 }
