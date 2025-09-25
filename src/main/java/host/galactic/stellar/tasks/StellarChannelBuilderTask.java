@@ -42,33 +42,47 @@ public class StellarChannelBuilderTask implements Function<ScheduledExecution, U
         return Uni.createFrom().item(() -> null);
     }
 
-    private Uni<List<StellarChannelAccount>> createChannelAccountsBy(ChannelGeneratorEntity channelGeneratorEntity) {
+    private Uni<ChannelAccountsCreatedPayload> createChannelAccountsBy(ChannelGeneratorEntity channelGeneratorEntity) {
         if(channelGeneratorEntity == null) {
-            return Uni.createFrom().item(Collections::emptyList);
+            return Uni.createFrom().item(ChannelAccountsCreatedPayload.empty());
         }
 
         var isOnTestNet = channelGeneratorEntity.voting.isOnTestNetwork;
         var stellarOperations = context.stellarOperationsProducer().create(isOnTestNet);
+        var payload = getStellarChannelAccountOperationPayload(channelGeneratorEntity);
 
+        return stellarOperations.createChannelAccounts(payload)
+                .map(accounts -> new ChannelAccountsCreatedPayload(accounts, channelGeneratorEntity.id));
+    }
+
+    private static StellarChannelAccountOperationPayload getStellarChannelAccountOperationPayload(ChannelGeneratorEntity channelGeneratorEntity) {
         var maxNumOfAccountsToCreate = StellarChannelBuilderTask.MAX_NUM_OF_ACCOUNTS_TO_CREATE_IN_ONE_BATCH;
         var accountsLeftToCreate = channelGeneratorEntity.accountsLeftToCreate;
         var numOfAccountsToActuallyCreate =
                 accountsLeftToCreate >= maxNumOfAccountsToCreate ? maxNumOfAccountsToCreate : accountsLeftToCreate;
 
-        var payload = new StellarChannelAccountOperationPayload(
+        return new StellarChannelAccountOperationPayload(
                 channelGeneratorEntity.accountSecret,
                 numOfAccountsToActuallyCreate,
                 channelGeneratorEntity.voting.id
         );
-
-        return stellarOperations.createChannelAccounts(payload);
     }
 
-    private Uni<Void> channelAccountsCreated(List<StellarChannelAccount> accountsCreated) {
-        if(!accountsCreated.isEmpty()) {
-            return context.channelAccountRepository().channelAccountsCreated(accountsCreated);
+    private Uni<Void> channelAccountsCreated(ChannelAccountsCreatedPayload payload) {
+        if(!payload.isEmpty()) {
+            return context.channelAccountRepository().channelAccountsCreated(payload. accountsCreated, payload.channelGeneratorId);
         } else {
             return Uni.createFrom().item(() -> null);
+        }
+    }
+
+    private record ChannelAccountsCreatedPayload(List<StellarChannelAccount> accountsCreated, Long channelGeneratorId) {
+        static ChannelAccountsCreatedPayload empty() {
+            return new ChannelAccountsCreatedPayload(Collections.emptyList(), -1L);
+        }
+
+        public boolean isEmpty() {
+            return accountsCreated.isEmpty();
         }
     }
 }
