@@ -16,7 +16,6 @@ import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static host.galactic.data.mappers.CreateVotingRequestMapper.from;
 
