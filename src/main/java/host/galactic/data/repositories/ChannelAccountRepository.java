@@ -1,6 +1,7 @@
 package host.galactic.data.repositories;
 
 import host.galactic.data.entities.ChannelAccountEntity;
+import host.galactic.data.entities.ChannelGeneratorEntity;
 import host.galactic.data.entities.VotingEntity;
 import host.galactic.stellar.operations.StellarChannelAccount;
 import io.quarkus.hibernate.reactive.panache.PanacheRepository;
@@ -26,10 +27,7 @@ public class ChannelAccountRepository implements PanacheRepository<ChannelAccoun
 
         return persist(entitiesToPersist)
                 .chain(v -> channelGeneratorRepository.findById(channelGeneratorId))
-                .chain(e -> {
-                    e.accountsLeftToCreate -= stellarChannelAccounts.size();
-                    return channelGeneratorRepository.persist(e);
-                })
+                .chain(e -> subtractNumOfChannelAccountFrom(e, stellarChannelAccounts.size()))
                 .replaceWithVoid();
     }
 
@@ -42,5 +40,11 @@ public class ChannelAccountRepository implements PanacheRepository<ChannelAccoun
         entity.voting.id = stellarChannelAccount.votingId();
 
         return entity;
+    }
+
+    private Uni<Void> subtractNumOfChannelAccountFrom(ChannelGeneratorEntity entity, int amount) {
+        entity.accountsLeftToCreate -= amount;
+        return channelGeneratorRepository.persist(entity)
+                .replaceWithVoid();
     }
 }

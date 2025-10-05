@@ -3,6 +3,7 @@ package host.galactic.stellar.tasks;
 import host.galactic.data.entities.ChannelGeneratorEntity;
 import host.galactic.stellar.operations.StellarChannelAccount;
 import host.galactic.stellar.operations.StellarChannelAccountOperationPayload;
+import io.quarkus.logging.Log;
 import io.quarkus.scheduler.ScheduledExecution;
 import io.smallrye.mutiny.Uni;
 
@@ -36,8 +37,11 @@ public class StellarChannelBuilderTask implements Function<ScheduledExecution, U
         var selectedGenerators = channelGeneratorCandidates.stream().filter(c -> c.id % context.voteBuckets() == this.id).toList();
 
         if (!selectedGenerators.isEmpty()) {
+            Log.infof("%s: Found %s channel generators to use for creating channel accounts.", id, selectedGenerators.size());
             return Uni.createFrom().item(selectedGenerators.get(0));
         }
+
+        Log.info("%s: Not found any channel generators suitable for creating channel accounts in this task.");
 
         return Uni.createFrom().item(() -> null);
     }
