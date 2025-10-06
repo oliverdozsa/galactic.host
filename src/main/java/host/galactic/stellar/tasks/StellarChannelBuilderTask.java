@@ -38,6 +38,7 @@ public class StellarChannelBuilderTask implements Function<ScheduledExecution, U
 
         if (!selectedGenerators.isEmpty()) {
             Log.infof("%s: Found %s channel generators to use for creating channel accounts.", taskId, selectedGenerators.size());
+            Log.infof("%s: Using channel generator: %s", taskId, selectedGenerators.get(0).id);
             return Uni.createFrom().item(selectedGenerators.get(0));
         }
 
