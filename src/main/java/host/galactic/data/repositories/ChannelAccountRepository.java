@@ -44,6 +44,9 @@ public class ChannelAccountRepository implements PanacheRepository<ChannelAccoun
 
     private Uni<Void> subtractNumOfChannelAccountFrom(ChannelGeneratorEntity entity, int amount) {
         entity.accountsLeftToCreate -= amount;
+
+        Log.debugf("subtractNumOfChannelAccountFrom(): %d channel accounts left to create for channel generator: %d", entity.accountsLeftToCreate, entity.id);
+
         return channelGeneratorRepository.persist(entity)
                 .replaceWithVoid();
     }
