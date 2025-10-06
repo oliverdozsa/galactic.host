@@ -37,11 +37,11 @@ public class StellarChannelBuilderTask implements Function<ScheduledExecution, U
         var selectedGenerators = channelGeneratorCandidates.stream().filter(c -> c.id % context.voteBuckets() == this.id).toList();
 
         if (!selectedGenerators.isEmpty()) {
-            Log.infof("%s: Found %s channel generators to use for creating channel accounts.", id, selectedGenerators.size());
+            Log.infof("%s: Found %s channel generators to use for creating channel accounts.", taskId, selectedGenerators.size());
             return Uni.createFrom().item(selectedGenerators.get(0));
         }
 
-        Log.info("%s: Not found any channel generators suitable for creating channel accounts in this task.");
+        Log.infof("%s: Not found any channel generators suitable for creating channel accounts in this task.", taskId);
 
         return Uni.createFrom().item(() -> null);
     }
