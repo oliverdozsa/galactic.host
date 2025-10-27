@@ -2,13 +2,17 @@ package host.galactic.stellar.operations;
 
 import io.smallrye.mutiny.Uni;
 import org.stellar.sdk.*;
+import org.stellar.sdk.operations.CreateAccountOperation;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 public class StellarChannelAccountOperation {
     private Server server;
     private Network network;
+
+    private static final BigDecimal STARTING_BALANCE_XLM = new BigDecimal(2);
 
     public StellarChannelAccountOperation(Server server, Network network) {
         this.server = server;
@@ -23,21 +27,24 @@ public class StellarChannelAccountOperation {
 
             var channelAccounts = new ArrayList<StellarChannelAccount>();
 
-            for(var i = 0; i < payload.numOfAccountsToCreate(); i++) {
+            for (var i = 0; i < payload.numOfAccountsToCreate(); i++) {
                 var channelKeyPair = prepareAccountCreationOn(transactionBuilder);
                 channelAccounts.add(from(channelKeyPair, payload.votingId()));
             }
 
-            // TODO
-
-            return null;
+            return channelAccounts;
         });
     }
 
     private KeyPair prepareAccountCreationOn(TransactionBuilder txBuilder) {
         var channelKeyPair = KeyPair.random();
 
-        // TODO
+        var createAccountOperation = CreateAccountOperation.builder()
+                .destination(channelKeyPair.getAccountId())
+                .startingBalance(STARTING_BALANCE_XLM)
+                .build();
+
+        txBuilder.addOperation(createAccountOperation);
 
         return channelKeyPair;
     }
