@@ -28,6 +28,7 @@ public class StellarChannelGeneratorOperation {
                     int numOfAccountsPerChannelGenerator = payload.maxVoters() / payload.numOfGeneratorsToCreate();
                     int numOfAccountPerChannelGeneratorRemainder = payload.maxVoters() % payload.numOfGeneratorsToCreate();
 
+                    Log.infof("[STELLAR]: Total channel accounts to create: %d for voting %d", payload.maxVoters(), payload.votingId());
                     Log.infof("[STELLAR]: Creating %d channel generators for voting %d", payload.numOfGeneratorsToCreate(), payload.votingId());
                     Log.infof("[STELLAR]: The number of accounts per channel generators to create is %d. The last generator will additionally create %d channel accounts.",
                             numOfAccountsPerChannelGenerator, numOfAccountPerChannelGeneratorRemainder);

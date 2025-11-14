@@ -21,7 +21,7 @@ public class ChannelAccountRepository implements PanacheRepository<ChannelAccoun
     @WithTransaction
     public Uni<Void> channelAccountsCreated(List<StellarChannelAccount> stellarChannelAccounts, Long channelGeneratorId) {
         var votingId = stellarChannelAccounts.get(0).votingId();
-        Log.infof("channelAccountsCreated(): creating %d channel account for voting with id %d",
+        Log.infof("channelAccountsCreated(): storing %d channel accounts for voting with id %d",
                 stellarChannelAccounts.size(), votingId);
         var entitiesToPersist = stellarChannelAccounts.stream().map(this::toEntity);
 

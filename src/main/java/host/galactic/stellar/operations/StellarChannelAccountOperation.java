@@ -1,5 +1,6 @@
 package host.galactic.stellar.operations;
 
+import io.quarkus.logging.Log;
 import io.smallrye.mutiny.Uni;
 import org.stellar.sdk.*;
 import org.stellar.sdk.operations.CreateAccountOperation;
@@ -21,6 +22,7 @@ public class StellarChannelAccountOperation {
 
     public Uni<List<StellarChannelAccount>> create(StellarChannelAccountOperationPayload payload) {
         return Uni.createFrom().item(() -> {
+            Log.infof("[STELLAR]: Creating %d channel accounts for voting %d", payload.numOfAccountsToCreate(), payload.votingId());
             var generatorKeyPair = KeyPair.fromSecretSeed(payload.generatorAccountSecret());
             var generatorAccount = server.loadAccount(generatorKeyPair.getAccountId());
             var transactionBuilder = new TransactionBuilder(generatorAccount, network);
