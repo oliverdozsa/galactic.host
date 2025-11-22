@@ -17,9 +17,9 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
+import static org.awaitility.Awaitility.*;
 
 @QuarkusTest
 public class StellarChannelGeneratorAccountsTest extends StellarRestTestBase {
@@ -40,16 +40,16 @@ public class StellarChannelGeneratorAccountsTest extends StellarRestTestBase {
         Log.info("[START TEST]: testChannelGeneratorAccountsCreated()");
 
         var votingId = createAVotingWithThreeParticipants();
-
-        Thread.sleep(2500);
-
-        var channelGenerators = entityManager.createQuery("select c from ChannelGeneratorEntity c where voting.id = :id", ChannelGeneratorEntity.class)
-                .setParameter("id", votingId)
-                .getResultList();
-
-        assertThat(channelGenerators, hasSize(greaterThan(0)));
+        await().until(() -> channelGeneratorsOf(votingId), hasSize(greaterThan(0)));
 
         Log.info("[  END TEST]: testChannelGeneratorAccountsCreated()");
+    }
+
+    @Transactional
+    public List<ChannelGeneratorEntity> channelGeneratorsOf(Long votingId) {
+        return entityManager.createQuery("select c from ChannelGeneratorEntity c where voting.id = :id", ChannelGeneratorEntity.class)
+                .setParameter("id", votingId)
+                .getResultList();
     }
 
     private long createAVotingWithThreeParticipants() {

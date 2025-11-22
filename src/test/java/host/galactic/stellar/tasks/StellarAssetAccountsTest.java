@@ -1,0 +1,55 @@
+package host.galactic.stellar.tasks;
+
+import host.galactic.stellar.rest.StellarRestTestBase;
+import host.galactic.stellar.rest.responses.voting.VotingResponse;
+import io.quarkus.logging.Log;
+import io.quarkus.test.junit.QuarkusTest;
+import org.hamcrest.Description;
+import org.hamcrest.TypeSafeMatcher;
+import org.junit.jupiter.api.Test;
+
+import static io.restassured.RestAssured.given;
+import static org.awaitility.Awaitility.*;
+
+@QuarkusTest
+public class StellarAssetAccountsTest extends StellarRestTestBase {
+
+    @Test
+    public void testAssetAccountsCreated() throws InterruptedException {
+        Log.info("[START TEST]: testAssetAccountsCreated()");
+
+        var votingId = createAVotingAs("alice");
+        await().until(() -> getVotingBy(votingId), hasAssetAccounts());
+
+        Log.info("[  END TEST]: testAssetAccountsCreated()");
+    }
+
+    public VotingResponse getVotingBy(Long votingId) {
+        String withAccessToken = authForTest.loginAs("alice");
+        return given()
+                .auth().oauth2(withAccessToken)
+                .get(stellarVotingRest + "/" + votingId)
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .as(VotingResponse.class);
+    }
+
+    private static class VotingAssetAccountsMatcher extends TypeSafeMatcher<VotingResponse> {
+        @Override
+        protected boolean matchesSafely(VotingResponse votingResponse) {
+            // TODO
+            return false;
+        }
+
+        @Override
+        public void describeTo(Description description) {
+            description.appendText("has no asset accounts");
+        }
+    }
+
+    private static VotingAssetAccountsMatcher hasAssetAccounts() {
+        return new VotingAssetAccountsMatcher();
+    }
+}

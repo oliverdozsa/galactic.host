@@ -21,8 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
+import static org.awaitility.Awaitility.*;
 
 @QuarkusTest
 public class StellarChannelAccountsTest extends StellarRestTestBase {
@@ -42,16 +42,16 @@ public class StellarChannelAccountsTest extends StellarRestTestBase {
         Log.info("[START TEST]: testChannelAccountsCreated()");
 
         var votingId = createAVotingWithMultipleParticipants();
-
-        Thread.sleep(4000);
-
-        var channelAccountsOfVoting = entityManager.createQuery("select c from ChannelAccountEntity c where voting.id = :id", ChannelAccountEntity.class)
-                .setParameter("id", votingId)
-                .getResultList();
-
-        assertThat(channelAccountsOfVoting, hasSize(42));
+        await().until(() -> channelAccountsOfVoting(votingId), hasSize(42));
 
         Log.info("[  END TEST]: testChannelAccountsCreated()");
+    }
+
+    @Transactional
+    public List<ChannelAccountEntity> channelAccountsOfVoting(Long votingId) {
+        return entityManager.createQuery("select c from ChannelAccountEntity c where voting.id = :id", ChannelAccountEntity.class)
+                .setParameter("id", votingId)
+                .getResultList();
     }
 
     private long createAVotingWithMultipleParticipants() {

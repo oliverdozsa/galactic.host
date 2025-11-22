@@ -57,8 +57,8 @@ public class VotingEntity extends PanacheEntityBase {
     @Column(name = "user_given_funding_account_secret", columnDefinition = "text")
     public String userGivenFundingAccountSecret;
 
-    @Column(name = "internal_funding_account_secret", columnDefinition = "text")
-    public String internalFundingAccountSecret;
+    @Column(name = "funding_account_secret", columnDefinition = "text")
+    public String fundingAccountSecret;
 
     @Column(name = "asset_code", length = 20)
     public String assetCode;
@@ -86,6 +86,12 @@ public class VotingEntity extends PanacheEntityBase {
     @OneToMany(mappedBy = "voting", cascade = CascadeType.REMOVE)
     public List<ChannelAccountEntity> channelAccounts;
 
-    @Column(name = "funding_account_secret", columnDefinition = "text")
-    public String fundingAccountSecret;
+    @Column(name = "distribution_account_secret", columnDefinition = "text")
+    public String distributionAccountSecret;
+
+    @Column(name = "ballot_account_secret", columnDefinition = "text")
+    public String ballotAccountSecret;
+
+    @Column(name = "issuer_account_secret", columnDefinition = "text")
+    public String issuerAccountSecret;
 }
