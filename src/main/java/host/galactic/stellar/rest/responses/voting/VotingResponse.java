@@ -20,6 +20,9 @@ public record VotingResponse (
         Boolean isOnTestNetwork,
         List<VotingPollResponse> polls,
         Integer numOfVoters,
-        String fundingAccountId
+        String fundingAccountId,
+        String distributionAccountId,
+        String ballotAccountId,
+        String issuerAccountId
 ) {
 }
