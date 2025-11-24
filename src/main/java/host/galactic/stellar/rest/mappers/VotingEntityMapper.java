@@ -3,6 +3,7 @@ package host.galactic.stellar.rest.mappers;
 import host.galactic.data.entities.VotingEntity;
 import host.galactic.data.entities.VotingPollEntity;
 import host.galactic.data.entities.VotingPollOptionEntity;
+import host.galactic.stellar.operations.StellarUtils;
 import host.galactic.stellar.rest.responses.voting.VotingPollOptionResponse;
 import host.galactic.stellar.rest.responses.voting.VotingPollResponse;
 import host.galactic.stellar.rest.responses.voting.VotingResponse;
@@ -12,11 +13,16 @@ import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static host.galactic.stellar.operations.StellarUtils.toAccountId;
+
 public class VotingEntityMapper {
     public static VotingResponse from(VotingEntity entity) {
         var polls = pollsFrom(entity);
 
-        var fundingAccountId = KeyPair.fromSecretSeed(entity.fundingAccountSecret).getAccountId();
+        var fundingAccountId = toAccountId(entity.fundingAccountSecret);
+        var distributionAccountId = entity.distributionAccountSecret == null ? "" : toAccountId(entity.distributionAccountSecret);
+        var ballotAccountId = entity.ballotAccountSecret == null ? "" : toAccountId(entity.ballotAccountSecret);
+        var issuerAccountId = entity.issuerAccountSecret == null ? "" :toAccountId(entity.issuerAccountSecret);
 
         return new VotingResponse(
                 entity.id,
@@ -35,7 +41,10 @@ public class VotingEntityMapper {
                 entity.isOnTestNetwork,
                 polls,
                 entity.numOfVoters,
-                fundingAccountId
+                fundingAccountId,
+                distributionAccountId,
+                ballotAccountId,
+                issuerAccountId
         );
     }
 
