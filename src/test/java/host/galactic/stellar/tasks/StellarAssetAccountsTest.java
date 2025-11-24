@@ -39,13 +39,14 @@ public class StellarAssetAccountsTest extends StellarRestTestBase {
     private static class VotingAssetAccountsMatcher extends TypeSafeMatcher<VotingResponse> {
         @Override
         protected boolean matchesSafely(VotingResponse votingResponse) {
-            // TODO
-            return false;
+            return votingResponse.distributionAccountId() != null && !votingResponse.distributionAccountId().isEmpty() &&
+                    votingResponse.ballotAccountId() != null && !votingResponse.ballotAccountId().isEmpty() &&
+                    votingResponse.issuerAccountId() != null && !votingResponse.issuerAccountId().isEmpty();
         }
 
         @Override
         public void describeTo(Description description) {
-            description.appendText("has no asset accounts");
+            description.appendText("distribution, ballot and issuer account to be present");
         }
     }
 

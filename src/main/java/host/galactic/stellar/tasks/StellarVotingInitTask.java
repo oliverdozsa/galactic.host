@@ -1,6 +1,7 @@
 package host.galactic.stellar.tasks;
 
 import host.galactic.data.entities.VotingEntity;
+import host.galactic.stellar.operations.StellarAssetAccounts;
 import host.galactic.stellar.operations.StellarChannelGenerator;
 import host.galactic.stellar.operations.StellarChannelGeneratorOperationPayload;
 import io.quarkus.logging.Log;
@@ -49,10 +50,20 @@ public class StellarVotingInitTask implements Function<ScheduledExecution, Uni<V
     }
 
     private Uni<Void> createChannelGeneratorEntitiesFromIfNeeded(List<StellarChannelGenerator> stellarChannelGenerators) {
-        if(stellarChannelGenerators != null) {
+        if (stellarChannelGenerators != null) {
             return context.channelGeneratorRepository().createFrom(stellarChannelGenerators);
         } else {
             return Uni.createFrom().item(() -> null);
         }
+    }
+
+    private Uni<StellarAssetAccounts> createAssetAccounts() {
+        // TODO
+        return Uni.createFrom().item(() -> null);
+    }
+
+    private Uni<Void> setAssetAccountsForVoting(Long votingId, StellarAssetAccounts assetAccounts) {
+        // TODO
+        return Uni.createFrom().item(() -> null);
     }
 }
