@@ -32,4 +32,10 @@ class StellarOperationsImp implements StellarOperations {
     public Uni<List<StellarChannelAccount>> createChannelAccounts(StellarChannelAccountOperationPayload payload) {
         return new StellarChannelAccountOperation(server, network).create(payload);
     }
+
+    @Override
+    public Uni<StellarAssetAccounts> createAssetAccounts(StellarAssetAccountsOperationPayload payload) {
+        // TODO
+        return null;
+    }
 }
