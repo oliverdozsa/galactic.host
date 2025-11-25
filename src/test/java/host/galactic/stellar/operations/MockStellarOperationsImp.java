@@ -51,4 +51,15 @@ class MockStellarOperationsImp implements StellarOperations {
 
         return Uni.createFrom().item(channelAccounts);
     }
+
+    @Override
+    public Uni<StellarAssetAccounts> createAssetAccounts(StellarAssetAccountsOperationPayload payload) {
+        String distributionAccountSecret = new String(KeyPair.random().getSecretSeed());
+        String ballotAccountSecret = new String(KeyPair.random().getSecretSeed());
+        String issuerAccountSecret = new String(KeyPair.random().getSecretSeed());
+
+        return Uni
+                .createFrom()
+                .item(new StellarAssetAccounts(distributionAccountSecret, ballotAccountSecret, issuerAccountSecret, payload.votingId()));
+    }
 }

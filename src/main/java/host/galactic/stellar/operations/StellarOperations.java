@@ -8,4 +8,5 @@ public interface StellarOperations {
     Uni<Void> createInternalFunding(String sourceAccountSecret, double startingXlm, String targetAccountSecret);
     Uni<List<StellarChannelGenerator>> createChannelGenerators(StellarChannelGeneratorOperationPayload payload);
     Uni<List<StellarChannelAccount>> createChannelAccounts(StellarChannelAccountOperationPayload payload);
+    Uni<StellarAssetAccounts> createAssetAccounts(StellarAssetAccountsOperationPayload payload);
 }
