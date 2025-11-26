@@ -18,7 +18,7 @@ class StellarOperationsImp implements StellarOperations {
     }
 
     public Uni<Void> createInternalFunding(String sourceAccountSecret, double startingXlm, String targetAccountSecret) {
-        return new StellarCreateInternalFunding(server, network)
+        return new StellarCreateInternalFundingOperation(server, network)
                 .create(sourceAccountSecret, startingXlm, targetAccountSecret);
     }
 

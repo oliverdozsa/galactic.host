@@ -2,6 +2,7 @@ package host.galactic.data.repositories;
 
 import host.galactic.data.entities.UserEntity;
 import host.galactic.data.entities.VotingEntity;
+import host.galactic.stellar.operations.StellarAssetAccounts;
 import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
 import io.quarkus.hibernate.reactive.panache.PanacheRepository;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
@@ -82,12 +83,26 @@ public class VotingRepository implements PanacheRepository<VotingEntity> {
                     }
                 })
                 .chain(v -> deleteById(v.id))
-                .map(b -> null);
+                .replaceWithVoid();
     }
 
     public Uni<VotingEntity> getAnUninitializedVoting() {
         Log.debug("getAnUninitializedVoting(): Finding an uninitialized voting.");
-        return find("select v from VotingEntity v left join v.channelGenerators cg where cg.voting is null").firstResult();
+        return find("select v from VotingEntity v left join v.channelGenerators cg where cg.voting is null or " +
+                "distributionAccountSecret is null").firstResult()
+                .call(v -> Mutiny.fetch(v.channelGenerators));
+    }
+
+    public Uni<Void> assetAccountsCreated(StellarAssetAccounts assetAccounts) {
+        Log.infof("assetAccountsCreated(): Asset accounts created for voting: %s", assetAccounts.votingId());
+
+        return findById(assetAccounts.votingId())
+                .invoke(v -> {
+                    v.distributionAccountSecret = assetAccounts.distributionAccountSecret();
+                    v.ballotAccountSecret = assetAccounts.ballotAccountSecret();
+                    v.issuerAccountSecret = assetAccounts.issuerAccountSecret();
+                })
+                .replaceWithVoid();
     }
 
     private void checkIfMaxVotersWouldBeExceeded(VotingEntity voting, List<UserEntity> usersToAdd){
