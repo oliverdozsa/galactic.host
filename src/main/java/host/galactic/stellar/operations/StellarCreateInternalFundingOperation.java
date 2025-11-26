@@ -14,11 +14,11 @@ import static host.galactic.stellar.operations.StellarUtils.toAccountId;
 import static host.galactic.stellar.operations.StellarUtils.toTruncatedAccountId;
 import static org.stellar.sdk.AbstractTransaction.MIN_BASE_FEE;
 
-class StellarCreateInternalFunding {
+class StellarCreateInternalFundingOperation {
     private Server server;
     private Network network;
 
-    StellarCreateInternalFunding(Server server, Network network) {
+    StellarCreateInternalFundingOperation(Server server, Network network) {
         this.server = server;
         this.network = network;
     }
