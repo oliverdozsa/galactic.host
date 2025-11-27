@@ -90,6 +90,8 @@ public class VotingRepository implements PanacheRepository<VotingEntity> {
         Log.debug("getAnUninitializedVoting(): Finding an uninitialized voting.");
         return find("select v from VotingEntity v left join v.channelGenerators cg where cg.voting is null or " +
                 "distributionAccountSecret is null").firstResult()
+                .onItem()
+                .ifNotNull()
                 .call(v -> Mutiny.fetch(v.channelGenerators));
     }
 
