@@ -6,6 +6,7 @@ import io.quarkus.logging.Log;
 import io.quarkus.scheduler.ScheduledExecution;
 import io.smallrye.mutiny.Uni;
 
+import java.util.Collections;
 import java.util.function.Function;
 
 public class StellarVotingInitTask implements Function<ScheduledExecution, Uni<Void>> {
@@ -48,7 +49,7 @@ public class StellarVotingInitTask implements Function<ScheduledExecution, Uni<V
                     .map(accounts -> new StellarChannelGenerators(votingEntity, accounts));
         } else {
             Log.debugf("%s: Not found any voting without channel generators.", taskId);
-            return Uni.createFrom().item(() -> null);
+            return Uni.createFrom().item(() -> new StellarChannelGenerators(votingEntity, Collections.emptyList()));
         }
     }
 
@@ -61,7 +62,7 @@ public class StellarVotingInitTask implements Function<ScheduledExecution, Uni<V
         if(votingEntity.distributionAccountSecret == null) {
             Log.infof("%s: Found a voting without asset accounts! voting id = %s", taskId, votingEntity.id);
 
-            var stellarOperation = context.operationsProducer().create(generators.votingEntity().isOnTestNetwork);
+            var stellarOperation = context.operationsProducer().create(votingEntity.isOnTestNetwork);
             var payload = new StellarAssetAccountsOperationPayload(votingEntity.fundingAccountSecret, votingEntity.id);
             return stellarOperation.createAssetAccounts(payload);
         } else {
