@@ -7,6 +7,7 @@ import io.quarkus.scheduler.ScheduledExecution;
 import io.smallrye.mutiny.Uni;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.function.Function;
 
 public class StellarVotingInitTask implements Function<ScheduledExecution, Uni<Void>> {
@@ -22,10 +23,7 @@ public class StellarVotingInitTask implements Function<ScheduledExecution, Uni<V
         return context.sessionFactory().withSession(s -> {
             taskId = execution.getTrigger().getId();
             return context.votingRepository().getAnUninitializedVoting()
-                    .chain(this::createChannelGeneratorsForVotingIfNeeded)
-                    .chain(this::createChannelGeneratorEntitiesFromIfNeeded)
-                    .chain(this::createAssetAccounts)
-                    .chain(this::setAssetAccountsForVoting);
+                    .chain(this::initializeVotingIfNeeded);
         });
     }
 
@@ -38,68 +36,61 @@ public class StellarVotingInitTask implements Function<ScheduledExecution, Uni<V
         var channelInit = initializeChannelGeneratorsIfNeeded(voting);
         var assetAccountsInit = initializeAssetAccountsIfNeeded(voting);
 
-        // TODO: merge the Unis.
-
-        return Uni.createFrom().voidItem();
+        return channelInit.chain(() -> assetAccountsInit);
     }
 
     private Uni<Void> initializeChannelGeneratorsIfNeeded(VotingEntity voting) {
-        // TODO
-        return Uni.createFrom().voidItem();
+        if(voting == null) {
+            Log.debugf("%s: initializeChannelGeneratorsIfNeeded(): Not found any uninitialized voting.", taskId);
+            return Uni.createFrom().voidItem();
+        }
+
+        return createChannelGeneratorsForVotingIfNeeded(voting)
+                .chain(this::createChannelGeneratorEntities);
     }
 
     private Uni<Void> initializeAssetAccountsIfNeeded(VotingEntity voting) {
-        // TODO
-        return Uni.createFrom().voidItem();
+        if(voting == null) {
+            Log.debugf("%s: initializeAssetAccountsIfNeeded(): Not found any uninitialized voting.", taskId);
+            return Uni.createFrom().voidItem();
+        }
+
+        return createAssetAccountsIfNeeded(voting)
+                .chain(this::setAssetAccountsForVoting);
     }
 
-    private Uni<StellarChannelGenerators> createChannelGeneratorsForVotingIfNeeded(VotingEntity votingEntity) {
-        if(votingEntity != null) {
-            Log.debugf("cg size=%s, voting id=%s", votingEntity.channelGenerators.size(), votingEntity.id);
-        }
+    private Uni<List<StellarChannelGenerator>> createChannelGeneratorsForVotingIfNeeded(VotingEntity voting) {
+        if (voting.channelGenerators.isEmpty()) {
+            Log.infof("%s: Found a voting without channel generators! voting id = %s", taskId, voting.id);
 
-        if(votingEntity == null) {
-            Log.debugf("%s: Not found any uninitialized voting.", taskId);
-            return Uni.createFrom().item(() -> new StellarChannelGenerators(null, null));
-        }
-
-        if (votingEntity.channelGenerators.isEmpty()) {
-            Log.infof("%s: Found a voting without channel generators! voting id = %s", taskId, votingEntity.id);
-
-            var stellarOperations = context.operationsProducer().create(votingEntity.isOnTestNetwork);
+            var stellarOperations = context.operationsProducer().create(voting.isOnTestNetwork);
             var payload = new StellarChannelGeneratorOperationPayload(
-                    votingEntity.fundingAccountSecret,
-                    votingEntity.maxVoters,
-                    votingEntity.id,
+                    voting.fundingAccountSecret,
+                    voting.maxVoters,
+                    voting.id,
                     context.voteBuckets()
             );
 
-            return stellarOperations.createChannelGenerators(payload)
-                    .map(accounts -> new StellarChannelGenerators(votingEntity, accounts));
+            return stellarOperations.createChannelGenerators(payload);
         } else {
-            Log.debugf("%s: Voting has channel generators already, but not asset accounts! voting id = %s", taskId, votingEntity.id);
-            return Uni.createFrom().item(() -> new StellarChannelGenerators(votingEntity, Collections.emptyList()));
+            Log.debugf("%s: Voting has channel generators already! voting id = %s", taskId, voting.id);
+            return Uni.createFrom().item(Collections::emptyList);
         }
     }
 
-    private Uni<VotingEntity> createChannelGeneratorEntitiesFromIfNeeded(StellarChannelGenerators stellarChannelGenerators) {
-        return context.channelGeneratorRepository().createFrom(stellarChannelGenerators.generatorAccounts())
-                .map(v -> stellarChannelGenerators.votingEntity());
+    private Uni<Void> createChannelGeneratorEntities(List<StellarChannelGenerator> channelGenerators) {
+        return context.channelGeneratorRepository().createFrom(channelGenerators);
     }
 
-    private Uni<StellarAssetAccounts> createAssetAccounts(VotingEntity votingEntity) {
-        if(votingEntity == null) {
-            Log.debugf("");
-        }
+    private Uni<StellarAssetAccounts> createAssetAccountsIfNeeded(VotingEntity voting) {
+        if(voting.distributionAccountSecret == null) {
+            Log.infof("%s: Found a voting without asset accounts! voting id = %s", taskId, voting.id);
 
-        if(votingEntity.distributionAccountSecret == null) {
-            Log.infof("%s: Found a voting without asset accounts! voting id = %s", taskId, votingEntity.id);
-
-            var stellarOperation = context.operationsProducer().create(votingEntity.isOnTestNetwork);
-            var payload = new StellarAssetAccountsOperationPayload(votingEntity.fundingAccountSecret, votingEntity.id);
+            var stellarOperation = context.operationsProducer().create(voting.isOnTestNetwork);
+            var payload = new StellarAssetAccountsOperationPayload(voting.fundingAccountSecret, voting.id);
             return stellarOperation.createAssetAccounts(payload);
         } else {
-            Log.debugf("%s: Not found voting without channel accounts.", taskId);
+            Log.debugf("%s: Voting has asset accounts already.", taskId);
             return Uni.createFrom().item(() -> null);
         }
     }

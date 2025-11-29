@@ -1,11 +1,16 @@
 package host.galactic.stellar.tasks;
 
+import host.galactic.data.entities.VotingEntity;
 import host.galactic.stellar.rest.StellarRestTestBase;
 import host.galactic.stellar.rest.responses.voting.VotingResponse;
 import io.quarkus.logging.Log;
 import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
@@ -13,6 +18,17 @@ import static org.awaitility.Awaitility.*;
 
 @QuarkusTest
 public class StellarAssetAccountsTest extends StellarRestTestBase {
+    @Inject
+    EntityManager entityManager;
+
+    @BeforeEach
+    @Transactional
+    public void deleteAllVotings() {
+        var votings = entityManager.createQuery("select v from VotingEntity v", VotingEntity.class)
+                .getResultList();
+        votings.forEach(v -> entityManager.remove(v));
+
+    }
 
     @Test
     public void testAssetAccountsCreated() throws InterruptedException {

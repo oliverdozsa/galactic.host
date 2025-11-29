@@ -95,6 +95,7 @@ public class VotingRepository implements PanacheRepository<VotingEntity> {
                 .call(v -> Mutiny.fetch(v.channelGenerators));
     }
 
+    @WithTransaction
     public Uni<Void> assetAccountsCreated(StellarAssetAccounts assetAccounts) {
         Log.infof("assetAccountsCreated(): Asset accounts created for voting: %s", assetAccounts.votingId());
 
