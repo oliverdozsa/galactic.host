@@ -34,6 +34,8 @@ public class StellarChannelBuilderTask implements Function<ScheduledExecution, U
     }
 
     private Uni<ChannelGeneratorEntity> selectChannelGenerator(List<ChannelGeneratorEntity> channelGeneratorCandidates) {
+        var cids = channelGeneratorCandidates.stream().map(c -> c.id).toList();
+        Log.debugf("cids = %s", cids);
         var selectedGenerators = channelGeneratorCandidates.stream().filter(c -> c.id % context.voteBuckets() == this.id).toList();
 
         if (!selectedGenerators.isEmpty()) {

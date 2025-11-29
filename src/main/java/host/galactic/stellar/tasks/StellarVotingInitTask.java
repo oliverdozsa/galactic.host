@@ -87,7 +87,7 @@ public class StellarVotingInitTask implements Function<ScheduledExecution, Uni<V
             Log.infof("%s: Found a voting without asset accounts! voting id = %s", taskId, voting.id);
 
             var stellarOperation = context.operationsProducer().create(voting.isOnTestNetwork);
-            var payload = new StellarAssetAccountsOperationPayload(voting.fundingAccountSecret, voting.id);
+            var payload = new StellarAssetAccountsOperationPayload(voting.fundingAccountSecret, voting);
             return stellarOperation.createAssetAccounts(payload);
         } else {
             Log.debugf("%s: Voting has asset accounts already.", taskId);

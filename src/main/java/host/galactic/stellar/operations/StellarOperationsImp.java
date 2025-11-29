@@ -35,7 +35,6 @@ class StellarOperationsImp implements StellarOperations {
 
     @Override
     public Uni<StellarAssetAccounts> createAssetAccounts(StellarAssetAccountsOperationPayload payload) {
-        // TODO
-        return null;
+        return new StellarAssetAccountsOperation(server, network).create(payload);
     }
 }

@@ -1,4 +1,6 @@
 package host.galactic.stellar.operations;
 
-public record StellarAssetAccountsOperationPayload (String fundingSecret, Long votingId) {
+import host.galactic.data.entities.VotingEntity;
+
+public record StellarAssetAccountsOperationPayload (String fundingSecret, VotingEntity votingEntity) {
 }

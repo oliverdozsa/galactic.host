@@ -9,6 +9,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.stellar.sdk.AbstractTransaction.MIN_BASE_FEE;
+
 public class StellarChannelAccountOperation {
     private Server server;
     private Network network;
@@ -33,6 +35,16 @@ public class StellarChannelAccountOperation {
                 var channelKeyPair = prepareAccountCreationOn(transactionBuilder);
                 channelAccounts.add(from(channelKeyPair, payload.votingId()));
             }
+
+            var transaction =transactionBuilder
+                    .setBaseFee(MIN_BASE_FEE)
+                    .setTimeout(15)
+                    .build();
+
+            transaction.sign(generatorKeyPair);
+            StellarSubmitTransaction.submit("create channel accounts", transaction, server);
+
+            Log.info("[STELLAR]: Successfully created channel accounts.");
 
             return channelAccounts;
         });

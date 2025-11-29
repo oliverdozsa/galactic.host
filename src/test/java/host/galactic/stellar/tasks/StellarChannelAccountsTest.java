@@ -38,7 +38,7 @@ public class StellarChannelAccountsTest extends StellarRestTestBase {
     }
 
     @Test
-    public void testChannelAccountsCreated() throws InterruptedException {
+    public void testChannelAccountsCreated() {
         Log.info("[START TEST]: testChannelAccountsCreated()");
 
         var votingId = createAVotingWithMultipleParticipants();

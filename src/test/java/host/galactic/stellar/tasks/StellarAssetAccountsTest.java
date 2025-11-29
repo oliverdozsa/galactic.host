@@ -31,7 +31,7 @@ public class StellarAssetAccountsTest extends StellarRestTestBase {
     }
 
     @Test
-    public void testAssetAccountsCreated() throws InterruptedException {
+    public void testAssetAccountsCreated() {
         Log.info("[START TEST]: testAssetAccountsCreated()");
 
         var votingId = createAVotingAs("alice");
