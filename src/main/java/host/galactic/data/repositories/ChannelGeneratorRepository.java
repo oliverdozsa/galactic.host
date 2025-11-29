@@ -17,7 +17,7 @@ public class ChannelGeneratorRepository implements PanacheRepository<ChannelGene
     public Uni<Void> createFrom(List<StellarChannelGenerator> channelGenerators) {
         if(channelGenerators.isEmpty()) {
             Log.debug("create(): Nothing to create.");
-            return Uni.createFrom().nullItem();
+            return Uni.createFrom().voidItem();
         }
 
         Log.infof("create(): Storing %d channel generators for voting %d.", channelGenerators.size(), channelGenerators.get(0).votingId());
