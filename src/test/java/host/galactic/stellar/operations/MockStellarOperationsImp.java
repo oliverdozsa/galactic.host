@@ -60,6 +60,6 @@ class MockStellarOperationsImp implements StellarOperations {
 
         return Uni
                 .createFrom()
-                .item(new StellarAssetAccounts(distributionAccountSecret, ballotAccountSecret, issuerAccountSecret, payload.votingId()));
+                .item(new StellarAssetAccounts(distributionAccountSecret, ballotAccountSecret, issuerAccountSecret, payload.votingEntity().id));
     }
 }

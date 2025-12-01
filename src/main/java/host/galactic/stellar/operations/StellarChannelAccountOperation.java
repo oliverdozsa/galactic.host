@@ -36,7 +36,7 @@ public class StellarChannelAccountOperation {
                 channelAccounts.add(from(channelKeyPair, payload.votingId()));
             }
 
-            var transaction =transactionBuilder
+            var transaction = transactionBuilder
                     .setBaseFee(MIN_BASE_FEE)
                     .setTimeout(15)
                     .build();
