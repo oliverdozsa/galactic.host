@@ -3,6 +3,9 @@ package host.galactic.stellar.operations;
 import host.galactic.data.entities.VotingEntity;
 import io.quarkus.logging.Log;
 import io.smallrye.mutiny.Uni;
+import io.smallrye.mutiny.infrastructure.Infrastructure;
+import io.smallrye.mutiny.vertx.MutinyHelper;
+import io.vertx.core.Vertx;
 import org.stellar.sdk.*;
 import org.stellar.sdk.operations.ChangeTrustOperation;
 import org.stellar.sdk.operations.CreateAccountOperation;
@@ -65,7 +68,9 @@ public class StellarAssetAccountsOperation {
             var issuerSecret = new String(issuerKeyPair.getSecretSeed());
 
             return new StellarAssetAccounts(distributionSecret, ballotSecret, issuerSecret, voting.id);
-        });
+        })
+        .runSubscriptionOn(Infrastructure.getDefaultExecutor())
+        .emitOn(MutinyHelper.executor(Vertx.currentContext()));
     }
 
     private KeyPair prepareNewAccountCreation(BigDecimal startingBalanceXlm) {

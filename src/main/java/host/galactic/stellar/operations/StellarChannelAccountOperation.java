@@ -2,6 +2,9 @@ package host.galactic.stellar.operations;
 
 import io.quarkus.logging.Log;
 import io.smallrye.mutiny.Uni;
+import io.smallrye.mutiny.infrastructure.Infrastructure;
+import io.smallrye.mutiny.vertx.MutinyHelper;
+import io.vertx.core.Vertx;
 import org.stellar.sdk.*;
 import org.stellar.sdk.operations.CreateAccountOperation;
 
@@ -29,7 +32,7 @@ public class StellarChannelAccountOperation {
             var generatorAccount = server.loadAccount(generatorKeyPair.getAccountId());
             var transactionBuilder = new TransactionBuilder(generatorAccount, network);
 
-            var channelAccounts = new ArrayList<StellarChannelAccount>();
+            List<StellarChannelAccount> channelAccounts = new ArrayList<StellarChannelAccount>();
 
             for (var i = 0; i < payload.numOfAccountsToCreate(); i++) {
                 var channelKeyPair = prepareAccountCreationOn(transactionBuilder);
@@ -47,7 +50,9 @@ public class StellarChannelAccountOperation {
             Log.info("[STELLAR]: Successfully created channel accounts.");
 
             return channelAccounts;
-        });
+        })
+        .runSubscriptionOn(Infrastructure.getDefaultExecutor())
+        .emitOn(MutinyHelper.executor(Vertx.currentContext()));
     }
 
     private KeyPair prepareAccountCreationOn(TransactionBuilder txBuilder) {
