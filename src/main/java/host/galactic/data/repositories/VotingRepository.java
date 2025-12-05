@@ -82,7 +82,7 @@ public class VotingRepository implements PanacheRepository<VotingEntity> {
                         throw new ForbiddenException("User " + email + " is not the creator of voting with id =" + id + ".");
                     }
                 })
-                .chain(v -> deleteById(v.id))
+                .chain(this::delete)
                 .replaceWithVoid();
     }
 
