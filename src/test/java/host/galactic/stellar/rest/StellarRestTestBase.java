@@ -1,6 +1,7 @@
 package host.galactic.stellar.rest;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import host.galactic.stellar.rest.requests.voting.AddVotersRequest;
 import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
 import host.galactic.stellar.rest.responses.voting.PageResponse;
 import host.galactic.testutils.AuthForTest;
@@ -22,6 +23,10 @@ public class StellarRestTestBase {
     @TestHTTPEndpoint(StellarVotingRest.class)
     @TestHTTPResource
     protected URL stellarVotingRest;
+
+    @TestHTTPEndpoint(StellarCommissionRest.class)
+    @TestHTTPResource
+    protected URL stellarCommissionRest;
 
     protected AuthForTest authForTest = new AuthForTest();
 
@@ -85,6 +90,17 @@ public class StellarRestTestBase {
         return Long.parseLong(locationParts[locationParts.length - 1]);
     }
 
+    public void addVoterAsParticipantTo(Long votingId, String user, String owner) {
+        var addVotersRequest = new AddVotersRequest(List.of(user + "@galactic.pub"));
+        var withAccessTokenForAlice = authForTest.loginAs("charlie");
+        given()
+                .auth().oauth2(withAccessTokenForAlice)
+                .contentType(ContentType.JSON)
+                .body(addVotersRequest)
+                .post(stellarVotingRest + "/addvoters/" + votingId)
+                .then()
+                .statusCode(Response.Status.NO_CONTENT.getStatusCode());
+    }
 
     private Long getIdFromItem(Object item) {
         var itemAsMap = (Map) item;

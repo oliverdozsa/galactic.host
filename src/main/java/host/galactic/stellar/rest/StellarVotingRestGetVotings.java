@@ -36,7 +36,7 @@ class StellarVotingRestGetVotings {
                 .failWith(new NotFoundException())
                 .onItem()
                 .call(e -> Mutiny.fetch(e.voters))
-                .invoke(e -> checkIfUserIsAllowedToGetVoting(e, userInfo.getEmail()))
+                .invoke(this::checkIfUserIsAllowedToGetVoting)
                 .map(VotingEntityMapper::from)
                 .onFailure()
                 .invoke(t -> Log.warn("byId(): Could not get voting!", t));
@@ -56,23 +56,23 @@ class StellarVotingRestGetVotings {
                 .map(this::toResponse);
     }
 
-    private void checkIfUserIsAllowedToGetVoting(VotingEntity voting, String email) {
+    private void checkIfUserIsAllowedToGetVoting(VotingEntity voting) {
         if (voting.visibility == Visibility.PRIVATE &&
-                doesUserNotParticipateIn(voting, email) &&
-                isUserNotCreatorOf(voting, email)) {
-            Log.warnf("User \"%s\" is not allowed to get voting with id = %s", email, voting.id);
+                doesUserNotParticipateIn(voting) &&
+                isUserNotCreatorOf(voting)) {
+            Log.warnf("User \"%s\" is not allowed to get voting with id = %s", userInfo.getEmail(), voting.id);
             throw new ForbiddenException();
         }
     }
 
-    private boolean doesUserNotParticipateIn(VotingEntity entity, String email) {
+    private boolean doesUserNotParticipateIn(VotingEntity entity) {
         return entity.voters.stream()
                 .map(u -> u.email)
-                .noneMatch(e -> e.equals(email));
+                .noneMatch(e -> e.equals(userInfo.getEmail()));
     }
 
-    private boolean isUserNotCreatorOf(VotingEntity voting, String email) {
-        return !voting.createdBy.email.equals(email);
+    private boolean isUserNotCreatorOf(VotingEntity voting) {
+        return !voting.createdBy.email.equals(userInfo.getEmail());
     }
 
     private PageResponse<VotingResponse> toResponse(Page<VotingEntity> page) {

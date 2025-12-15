@@ -157,6 +157,32 @@ public class StellarVotersRestTest extends StellarRestTestBase {
         Log.info("[  END TEST]: testDuplicateEmailsInAddVotersRequest()\n\n");
     }
 
+    @Test
+    public void testAddVotersNotByVotingOwner() {
+        Log.info("[START TEST]: testAddVotersNotByVotingOwner()\n\n");
+
+        var location = createPrivateVotingByAlice();
+        String[] locationParts = location.split("/");
+        Long id = Long.parseLong(locationParts[locationParts.length - 1]);
+
+        var addVotersRequest = new AddVotersRequest(List.of(
+                "emily@galactic.pub",
+                "emily@galactic.pub",
+                "alice@galactic.pub",
+                "charlie@galactic.pub"));
+
+        var withAccessToken = authForTest.loginAs("charlie");
+        given()
+                .auth().oauth2(withAccessToken)
+                .contentType(ContentType.JSON)
+                .body(addVotersRequest)
+                .post(stellarVotingRest + "/addvoters/" + id)
+                .then()
+                .statusCode(Response.Status.FORBIDDEN.getStatusCode());
+
+        Log.info("[  END TEST]: testAddVotersNotByVotingOwner()\n\n");
+    }
+
     private String createPrivateVotingByAlice() {
         var createRequest = JsonUtils.readJsonFile("valid-voting-request.json");
         createRequest.put("visibility", CreateVotingRequest.Visibility.PRIVATE.name());
