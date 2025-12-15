@@ -16,6 +16,7 @@
         <skipITs>true</skipITs>
         <surefire-plugin.version>3.3.1</surefire-plugin.version>
         <awaitility.version>4.3.0</awaitility.version>
+        <bouncy-castle.version>1.82</bouncy-castle.version>
     </properties>
 
     <dependencyManagement>
@@ -91,6 +92,16 @@
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-scheduler</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk18on</artifactId>
+            <version>${bouncy-castle.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcpkix-jdk18on</artifactId>
+            <version>${bouncy-castle.version}</version>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
