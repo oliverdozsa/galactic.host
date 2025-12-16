@@ -90,11 +90,11 @@ public class StellarRestTestBase {
         return Long.parseLong(locationParts[locationParts.length - 1]);
     }
 
-    public void addVoterAsParticipantTo(Long votingId, String user, String owner) {
-        var addVotersRequest = new AddVotersRequest(List.of(user + "@galactic.pub"));
-        var withAccessTokenForAlice = authForTest.loginAs("charlie");
+    public void addVoterAsParticipantTo(Long votingId, String voter, String owner) {
+        var addVotersRequest = new AddVotersRequest(List.of(voter + "@galactic.pub"));
+        var withAccessTokenForOwner = authForTest.loginAs(owner);
         given()
-                .auth().oauth2(withAccessTokenForAlice)
+                .auth().oauth2(withAccessTokenForOwner)
                 .contentType(ContentType.JSON)
                 .body(addVotersRequest)
                 .post(stellarVotingRest + "/addvoters/" + votingId)
