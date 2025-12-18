@@ -1,11 +1,14 @@
 package host.galactic.stellar.rest;
 
+import host.galactic.stellar.StellarTestBase;
 import host.galactic.stellar.rest.requests.voting.AddVotersRequest;
 import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
 import host.galactic.stellar.rest.responses.voting.PageResponse;
+import host.galactic.testutils.AuthForTest;
 import io.quarkus.logging.Log;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 
@@ -18,14 +21,19 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 @QuarkusTest
-class StellarGetVotingsOfVoterTest extends StellarRestTestBase {
+class StellarGetVotingsOfVoterTest {
+    @Inject
+    private AuthForTest authForTest;
+
+    @Inject
+    private StellarTestBase testBase;
 
     @Test
     public void testGetVotingsOfVoterNotAuthenticated() {
         Log.info("[START TEST]: testGetVotingsOfVoterNotAuthenticated()");
 
         given()
-                .get(stellarVotingRest + "/")
+                .get(testBase.rest.voting.url + "/")
                 .then()
                 .statusCode(Response.Status.UNAUTHORIZED.getStatusCode());
 
@@ -65,7 +73,7 @@ class StellarGetVotingsOfVoterTest extends StellarRestTestBase {
 
         given()
                 .auth().oauth2(withAccessToken)
-                .get(stellarVotingRest + "/?page=" + totalPages)
+                .get(testBase.rest.voting.url + "/?page=" + totalPages)
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode())
                 .body("totalPages", greaterThan(0))
@@ -88,7 +96,7 @@ class StellarGetVotingsOfVoterTest extends StellarRestTestBase {
     }
 
     private long createAVotingAsCharlieWithParticipantAsAlice() {
-        var createRequest = makeCreateVotingRequest();
+        var createRequest = testBase.rest.voting.makeCreateVotingRequest();
         var withAccessToken = authForTest.loginAs("charlie");
 
         var location = given()
@@ -96,7 +104,7 @@ class StellarGetVotingsOfVoterTest extends StellarRestTestBase {
                 .contentType(ContentType.JSON)
                 .body(createRequest)
                 .when()
-                .post(stellarVotingRest)
+                .post(testBase.rest.voting.url)
                 .then()
                 .statusCode(Response.Status.CREATED.getStatusCode())
                 .extract()
@@ -112,7 +120,7 @@ class StellarGetVotingsOfVoterTest extends StellarRestTestBase {
     }
 
     private int getTotalPageCount() {
-        return getPage(stellarVotingRest.toString(), "alice", 0).totalPages();
+        return testBase.rest.getPage(testBase.rest.voting.url.toString(), "alice", 0).totalPages();
     }
 
     private void addAliceAsParticipantTo(Long votingId) {
@@ -122,15 +130,15 @@ class StellarGetVotingsOfVoterTest extends StellarRestTestBase {
                 .auth().oauth2(withAccessTokenForAlice)
                 .contentType(ContentType.JSON)
                 .body(addVotersRequest)
-                .post(stellarVotingRest + "/addvoters/" + votingId)
+                .post(testBase.rest.voting.url + "/addvoters/" + votingId)
                 .then()
                 .statusCode(Response.Status.NO_CONTENT.getStatusCode());
     }
 
     private List<Long> getActualVotingIdsWhereAliceIsParticipantWithPaging() {
-        List<PageResponse> aliceAsParticipantResponses = getPages(stellarVotingRest.toString(), "alice");
+        List<PageResponse> aliceAsParticipantResponses = testBase.rest.getPages(testBase.rest.voting.url.toString(), "alice");
         return aliceAsParticipantResponses.stream()
-                .map(this::getIdsFrom)
+                .map(this.testBase.rest::getIdsFrom)
                 .flatMap(Collection::stream)
                 .toList();
     }

@@ -2,13 +2,13 @@ package host.galactic.stellar.tasks;
 
 import host.galactic.data.entities.ChannelGeneratorEntity;
 import host.galactic.data.entities.VotingEntity;
-import host.galactic.stellar.rest.StellarRestTestBase;
+import host.galactic.stellar.StellarTestBase;
 import host.galactic.stellar.rest.requests.voting.AddVotersRequest;
+import host.galactic.testutils.AuthForTest;
 import io.quarkus.logging.Log;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import jakarta.inject.Inject;
-import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,17 +22,19 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.awaitility.Awaitility.*;
 
 @QuarkusTest
-public class StellarChannelGeneratorAccountsTest extends StellarRestTestBase {
+public class StellarChannelGeneratorAccountsTest {
     @Inject
-    EntityManager entityManager;
+    private AuthForTest authForTest;
+
+    @Inject
+    private StellarTestBase testBase;
 
     @BeforeEach
     @Transactional
     public void deleteAllVotings() {
-        var votings = entityManager.createQuery("select v from VotingEntity v", VotingEntity.class)
+        var votings = testBase.db.entityManager.createQuery("select v from VotingEntity v", VotingEntity.class)
                 .getResultList();
-        votings.forEach(v -> entityManager.remove(v));
-
+        votings.forEach(v -> testBase.db.entityManager.remove(v));
     }
 
     @Test
@@ -47,13 +49,13 @@ public class StellarChannelGeneratorAccountsTest extends StellarRestTestBase {
 
     @Transactional
     public List<ChannelGeneratorEntity> channelGeneratorsOf(Long votingId) {
-        return entityManager.createQuery("select c from ChannelGeneratorEntity c where voting.id = :id", ChannelGeneratorEntity.class)
+        return testBase.db.entityManager.createQuery("select c from ChannelGeneratorEntity c where voting.id = :id", ChannelGeneratorEntity.class)
                 .setParameter("id", votingId)
                 .getResultList();
     }
 
     private long createAVotingWithThreeParticipants() {
-        var id = createAVotingAs("alice");
+        var id = testBase.rest.voting.createAVotingAs("alice");
 
         var addVotersRequest = new AddVotersRequest(List.of("emily@galactic.pub", "duke@galactic.pub", "alice@galactic.pub"));
         String withAccessTokenForAlice = authForTest.loginAs("alice");
@@ -61,7 +63,7 @@ public class StellarChannelGeneratorAccountsTest extends StellarRestTestBase {
                 .auth().oauth2(withAccessTokenForAlice)
                 .contentType(ContentType.JSON)
                 .body(addVotersRequest)
-                .post(stellarVotingRest + "/addvoters/" + id)
+                .post(testBase.rest.voting.url + "/addvoters/" + id)
                 .then()
                 .statusCode(Response.Status.NO_CONTENT.getStatusCode());
 

@@ -1,11 +1,14 @@
 package host.galactic.stellar.rest;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import host.galactic.stellar.StellarTestBase;
 import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
 import host.galactic.stellar.rest.responses.voting.PageResponse;
+import host.galactic.testutils.AuthForTest;
 import host.galactic.testutils.JsonUtils;
 import io.quarkus.logging.Log;
 import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 
@@ -18,14 +21,19 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 @QuarkusTest
-public class StellarGetCreatedVotingsTest extends StellarRestTestBase {
+public class StellarGetCreatedVotingsTest {
+    @Inject
+    private AuthForTest authForTest;
+
+    @Inject
+    private StellarTestBase testBase;
 
     @Test
     public void testGetCreatedNotAuthenticated() {
         Log.info("[START TEST]: testGetCreatedNotAuthenticated()");
 
         given()
-                .get(stellarVotingRest + "/created")
+                .get(testBase.rest.voting.url + "/created")
                 .then()
                 .statusCode(Response.Status.UNAUTHORIZED.getStatusCode());
 
@@ -41,9 +49,9 @@ public class StellarGetCreatedVotingsTest extends StellarRestTestBase {
         var votingsCreatedByCharlie = createMultipleVotingsForPagingAs("charlie")
                 .toArray(new Long[]{});
 
-        var votingsCreatedByAliceQueried = getPages(stellarVotingRest + "/created", "alice")
+        var votingsCreatedByAliceQueried = testBase.rest.getPages(testBase.rest.voting.url + "/created", "alice")
                 .stream()
-                .map(this::getIdsFrom)
+                .map(this.testBase.rest::getIdsFrom)
                 .flatMap(Collection::stream)
                 .toList();
 
@@ -64,7 +72,7 @@ public class StellarGetCreatedVotingsTest extends StellarRestTestBase {
 
         given()
                 .auth().oauth2(withAccessToken)
-                .get(stellarVotingRest + "/created?page=" + totalPages)
+                .get(testBase.rest.voting.url + "/created?page=" + totalPages)
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode())
                 .body("totalPages", greaterThan(0))
@@ -80,7 +88,7 @@ public class StellarGetCreatedVotingsTest extends StellarRestTestBase {
         var withAccessToken = authForTest.loginAs("alice");
         given()
                 .auth().oauth2(withAccessToken)
-                .get(stellarVotingRest + "/" + votingId)
+                .get(testBase.rest.voting.url + "/" + votingId)
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode());
     }
@@ -90,7 +98,7 @@ public class StellarGetCreatedVotingsTest extends StellarRestTestBase {
         var asAlice = authForTest.loginAs("alice");
         given()
                 .auth().oauth2(asAlice)
-                .get(stellarVotingRest + "/-1")
+                .get(testBase.rest.voting.url + "/-1")
                 .then()
                 .statusCode(Response.Status.NOT_FOUND.getStatusCode());
     }
@@ -98,7 +106,7 @@ public class StellarGetCreatedVotingsTest extends StellarRestTestBase {
     private List<Long> createMultipleVotingsForPagingAs(String user) {
         var createdVotingIds = new ArrayList<Long>();
         for (int i = 0; i < 42; i++) {
-            createdVotingIds.add(createAVotingAs(user));
+            createdVotingIds.add(testBase.rest.voting.createAVotingAs(user));
         }
 
         return createdVotingIds;
@@ -109,7 +117,7 @@ public class StellarGetCreatedVotingsTest extends StellarRestTestBase {
         votingRequestJson.put("visibility", "PRIVATE");
 
         var createRequest = JsonUtils.convertJsonNodeTo(CreateVotingRequest.class, votingRequestJson);
-        return createVoting(createRequest, user);
+        return testBase.rest.voting.createVoting(createRequest, user);
     }
 
     private int getTotalPageCount() {
@@ -117,7 +125,7 @@ public class StellarGetCreatedVotingsTest extends StellarRestTestBase {
 
         return given()
                 .auth().oauth2(withAccessToken)
-                .get(stellarVotingRest + "/created")
+                .get(testBase.rest.voting.url + "/created")
                 .then()
                 .extract()
                 .body()

@@ -1,13 +1,19 @@
 package host.galactic.stellar.rest;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import host.galactic.stellar.StellarTestBase;
 import host.galactic.stellar.rest.requests.voting.AddVotersRequest;
 import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
 import host.galactic.stellar.rest.responses.voting.VotingResponse;
+
+import host.galactic.testutils.AuthForTest;
 import host.galactic.testutils.JsonUtils;
 import io.quarkus.logging.Log;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
+
+import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +24,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 @QuarkusTest
-public class StellarVotersRestTest extends StellarRestTestBase {
+public class StellarVotersRestTest {
+    @Inject
+    private AuthForTest authForTest;
+
+    @Inject
+    private StellarTestBase testBase;
 
     @Test
     public void testGetPrivateVotingAsNonParticipant() {
@@ -78,7 +89,7 @@ public class StellarVotersRestTest extends StellarRestTestBase {
                 .auth().oauth2(withAccessTokenForAlice)
                 .contentType(ContentType.JSON)
                 .body(addVotersRequest)
-                .post(stellarVotingRest + "/addvoters/" + id)
+                .post(testBase.rest.voting.url + "/addvoters/" + id)
                 .then()
                 .statusCode(Response.Status.NO_CONTENT.getStatusCode());
 
@@ -113,7 +124,7 @@ public class StellarVotersRestTest extends StellarRestTestBase {
                 .auth().oauth2(withAccessToken)
                 .contentType(ContentType.JSON)
                 .body(addVotersRequest)
-                .post(stellarVotingRest + "/addvoters/" + id)
+                .post(testBase.rest.voting.url + "/addvoters/" + id)
                 .then()
                 .statusCode(Response.Status.BAD_REQUEST.getStatusCode());
 
@@ -139,7 +150,7 @@ public class StellarVotersRestTest extends StellarRestTestBase {
                 .auth().oauth2(withAccessToken)
                 .contentType(ContentType.JSON)
                 .body(addVotersRequest)
-                .post(stellarVotingRest + "/addvoters/" + id)
+                .post(testBase.rest.voting.url + "/addvoters/" + id)
                 .then()
                 .statusCode(Response.Status.NO_CONTENT.getStatusCode());
 
@@ -176,7 +187,7 @@ public class StellarVotersRestTest extends StellarRestTestBase {
                 .auth().oauth2(withAccessToken)
                 .contentType(ContentType.JSON)
                 .body(addVotersRequest)
-                .post(stellarVotingRest + "/addvoters/" + id)
+                .post(testBase.rest.voting.url + "/addvoters/" + id)
                 .then()
                 .statusCode(Response.Status.FORBIDDEN.getStatusCode());
 
@@ -193,7 +204,7 @@ public class StellarVotersRestTest extends StellarRestTestBase {
                 .contentType(ContentType.JSON)
                 .body(createRequest)
                 .when()
-                .post(stellarVotingRest)
+                .post(testBase.rest.voting.url)
                 .then()
                 .statusCode(Response.Status.CREATED.getStatusCode())
                 .extract()
@@ -210,7 +221,7 @@ public class StellarVotersRestTest extends StellarRestTestBase {
                 .contentType(ContentType.JSON)
                 .body(createRequest)
                 .when()
-                .post(stellarVotingRest)
+                .post(testBase.rest.voting.url)
                 .then()
                 .statusCode(Response.Status.CREATED.getStatusCode())
                 .extract()

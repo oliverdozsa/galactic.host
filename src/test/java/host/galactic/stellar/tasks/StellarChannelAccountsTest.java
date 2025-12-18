@@ -2,16 +2,16 @@ package host.galactic.stellar.tasks;
 
 import host.galactic.data.entities.ChannelAccountEntity;
 import host.galactic.data.entities.VotingEntity;
-import host.galactic.stellar.rest.StellarRestTestBase;
+import host.galactic.stellar.StellarTestBase;
 import host.galactic.stellar.rest.requests.voting.AddVotersRequest;
 import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
+import host.galactic.testutils.AuthForTest;
 import host.galactic.testutils.JsonUtils;
 import host.galactic.testutils.StringUtils;
 import io.quarkus.logging.Log;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import jakarta.inject.Inject;
-import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,16 +25,19 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.awaitility.Awaitility.*;
 
 @QuarkusTest
-public class StellarChannelAccountsTest extends StellarRestTestBase {
+public class StellarChannelAccountsTest {
     @Inject
-    EntityManager entityManager;
+    private AuthForTest authForTest;
+
+    @Inject
+    private StellarTestBase testBase;
 
     @BeforeEach
     @Transactional
     public void deleteAllVotings() {
-        var votings = entityManager.createQuery("select v from VotingEntity v", VotingEntity.class)
+        var votings = testBase.db.entityManager.createQuery("select v from VotingEntity v", VotingEntity.class)
                 .getResultList();
-        votings.forEach(v -> entityManager.remove(v));
+        votings.forEach(v -> testBase.db.entityManager.remove(v));
     }
 
     @Test
@@ -49,7 +52,7 @@ public class StellarChannelAccountsTest extends StellarRestTestBase {
 
     @Transactional
     public List<ChannelAccountEntity> channelAccountsOfVoting(Long votingId) {
-        return entityManager.createQuery("select c from ChannelAccountEntity c where voting.id = :id", ChannelAccountEntity.class)
+        return testBase.db.entityManager.createQuery("select c from ChannelAccountEntity c where voting.id = :id", ChannelAccountEntity.class)
                 .setParameter("id", votingId)
                 .getResultList();
     }
@@ -60,7 +63,7 @@ public class StellarChannelAccountsTest extends StellarRestTestBase {
 
         var createVotingRequest = JsonUtils.convertJsonNodeTo(CreateVotingRequest.class, votingRequestJson);
 
-        var votingId = createVoting(createVotingRequest, "alice");
+        var votingId = testBase.rest.voting.createVoting(createVotingRequest, "alice");
 
         List<String> multipleParticipants = new ArrayList<>();
         for (int i = 0; i < 42; i++) {
@@ -74,7 +77,7 @@ public class StellarChannelAccountsTest extends StellarRestTestBase {
                 .auth().oauth2(withAccessTokenForAlice)
                 .contentType(ContentType.JSON)
                 .body(addVotersRequest)
-                .post(stellarVotingRest + "/addvoters/" + votingId)
+                .post(testBase.rest.voting.url + "/addvoters/" + votingId)
                 .then()
                 .statusCode(Response.Status.NO_CONTENT.getStatusCode());
 
