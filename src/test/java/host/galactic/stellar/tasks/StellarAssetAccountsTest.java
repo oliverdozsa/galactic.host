@@ -1,55 +1,40 @@
 package host.galactic.stellar.tasks;
 
 import host.galactic.data.entities.VotingEntity;
-import host.galactic.stellar.rest.StellarRestTestBase;
+import host.galactic.stellar.StellarTestBase;
 import host.galactic.stellar.rest.responses.voting.VotingResponse;
 import io.quarkus.logging.Log;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
-import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static io.restassured.RestAssured.given;
 import static org.awaitility.Awaitility.*;
 
 @QuarkusTest
-public class StellarAssetAccountsTest extends StellarRestTestBase {
+public class StellarAssetAccountsTest {
     @Inject
-    EntityManager entityManager;
+    private StellarTestBase testBase;
 
     @BeforeEach
     @Transactional
     public void deleteAllVotings() {
-        var votings = entityManager.createQuery("select v from VotingEntity v", VotingEntity.class)
+        var votings = testBase.db.entityManager.createQuery("select v from VotingEntity v", VotingEntity.class)
                 .getResultList();
-        votings.forEach(v -> entityManager.remove(v));
-
+        votings.forEach(v -> testBase.db.entityManager.remove(v));
     }
 
     @Test
     public void testAssetAccountsCreated() {
         Log.info("[START TEST]: testAssetAccountsCreated()");
 
-        var votingId = createAVotingAs("alice");
-        await().until(() -> getVotingBy(votingId), hasAssetAccounts());
+        var votingId = testBase.rest.voting.createAVotingAs("alice");
+        await().until(() -> testBase.rest.voting.getVotingBy(votingId, "alice"), hasAssetAccounts());
 
         Log.info("[  END TEST]: testAssetAccountsCreated()");
-    }
-
-    public VotingResponse getVotingBy(Long votingId) {
-        String withAccessToken = authForTest.loginAs("alice");
-        return given()
-                .auth().oauth2(withAccessToken)
-                .get(stellarVotingRest + "/" + votingId)
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .as(VotingResponse.class);
     }
 
     private static class VotingAssetAccountsMatcher extends TypeSafeMatcher<VotingResponse> {

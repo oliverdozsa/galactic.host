@@ -1,41 +1,51 @@
 package host.galactic.stellar.rest;
 
+import host.galactic.stellar.StellarTestBase;
 import host.galactic.stellar.rest.requests.commission.CommissionInitRequest;
 import host.galactic.stellar.rest.responses.commission.CommissionInitResponse;
+import host.galactic.testutils.AuthForTest;
 import io.quarkus.logging.Log;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 @QuarkusTest
-public class StellarCommissionInitRestTest extends StellarRestTestBase {
+public class StellarCommissionInitRestTest {
+    @Inject
+    private StellarTestBase testBase;
+
+    @Inject
+    private AuthForTest authForTest;
+
     @Test
     public void testInitSession() {
         Log.info("[START TEST]: testInitSession()");
 
-        var votingId = createAVotingAs("alice");
-        addVoterAsParticipantTo(votingId, "charlie", "alice");
+        var votingId = initializeAVotingWithParticipant("charlie");
 
         var withAccessToken = authForTest.loginAs("charlie");
 
-        var initRequest = new CommissionInitRequest();
+        var initRequest = new CommissionInitRequest(votingId);
 
         var response = given()
                 .auth().oauth2(withAccessToken)
                 .contentType(ContentType.JSON)
                 .body(initRequest)
                 .when()
-                .post(stellarCommissionRest + "/initsession")
+                .post(testBase.rest.commission.url + "/initsession")
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode())
                 .extract().body()
                 .as(CommissionInitResponse.class);
 
-        // TODO: asserts about response
+        assertThat(response.publicKey(), notNullValue());
 
         Log.info("[  END TEST]: testInitSession()");
     }
@@ -58,5 +68,16 @@ public class StellarCommissionInitRestTest extends StellarRestTestBase {
     @Test
     public void testInitSessionUserIsNotAuthorizedToInit() {
         fail("Implement testInitSessionUserIsNotParticipant()");
+    }
+
+    private Long initializeAVotingWithParticipant(String voter) {
+//        var votingId = createAVotingAs("alice");
+//        addVoterAsParticipantTo(votingId, voter, "alice");
+//
+//        waitForChannelAccountsToBeCreatedFor(votingId);
+//        waitForAssetAccountsToBeCreatedFor(votingId);
+
+//        return votingId;
+        return 0L;
     }
 }
