@@ -27,17 +27,17 @@ public class StellarRestVotingTestBase {
     @TestHTTPResource
     public URL url;
 
-    public long createAVotingAs(String user) {
-        var createRequest = makeCreateVotingRequest();
-        return createVoting(createRequest, user);
+    public long createAs(String user) {
+        var createRequest = makeCreateRequest();
+        return create(createRequest, user);
     }
 
-    public CreateVotingRequest makeCreateVotingRequest() {
+    public CreateVotingRequest makeCreateRequest() {
         var votingRequestJson = JsonUtils.readJsonFile("valid-voting-request.json");
         return JsonUtils.convertJsonNodeTo(CreateVotingRequest.class, votingRequestJson);
     }
 
-    public long createVoting(CreateVotingRequest request, String user) {
+    public long create(CreateVotingRequest request, String user) {
         var withAccessToken = authForTest.loginAs(user);
         var location = given()
                 .auth().oauth2(withAccessToken)
@@ -66,7 +66,7 @@ public class StellarRestVotingTestBase {
                 .statusCode(Response.Status.NO_CONTENT.getStatusCode());
     }
 
-    public VotingResponse getVotingBy(Long votingId, String owner) {
+    public VotingResponse getById(Long votingId, String owner) {
         String withAccessToken = authForTest.loginAs(owner);
         return given()
                 .auth().oauth2(withAccessToken)

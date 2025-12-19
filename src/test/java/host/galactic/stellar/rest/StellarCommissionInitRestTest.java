@@ -1,6 +1,6 @@
 package host.galactic.stellar.rest;
 
-import host.galactic.stellar.StellarTestBase;
+import host.galactic.stellar.StellarTest;
 import host.galactic.stellar.rest.requests.commission.CommissionInitRequest;
 import host.galactic.stellar.rest.responses.commission.CommissionInitResponse;
 import host.galactic.testutils.AuthForTest;
@@ -19,10 +19,10 @@ import static org.junit.jupiter.api.Assertions.fail;
 @QuarkusTest
 public class StellarCommissionInitRestTest {
     @Inject
-    private StellarTestBase testBase;
+    private StellarTest test;
 
     @Inject
-    private AuthForTest authForTest;
+    private AuthForTest auth;
 
     @Test
     public void testInitSession() {
@@ -30,7 +30,7 @@ public class StellarCommissionInitRestTest {
 
         var votingId = initializeAVotingWithParticipant("charlie");
 
-        var withAccessToken = authForTest.loginAs("charlie");
+        var withAccessToken = auth.loginAs("charlie");
 
         var initRequest = new CommissionInitRequest(votingId);
 
@@ -39,7 +39,7 @@ public class StellarCommissionInitRestTest {
                 .contentType(ContentType.JSON)
                 .body(initRequest)
                 .when()
-                .post(testBase.rest.commission.url + "/initsession")
+                .post(test.rest.commission.url + "/initsession")
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode())
                 .extract().body()

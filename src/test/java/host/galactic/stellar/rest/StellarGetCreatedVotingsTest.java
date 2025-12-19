@@ -1,7 +1,7 @@
 package host.galactic.stellar.rest;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import host.galactic.stellar.StellarTestBase;
+import host.galactic.stellar.StellarTest;
 import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
 import host.galactic.stellar.rest.responses.voting.PageResponse;
 import host.galactic.testutils.AuthForTest;
@@ -23,17 +23,17 @@ import static org.hamcrest.Matchers.*;
 @QuarkusTest
 public class StellarGetCreatedVotingsTest {
     @Inject
-    private AuthForTest authForTest;
+    private AuthForTest auth;
 
     @Inject
-    private StellarTestBase testBase;
+    private StellarTest test;
 
     @Test
     public void testGetCreatedNotAuthenticated() {
         Log.info("[START TEST]: testGetCreatedNotAuthenticated()");
 
         given()
-                .get(testBase.rest.voting.url + "/created")
+                .get(test.rest.voting.url + "/created")
                 .then()
                 .statusCode(Response.Status.UNAUTHORIZED.getStatusCode());
 
@@ -49,9 +49,9 @@ public class StellarGetCreatedVotingsTest {
         var votingsCreatedByCharlie = createMultipleVotingsForPagingAs("charlie")
                 .toArray(new Long[]{});
 
-        var votingsCreatedByAliceQueried = testBase.rest.getPages(testBase.rest.voting.url + "/created", "alice")
+        var votingsCreatedByAliceQueried = test.rest.getPages(test.rest.voting.url + "/created", "alice")
                 .stream()
-                .map(this.testBase.rest::getIdsFrom)
+                .map(this.test.rest::getIdsFrom)
                 .flatMap(Collection::stream)
                 .toList();
 
@@ -67,12 +67,12 @@ public class StellarGetCreatedVotingsTest {
 
         createMultipleVotingsForPagingAs("alice");
 
-        var withAccessToken = authForTest.loginAs("alice");
+        var withAccessToken = auth.loginAs("alice");
         int totalPages = getTotalPageCount();
 
         given()
                 .auth().oauth2(withAccessToken)
-                .get(testBase.rest.voting.url + "/created?page=" + totalPages)
+                .get(test.rest.voting.url + "/created?page=" + totalPages)
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode())
                 .body("totalPages", greaterThan(0))
@@ -85,20 +85,20 @@ public class StellarGetCreatedVotingsTest {
     public void testGetSingleByCreator() {
         var votingId = createPrivateVotingAs("alice");
 
-        var withAccessToken = authForTest.loginAs("alice");
+        var withAccessToken = auth.loginAs("alice");
         given()
                 .auth().oauth2(withAccessToken)
-                .get(testBase.rest.voting.url + "/" + votingId)
+                .get(test.rest.voting.url + "/" + votingId)
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode());
     }
 
     @Test
     public void testGetNotExisting() {
-        var asAlice = authForTest.loginAs("alice");
+        var asAlice = auth.loginAs("alice");
         given()
                 .auth().oauth2(asAlice)
-                .get(testBase.rest.voting.url + "/-1")
+                .get(test.rest.voting.url + "/-1")
                 .then()
                 .statusCode(Response.Status.NOT_FOUND.getStatusCode());
     }
@@ -106,7 +106,7 @@ public class StellarGetCreatedVotingsTest {
     private List<Long> createMultipleVotingsForPagingAs(String user) {
         var createdVotingIds = new ArrayList<Long>();
         for (int i = 0; i < 42; i++) {
-            createdVotingIds.add(testBase.rest.voting.createAVotingAs(user));
+            createdVotingIds.add(test.rest.voting.createAs(user));
         }
 
         return createdVotingIds;
@@ -117,15 +117,15 @@ public class StellarGetCreatedVotingsTest {
         votingRequestJson.put("visibility", "PRIVATE");
 
         var createRequest = JsonUtils.convertJsonNodeTo(CreateVotingRequest.class, votingRequestJson);
-        return testBase.rest.voting.createVoting(createRequest, user);
+        return test.rest.voting.create(createRequest, user);
     }
 
     private int getTotalPageCount() {
-        var withAccessToken = authForTest.loginAs("alice");
+        var withAccessToken = auth.loginAs("alice");
 
         return given()
                 .auth().oauth2(withAccessToken)
-                .get(testBase.rest.voting.url + "/created")
+                .get(test.rest.voting.url + "/created")
                 .then()
                 .extract()
                 .body()

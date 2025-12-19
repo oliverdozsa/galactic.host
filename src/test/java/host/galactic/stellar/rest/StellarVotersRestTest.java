@@ -2,7 +2,7 @@ package host.galactic.stellar.rest;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import host.galactic.stellar.StellarTestBase;
+import host.galactic.stellar.StellarTest;
 import host.galactic.stellar.rest.requests.voting.AddVotersRequest;
 import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
 import host.galactic.stellar.rest.responses.voting.VotingResponse;
@@ -26,17 +26,17 @@ import static org.hamcrest.Matchers.equalTo;
 @QuarkusTest
 public class StellarVotersRestTest {
     @Inject
-    private AuthForTest authForTest;
+    private AuthForTest auth;
 
     @Inject
-    private StellarTestBase testBase;
+    private StellarTest test;
 
     @Test
     public void testGetPrivateVotingAsNonParticipant() {
         Log.info("[START TEST]: testGetPrivateVotingAsNonParticipant()");
         var location = createPrivateVotingByAlice();
 
-        var withAccessToken = authForTest.loginAs("charlie");
+        var withAccessToken = auth.loginAs("charlie");
         given()
                 .auth().oauth2(withAccessToken)
                 .get(location)
@@ -65,7 +65,7 @@ public class StellarVotersRestTest {
 
         var location = createUnlistedVotingByAlice();
 
-        var withAccessToken = authForTest.loginAs("helena");
+        var withAccessToken = auth.loginAs("helena");
         given()
                 .auth().oauth2(withAccessToken)
                 .get(location)
@@ -84,16 +84,16 @@ public class StellarVotersRestTest {
         Long id = Long.parseLong(locationParts[locationParts.length - 1]);
 
         AddVotersRequest addVotersRequest = new AddVotersRequest(List.of("emily@galactic.pub", "duke@galactic.pub", "alice@galactic.pub"));
-        var withAccessTokenForAlice = authForTest.loginAs("alice");
+        var withAccessTokenForAlice = auth.loginAs("alice");
         given()
                 .auth().oauth2(withAccessTokenForAlice)
                 .contentType(ContentType.JSON)
                 .body(addVotersRequest)
-                .post(testBase.rest.voting.url + "/addvoters/" + id)
+                .post(test.rest.voting.url + "/addvoters/" + id)
                 .then()
                 .statusCode(Response.Status.NO_CONTENT.getStatusCode());
 
-        var withAccessTokenForEmily = authForTest.loginAs("emily");
+        var withAccessTokenForEmily = auth.loginAs("emily");
         given()
                 .auth().oauth2(withAccessTokenForEmily)
                 .get(location)
@@ -119,12 +119,12 @@ public class StellarVotersRestTest {
                 "frank@galactic.pub",
                 "bob@galactic.pub"));
 
-        var withAccessToken = authForTest.loginAs("alice");
+        var withAccessToken = auth.loginAs("alice");
         given()
                 .auth().oauth2(withAccessToken)
                 .contentType(ContentType.JSON)
                 .body(addVotersRequest)
-                .post(testBase.rest.voting.url + "/addvoters/" + id)
+                .post(test.rest.voting.url + "/addvoters/" + id)
                 .then()
                 .statusCode(Response.Status.BAD_REQUEST.getStatusCode());
 
@@ -145,12 +145,12 @@ public class StellarVotersRestTest {
                 "alice@galactic.pub",
                 "charlie@galactic.pub"));
 
-        var withAccessToken = authForTest.loginAs("alice");
+        var withAccessToken = auth.loginAs("alice");
         given()
                 .auth().oauth2(withAccessToken)
                 .contentType(ContentType.JSON)
                 .body(addVotersRequest)
-                .post(testBase.rest.voting.url + "/addvoters/" + id)
+                .post(test.rest.voting.url + "/addvoters/" + id)
                 .then()
                 .statusCode(Response.Status.NO_CONTENT.getStatusCode());
 
@@ -182,12 +182,12 @@ public class StellarVotersRestTest {
                 "alice@galactic.pub",
                 "charlie@galactic.pub"));
 
-        var withAccessToken = authForTest.loginAs("charlie");
+        var withAccessToken = auth.loginAs("charlie");
         given()
                 .auth().oauth2(withAccessToken)
                 .contentType(ContentType.JSON)
                 .body(addVotersRequest)
-                .post(testBase.rest.voting.url + "/addvoters/" + id)
+                .post(test.rest.voting.url + "/addvoters/" + id)
                 .then()
                 .statusCode(Response.Status.FORBIDDEN.getStatusCode());
 
@@ -198,13 +198,13 @@ public class StellarVotersRestTest {
         var createRequest = JsonUtils.readJsonFile("valid-voting-request.json");
         createRequest.put("visibility", CreateVotingRequest.Visibility.PRIVATE.name());
 
-        var withAccessToken = authForTest.loginAs("alice");
+        var withAccessToken = auth.loginAs("alice");
         return given()
                 .auth().oauth2(withAccessToken)
                 .contentType(ContentType.JSON)
                 .body(createRequest)
                 .when()
-                .post(testBase.rest.voting.url)
+                .post(test.rest.voting.url)
                 .then()
                 .statusCode(Response.Status.CREATED.getStatusCode())
                 .extract()
@@ -215,13 +215,13 @@ public class StellarVotersRestTest {
         ObjectNode createRequest = JsonUtils.readJsonFile("valid-voting-request.json");
         createRequest.put("visibility", CreateVotingRequest.Visibility.UNLISTED.name());
 
-        var withAccessToken = authForTest.loginAs("alice");
+        var withAccessToken = auth.loginAs("alice");
         return given()
                 .auth().oauth2(withAccessToken)
                 .contentType(ContentType.JSON)
                 .body(createRequest)
                 .when()
-                .post(testBase.rest.voting.url)
+                .post(test.rest.voting.url)
                 .then()
                 .statusCode(Response.Status.CREATED.getStatusCode())
                 .extract()
