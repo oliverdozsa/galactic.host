@@ -32,7 +32,7 @@ class StellarGetVotingsOfVoterTest {
         Log.info("[START TEST]: testGetVotingsOfVoterNotAuthenticated()");
 
         given()
-                .get(test.rest.voting.url + "/")
+                .get(test.getRest().getVoting().getUrl() + "/")
                 .then()
                 .statusCode(Response.Status.UNAUTHORIZED.getStatusCode());
 
@@ -72,7 +72,7 @@ class StellarGetVotingsOfVoterTest {
 
         given()
                 .auth().oauth2(withAccessToken)
-                .get(test.rest.voting.url + "/?page=" + totalPages)
+                .get(test.getRest().getVoting().getUrl() + "/?page=" + totalPages)
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode())
                 .body("totalPages", greaterThan(0))
@@ -95,7 +95,7 @@ class StellarGetVotingsOfVoterTest {
     }
 
     private long createAVotingAsCharlieWithParticipantAsAlice() {
-        var createRequest = test.rest.voting.makeCreateRequest();
+        var createRequest = test.getRest().getVoting().makeCreateRequest();
         var withAccessToken = auth.loginAs("charlie");
 
         var location = given()
@@ -103,7 +103,7 @@ class StellarGetVotingsOfVoterTest {
                 .contentType(ContentType.JSON)
                 .body(createRequest)
                 .when()
-                .post(test.rest.voting.url)
+                .post(test.getRest().getVoting().getUrl())
                 .then()
                 .statusCode(Response.Status.CREATED.getStatusCode())
                 .extract()
@@ -119,7 +119,7 @@ class StellarGetVotingsOfVoterTest {
     }
 
     private int getTotalPageCount() {
-        return test.rest.getPage(test.rest.voting.url.toString(), "alice", 0).totalPages();
+        return test.getRest().getPage(test.getRest().getVoting().getUrl().toString(), "alice", 0).totalPages();
     }
 
     private void addAliceAsParticipantTo(Long votingId) {
@@ -129,15 +129,15 @@ class StellarGetVotingsOfVoterTest {
                 .auth().oauth2(withAccessTokenForAlice)
                 .contentType(ContentType.JSON)
                 .body(addVotersRequest)
-                .post(test.rest.voting.url + "/addvoters/" + votingId)
+                .post(test.getRest().getVoting().getUrl() + "/addvoters/" + votingId)
                 .then()
                 .statusCode(Response.Status.NO_CONTENT.getStatusCode());
     }
 
     private List<Long> getActualVotingIdsWhereAliceIsParticipantWithPaging() {
-        List<PageResponse> aliceAsParticipantResponses = test.rest.getPages(test.rest.voting.url.toString(), "alice");
+        List<PageResponse> aliceAsParticipantResponses = test.getRest().getPages(test.getRest().getVoting().getUrl().toString(), "alice");
         return aliceAsParticipantResponses.stream()
-                .map(this.test.rest::getIdsFrom)
+                .map(r -> test.getRest().getIdsFrom(r))
                 .flatMap(Collection::stream)
                 .toList();
     }

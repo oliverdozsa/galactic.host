@@ -32,9 +32,9 @@ public class StellarChannelGeneratorAccountsTest {
     @BeforeEach
     @Transactional
     public void deleteAllVotings() {
-        var votings = test.db.entityManager.createQuery("select v from VotingEntity v", VotingEntity.class)
+        var votings = test.getDb().getEntityManager().createQuery("select v from VotingEntity v", VotingEntity.class)
                 .getResultList();
-        votings.forEach(v -> test.db.entityManager.remove(v));
+        votings.forEach(v -> test.getDb().getEntityManager().remove(v));
     }
 
     @Test
@@ -49,13 +49,13 @@ public class StellarChannelGeneratorAccountsTest {
 
     @Transactional
     public List<ChannelGeneratorEntity> channelGeneratorsOf(Long votingId) {
-        return test.db.entityManager.createQuery("select c from ChannelGeneratorEntity c where voting.id = :id", ChannelGeneratorEntity.class)
+        return test.getDb().getEntityManager().createQuery("select c from ChannelGeneratorEntity c where voting.id = :id", ChannelGeneratorEntity.class)
                 .setParameter("id", votingId)
                 .getResultList();
     }
 
     private long createAVotingWithThreeParticipants() {
-        var id = test.rest.voting.createAs("alice");
+        var id = test.getRest().getVoting().createAs("alice");
 
         var addVotersRequest = new AddVotersRequest(List.of("emily@galactic.pub", "duke@galactic.pub", "alice@galactic.pub"));
         String withAccessTokenForAlice = auth.loginAs("alice");
@@ -63,7 +63,7 @@ public class StellarChannelGeneratorAccountsTest {
                 .auth().oauth2(withAccessTokenForAlice)
                 .contentType(ContentType.JSON)
                 .body(addVotersRequest)
-                .post(test.rest.voting.url + "/addvoters/" + id)
+                .post(test.getRest().getVoting().getUrl() + "/addvoters/" + id)
                 .then()
                 .statusCode(Response.Status.NO_CONTENT.getStatusCode());
 

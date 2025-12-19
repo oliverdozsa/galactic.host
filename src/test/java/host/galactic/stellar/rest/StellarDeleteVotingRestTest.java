@@ -27,13 +27,13 @@ public class StellarDeleteVotingRestTest {
     public void testDeleteExisting() {
         Log.info("[START TEST]: testDeleteExisting()");
 
-        long id = test.rest.voting.createAs("alice");
+        long id = test.getRest().getVoting().createAs("alice");
         assertVotingWithIdExists(id);
 
         var asAlice = auth.loginAs("alice");
         given().auth().oauth2(asAlice)
                 .when()
-                .delete(test.rest.voting.url + "/" + id)
+                .delete(test.getRest().getVoting().getUrl() + "/" + id)
                 .then()
                 .statusCode(Response.Status.NO_CONTENT.getStatusCode());
 
@@ -51,7 +51,7 @@ public class StellarDeleteVotingRestTest {
         var asAlice = auth.loginAs("alice");
         given().auth().oauth2(asAlice)
                 .when()
-                .delete(test.rest.voting.url + "/-1")
+                .delete(test.getRest().getVoting().getUrl() + "/-1")
                 .then()
                 .statusCode(Response.Status.NOT_FOUND.getStatusCode());
 
@@ -62,13 +62,13 @@ public class StellarDeleteVotingRestTest {
     public void testDeleteForbidden() {
         Log.info("[START TEST]: testDeleteForbidden()");
 
-        long id = test.rest.voting.createAs("alice");
+        long id = test.getRest().getVoting().createAs("alice");
         assertVotingWithIdExists(id);
 
         var asBob = auth.loginAs("bob");
         given().auth().oauth2(asBob)
                 .when()
-                .delete(test.rest.voting.url + "/" + id)
+                .delete(test.getRest().getVoting().getUrl() + "/" + id)
                 .then()
                 .statusCode(Response.Status.FORBIDDEN.getStatusCode());
 
@@ -81,7 +81,7 @@ public class StellarDeleteVotingRestTest {
         VotingEntity voting = null;
 
         try {
-            voting = test.db.entityManager.createQuery("select v from VotingEntity v where v.id = :id", VotingEntity.class)
+            voting = test.getDb().getEntityManager().createQuery("select v from VotingEntity v where v.id = :id", VotingEntity.class)
                     .setParameter("id", id)
                     .getSingleResult();
         } catch (NoResultException ignored) {
@@ -94,7 +94,7 @@ public class StellarDeleteVotingRestTest {
         VotingEntity voting = null;
 
         try {
-            voting = test.db.entityManager.createQuery("select v from VotingEntity v where v.id = :id", VotingEntity.class)
+            voting = test.getDb().getEntityManager().createQuery("select v from VotingEntity v where v.id = :id", VotingEntity.class)
                     .setParameter("id", id)
                     .getSingleResult();
         } catch (NoResultException ignored) {

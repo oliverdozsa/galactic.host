@@ -35,9 +35,9 @@ public class StellarChannelAccountsTest {
     @BeforeEach
     @Transactional
     public void deleteAllVotings() {
-        var votings = test.db.entityManager.createQuery("select v from VotingEntity v", VotingEntity.class)
+        var votings = test.getDb().getEntityManager().createQuery("select v from VotingEntity v", VotingEntity.class)
                 .getResultList();
-        votings.forEach(v -> test.db.entityManager.remove(v));
+        votings.forEach(v -> test.getDb().getEntityManager().remove(v));
     }
 
     @Test
@@ -52,7 +52,7 @@ public class StellarChannelAccountsTest {
 
     @Transactional
     public List<ChannelAccountEntity> channelAccountsOfVoting(Long votingId) {
-        return test.db.entityManager.createQuery("select c from ChannelAccountEntity c where voting.id = :id", ChannelAccountEntity.class)
+        return test.getDb().getEntityManager().createQuery("select c from ChannelAccountEntity c where voting.id = :id", ChannelAccountEntity.class)
                 .setParameter("id", votingId)
                 .getResultList();
     }
@@ -63,7 +63,7 @@ public class StellarChannelAccountsTest {
 
         var createVotingRequest = JsonUtils.convertJsonNodeTo(CreateVotingRequest.class, votingRequestJson);
 
-        var votingId = test.rest.voting.create(createVotingRequest, "alice");
+        var votingId = test.getRest().getVoting().create(createVotingRequest, "alice");
 
         List<String> multipleParticipants = new ArrayList<>();
         for (int i = 0; i < 42; i++) {
@@ -77,7 +77,7 @@ public class StellarChannelAccountsTest {
                 .auth().oauth2(withAccessTokenForAlice)
                 .contentType(ContentType.JSON)
                 .body(addVotersRequest)
-                .post(test.rest.voting.url + "/addvoters/" + votingId)
+                .post(test.getRest().getVoting().getUrl() + "/addvoters/" + votingId)
                 .then()
                 .statusCode(Response.Status.NO_CONTENT.getStatusCode());
 

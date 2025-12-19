@@ -33,7 +33,7 @@ public class StellarGetCreatedVotingsTest {
         Log.info("[START TEST]: testGetCreatedNotAuthenticated()");
 
         given()
-                .get(test.rest.voting.url + "/created")
+                .get(test.getRest().getVoting().getUrl() + "/created")
                 .then()
                 .statusCode(Response.Status.UNAUTHORIZED.getStatusCode());
 
@@ -49,9 +49,9 @@ public class StellarGetCreatedVotingsTest {
         var votingsCreatedByCharlie = createMultipleVotingsForPagingAs("charlie")
                 .toArray(new Long[]{});
 
-        var votingsCreatedByAliceQueried = test.rest.getPages(test.rest.voting.url + "/created", "alice")
+        var votingsCreatedByAliceQueried = test.getRest().getPages(test.getRest().getVoting().getUrl() + "/created", "alice")
                 .stream()
-                .map(this.test.rest::getIdsFrom)
+                .map(m -> test.getRest().getIdsFrom(m))
                 .flatMap(Collection::stream)
                 .toList();
 
@@ -72,7 +72,7 @@ public class StellarGetCreatedVotingsTest {
 
         given()
                 .auth().oauth2(withAccessToken)
-                .get(test.rest.voting.url + "/created?page=" + totalPages)
+                .get(test.getRest().getVoting().getUrl() + "/created?page=" + totalPages)
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode())
                 .body("totalPages", greaterThan(0))
@@ -88,7 +88,7 @@ public class StellarGetCreatedVotingsTest {
         var withAccessToken = auth.loginAs("alice");
         given()
                 .auth().oauth2(withAccessToken)
-                .get(test.rest.voting.url + "/" + votingId)
+                .get(test.getRest().getVoting().getUrl() + "/" + votingId)
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode());
     }
@@ -98,7 +98,7 @@ public class StellarGetCreatedVotingsTest {
         var asAlice = auth.loginAs("alice");
         given()
                 .auth().oauth2(asAlice)
-                .get(test.rest.voting.url + "/-1")
+                .get(test.getRest().getVoting().getUrl() + "/-1")
                 .then()
                 .statusCode(Response.Status.NOT_FOUND.getStatusCode());
     }
@@ -106,7 +106,7 @@ public class StellarGetCreatedVotingsTest {
     private List<Long> createMultipleVotingsForPagingAs(String user) {
         var createdVotingIds = new ArrayList<Long>();
         for (int i = 0; i < 42; i++) {
-            createdVotingIds.add(test.rest.voting.createAs(user));
+            createdVotingIds.add(test.getRest().getVoting().createAs(user));
         }
 
         return createdVotingIds;
@@ -117,7 +117,7 @@ public class StellarGetCreatedVotingsTest {
         votingRequestJson.put("visibility", "PRIVATE");
 
         var createRequest = JsonUtils.convertJsonNodeTo(CreateVotingRequest.class, votingRequestJson);
-        return test.rest.voting.create(createRequest, user);
+        return test.getRest().getVoting().create(createRequest, user);
     }
 
     private int getTotalPageCount() {
@@ -125,7 +125,7 @@ public class StellarGetCreatedVotingsTest {
 
         return given()
                 .auth().oauth2(withAccessToken)
-                .get(test.rest.voting.url + "/created")
+                .get(test.getRest().getVoting().getUrl() + "/created")
                 .then()
                 .extract()
                 .body()
