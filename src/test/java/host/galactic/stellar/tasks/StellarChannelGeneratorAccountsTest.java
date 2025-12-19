@@ -2,7 +2,7 @@ package host.galactic.stellar.tasks;
 
 import host.galactic.data.entities.ChannelGeneratorEntity;
 import host.galactic.data.entities.VotingEntity;
-import host.galactic.stellar.StellarTestBase;
+import host.galactic.stellar.StellarTest;
 import host.galactic.stellar.rest.requests.voting.AddVotersRequest;
 import host.galactic.testutils.AuthForTest;
 import io.quarkus.logging.Log;
@@ -24,17 +24,17 @@ import static org.awaitility.Awaitility.*;
 @QuarkusTest
 public class StellarChannelGeneratorAccountsTest {
     @Inject
-    private AuthForTest authForTest;
+    private AuthForTest auth;
 
     @Inject
-    private StellarTestBase testBase;
+    private StellarTest test;
 
     @BeforeEach
     @Transactional
     public void deleteAllVotings() {
-        var votings = testBase.db.entityManager.createQuery("select v from VotingEntity v", VotingEntity.class)
+        var votings = test.db.entityManager.createQuery("select v from VotingEntity v", VotingEntity.class)
                 .getResultList();
-        votings.forEach(v -> testBase.db.entityManager.remove(v));
+        votings.forEach(v -> test.db.entityManager.remove(v));
     }
 
     @Test
@@ -49,21 +49,21 @@ public class StellarChannelGeneratorAccountsTest {
 
     @Transactional
     public List<ChannelGeneratorEntity> channelGeneratorsOf(Long votingId) {
-        return testBase.db.entityManager.createQuery("select c from ChannelGeneratorEntity c where voting.id = :id", ChannelGeneratorEntity.class)
+        return test.db.entityManager.createQuery("select c from ChannelGeneratorEntity c where voting.id = :id", ChannelGeneratorEntity.class)
                 .setParameter("id", votingId)
                 .getResultList();
     }
 
     private long createAVotingWithThreeParticipants() {
-        var id = testBase.rest.voting.createAVotingAs("alice");
+        var id = test.rest.voting.createAs("alice");
 
         var addVotersRequest = new AddVotersRequest(List.of("emily@galactic.pub", "duke@galactic.pub", "alice@galactic.pub"));
-        String withAccessTokenForAlice = authForTest.loginAs("alice");
+        String withAccessTokenForAlice = auth.loginAs("alice");
         given()
                 .auth().oauth2(withAccessTokenForAlice)
                 .contentType(ContentType.JSON)
                 .body(addVotersRequest)
-                .post(testBase.rest.voting.url + "/addvoters/" + id)
+                .post(test.rest.voting.url + "/addvoters/" + id)
                 .then()
                 .statusCode(Response.Status.NO_CONTENT.getStatusCode());
 

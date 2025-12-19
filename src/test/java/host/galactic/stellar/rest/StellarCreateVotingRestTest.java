@@ -1,6 +1,6 @@
 package host.galactic.stellar.rest;
 
-import host.galactic.stellar.StellarTestBase;
+import host.galactic.stellar.StellarTest;
 import host.galactic.stellar.operations.MockStellarOperations;
 import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
 import host.galactic.stellar.rest.responses.voting.VotingPollOptionResponse;
@@ -21,24 +21,24 @@ import static org.hamcrest.Matchers.*;
 @QuarkusTest
 public class StellarCreateVotingRestTest {
     @Inject
-    private AuthForTest authForTest;
+    private AuthForTest auth;
 
     @Inject
-    private StellarTestBase testBase;
+    private StellarTest test;
 
     @Test
     public void testCreateVoting() {
         Log.info("[START TEST]: testCreateVoting()");
 
-        var createRequest = testBase.rest.voting.makeCreateVotingRequest();
+        var createRequest = test.rest.voting.makeCreateRequest();
 
-        String withAccessToken = authForTest.loginAs("alice");
+        String withAccessToken = auth.loginAs("alice");
         String locationHeader = given()
                 .auth().oauth2(withAccessToken)
                 .contentType(ContentType.JSON)
                 .body(createRequest)
                 .when()
-                .post(testBase.rest.voting.url)
+                .post(test.rest.voting.url)
                 .then()
                 .statusCode(201)
                 .extract()
@@ -75,13 +75,13 @@ public class StellarCreateVotingRestTest {
 
         var invalidCreateRequest = makeInvalidCreateVotingRequest();
 
-        String withAccessToken = authForTest.loginAs("alice");
+        String withAccessToken = auth.loginAs("alice");
         given()
                 .auth().oauth2(withAccessToken)
                 .contentType(ContentType.JSON)
                 .body(invalidCreateRequest)
                 .when()
-                .post(testBase.rest.voting.url)
+                .post(test.rest.voting.url)
                 .then()
                 .statusCode(400);
 
@@ -92,11 +92,11 @@ public class StellarCreateVotingRestTest {
     public void testNotExistingVoting() {
         Log.info("[START TEST]: testNotExistingVoting()");
 
-        String withAccessToken = authForTest.loginAs("alice");
+        String withAccessToken = auth.loginAs("alice");
         given()
                 .auth().oauth2(withAccessToken)
                 .when()
-                .get(testBase.rest.voting.url + "/42")
+                .get(test.rest.voting.url + "/42")
                 .then()
                 .statusCode(404);
 
@@ -107,17 +107,17 @@ public class StellarCreateVotingRestTest {
     public void testFailedToDeductCostWhileCreatingVoting() {
         Log.info("[START TEST]: testFailedToDeductCostWhileCreatingVoting()");
 
-        var createRequest = testBase.rest.voting.makeCreateVotingRequest();
+        var createRequest = test.rest.voting.makeCreateRequest();
 
         MockStellarOperations.failTransferXlm();
 
-        String withAccessToken = authForTest.loginAs("alice");
+        String withAccessToken = auth.loginAs("alice");
         given()
                 .auth().oauth2(withAccessToken)
                 .contentType(ContentType.JSON)
                 .body(createRequest)
                 .when()
-                .post(testBase.rest.voting.url)
+                .post(test.rest.voting.url)
                 .then()
                 .statusCode(500);
 
