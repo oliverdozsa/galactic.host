@@ -18,10 +18,18 @@ public class StellarRestTestBase {
     private AuthForTest authForTest;
 
     @Inject
-    public StellarRestVotingTestBase voting;
+    private StellarRestVotingTestBase voting;
 
     @Inject
-    public StellarRestCommissionTestBase commission;
+    private StellarRestCommissionTestBase commission;
+
+    public StellarRestVotingTestBase getVoting() {
+        return voting;
+    }
+
+    public StellarRestCommissionTestBase getCommission() {
+        return commission;
+    }
 
     public List<PageResponse> getPages(String url, String asUser) {
         var pageResponse = getPage(url, asUser,0);

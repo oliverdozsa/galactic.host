@@ -11,5 +11,9 @@ import java.net.URL;
 public class StellarRestCommissionTestBase {
     @TestHTTPEndpoint(StellarCommissionRest.class)
     @TestHTTPResource
-    public URL url;
+    private URL url;
+
+    public URL getUrl() {
+        return url;
+    }
 }

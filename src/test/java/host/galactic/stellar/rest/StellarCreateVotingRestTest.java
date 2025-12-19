@@ -30,7 +30,7 @@ public class StellarCreateVotingRestTest {
     public void testCreateVoting() {
         Log.info("[START TEST]: testCreateVoting()");
 
-        var createRequest = test.rest.voting.makeCreateRequest();
+        var createRequest = test.getRest().getVoting().makeCreateRequest();
 
         String withAccessToken = auth.loginAs("alice");
         String locationHeader = given()
@@ -38,7 +38,7 @@ public class StellarCreateVotingRestTest {
                 .contentType(ContentType.JSON)
                 .body(createRequest)
                 .when()
-                .post(test.rest.voting.url)
+                .post(test.getRest().getVoting().getUrl())
                 .then()
                 .statusCode(201)
                 .extract()
@@ -81,7 +81,7 @@ public class StellarCreateVotingRestTest {
                 .contentType(ContentType.JSON)
                 .body(invalidCreateRequest)
                 .when()
-                .post(test.rest.voting.url)
+                .post(test.getRest().getVoting().getUrl())
                 .then()
                 .statusCode(400);
 
@@ -96,7 +96,7 @@ public class StellarCreateVotingRestTest {
         given()
                 .auth().oauth2(withAccessToken)
                 .when()
-                .get(test.rest.voting.url + "/42")
+                .get(test.getRest().getVoting().getUrl() + "/42")
                 .then()
                 .statusCode(404);
 
@@ -107,7 +107,7 @@ public class StellarCreateVotingRestTest {
     public void testFailedToDeductCostWhileCreatingVoting() {
         Log.info("[START TEST]: testFailedToDeductCostWhileCreatingVoting()");
 
-        var createRequest = test.rest.voting.makeCreateRequest();
+        var createRequest = test.getRest().getVoting().makeCreateRequest();
 
         MockStellarOperations.failTransferXlm();
 
@@ -117,7 +117,7 @@ public class StellarCreateVotingRestTest {
                 .contentType(ContentType.JSON)
                 .body(createRequest)
                 .when()
-                .post(test.rest.voting.url)
+                .post(test.getRest().getVoting().getUrl())
                 .then()
                 .statusCode(500);
 

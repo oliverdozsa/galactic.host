@@ -89,7 +89,7 @@ public class StellarVotersRestTest {
                 .auth().oauth2(withAccessTokenForAlice)
                 .contentType(ContentType.JSON)
                 .body(addVotersRequest)
-                .post(test.rest.voting.url + "/addvoters/" + id)
+                .post(test.getRest().getVoting().getUrl() + "/addvoters/" + id)
                 .then()
                 .statusCode(Response.Status.NO_CONTENT.getStatusCode());
 
@@ -124,7 +124,7 @@ public class StellarVotersRestTest {
                 .auth().oauth2(withAccessToken)
                 .contentType(ContentType.JSON)
                 .body(addVotersRequest)
-                .post(test.rest.voting.url + "/addvoters/" + id)
+                .post(test.getRest().getVoting().getUrl() + "/addvoters/" + id)
                 .then()
                 .statusCode(Response.Status.BAD_REQUEST.getStatusCode());
 
@@ -150,7 +150,7 @@ public class StellarVotersRestTest {
                 .auth().oauth2(withAccessToken)
                 .contentType(ContentType.JSON)
                 .body(addVotersRequest)
-                .post(test.rest.voting.url + "/addvoters/" + id)
+                .post(test.getRest().getVoting().getUrl() + "/addvoters/" + id)
                 .then()
                 .statusCode(Response.Status.NO_CONTENT.getStatusCode());
 
@@ -187,7 +187,7 @@ public class StellarVotersRestTest {
                 .auth().oauth2(withAccessToken)
                 .contentType(ContentType.JSON)
                 .body(addVotersRequest)
-                .post(test.rest.voting.url + "/addvoters/" + id)
+                .post(test.getRest().getVoting().getUrl() + "/addvoters/" + id)
                 .then()
                 .statusCode(Response.Status.FORBIDDEN.getStatusCode());
 
@@ -204,7 +204,7 @@ public class StellarVotersRestTest {
                 .contentType(ContentType.JSON)
                 .body(createRequest)
                 .when()
-                .post(test.rest.voting.url)
+                .post(test.getRest().getVoting().getUrl())
                 .then()
                 .statusCode(Response.Status.CREATED.getStatusCode())
                 .extract()
@@ -221,7 +221,7 @@ public class StellarVotersRestTest {
                 .contentType(ContentType.JSON)
                 .body(createRequest)
                 .when()
-                .post(test.rest.voting.url)
+                .post(test.getRest().getVoting().getUrl())
                 .then()
                 .statusCode(Response.Status.CREATED.getStatusCode())
                 .extract()

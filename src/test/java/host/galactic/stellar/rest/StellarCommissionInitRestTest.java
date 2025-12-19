@@ -39,7 +39,7 @@ public class StellarCommissionInitRestTest {
                 .contentType(ContentType.JSON)
                 .body(initRequest)
                 .when()
-                .post(test.rest.commission.url + "/initsession")
+                .post(test.getRest().getCommission().getUrl() + "/initsession")
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode())
                 .extract().body()

@@ -22,17 +22,17 @@ public class StellarAssetAccountsTest {
     @BeforeEach
     @Transactional
     public void deleteAllVotings() {
-        var votings = test.db.entityManager.createQuery("select v from VotingEntity v", VotingEntity.class)
+        var votings = test.getDb().getEntityManager().createQuery("select v from VotingEntity v", VotingEntity.class)
                 .getResultList();
-        votings.forEach(v -> test.db.entityManager.remove(v));
+        votings.forEach(v -> test.getDb().getEntityManager().remove(v));
     }
 
     @Test
     public void testAssetAccountsCreated() {
         Log.info("[START TEST]: testAssetAccountsCreated()");
 
-        var votingId = test.rest.voting.createAs("alice");
-        await().until(() -> test.rest.voting.getById(votingId, "alice"), hasAssetAccounts());
+        var votingId = test.getRest().getVoting().createAs("alice");
+        await().until(() -> test.getRest().getVoting().getById(votingId, "alice"), hasAssetAccounts());
 
         Log.info("[  END TEST]: testAssetAccountsCreated()");
     }

@@ -7,5 +7,9 @@ import jakarta.persistence.EntityManager;
 @ApplicationScoped
 public class StellarDbTestBase {
     @Inject
-    public EntityManager entityManager;
+    private EntityManager entityManager;
+
+    public EntityManager getEntityManager() {
+        return entityManager;
+    }
 }

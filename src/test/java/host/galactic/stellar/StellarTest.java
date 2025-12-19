@@ -6,8 +6,16 @@ import jakarta.inject.Inject;
 @ApplicationScoped
 public class StellarTest {
     @Inject
-    public StellarRestTestBase rest;
+    private StellarRestTestBase rest;
 
     @Inject
-    public StellarDbTestBase db;
+    private StellarDbTestBase db;
+
+    public StellarRestTestBase getRest() {
+        return rest;
+    }
+
+    public StellarDbTestBase getDb() {
+        return db;
+    }
 }

@@ -8,6 +8,7 @@ import host.galactic.testutils.AuthForTest;
 import host.galactic.testutils.JsonUtils;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.common.http.TestHTTPResource;
+import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -18,14 +19,24 @@ import java.util.List;
 
 import static io.restassured.RestAssured.given;
 
+
 @ApplicationScoped
+@QuarkusTest
 public class StellarRestVotingTestBase {
     @Inject
     private AuthForTest authForTest;
 
     @TestHTTPEndpoint(StellarVotingRest.class)
     @TestHTTPResource
-    public URL url;
+    private URL url;
+
+    public URL getUrl() {
+        return url;
+    }
+
+    public void setUrl(URL url) {
+        this.url = url;
+    }
 
     public long createAs(String user) {
         var createRequest = makeCreateRequest();
@@ -44,7 +55,7 @@ public class StellarRestVotingTestBase {
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()
-                .post(url)
+                .post(getUrl())
                 .then()
                 .statusCode(Response.Status.CREATED.getStatusCode())
                 .extract()
@@ -61,7 +72,7 @@ public class StellarRestVotingTestBase {
                 .auth().oauth2(withAccessTokenForOwner)
                 .contentType(ContentType.JSON)
                 .body(addVotersRequest)
-                .post(url + "/addvoters/" + votingId)
+                .post(getUrl() + "/addvoters/" + votingId)
                 .then()
                 .statusCode(Response.Status.NO_CONTENT.getStatusCode());
     }
@@ -70,7 +81,7 @@ public class StellarRestVotingTestBase {
         String withAccessToken = authForTest.loginAs(owner);
         return given()
                 .auth().oauth2(withAccessToken)
-                .get(url + "/" + votingId)
+                .get(getUrl() + "/" + votingId)
                 .then()
                 .statusCode(200)
                 .extract()
