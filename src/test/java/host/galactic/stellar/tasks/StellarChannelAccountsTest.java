@@ -2,7 +2,7 @@ package host.galactic.stellar.tasks;
 
 import host.galactic.data.entities.ChannelAccountEntity;
 import host.galactic.data.entities.VotingEntity;
-import host.galactic.stellar.StellarTest;
+import host.galactic.stellar.StellarBaseTest;
 import host.galactic.stellar.rest.requests.voting.AddVotersRequest;
 import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
 import host.galactic.testutils.AuthForTest;
@@ -25,19 +25,16 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.awaitility.Awaitility.*;
 
 @QuarkusTest
-public class StellarChannelAccountsTest {
+public class StellarChannelAccountsTest extends StellarBaseTest {
     @Inject
     private AuthForTest auth;
-
-    @Inject
-    private StellarTest test;
 
     @BeforeEach
     @Transactional
     public void deleteAllVotings() {
-        var votings = test.getDb().getEntityManager().createQuery("select v from VotingEntity v", VotingEntity.class)
+        var votings = db.entityManager.createQuery("select v from VotingEntity v", VotingEntity.class)
                 .getResultList();
-        votings.forEach(v -> test.getDb().getEntityManager().remove(v));
+        votings.forEach(v -> db.entityManager.remove(v));
     }
 
     @Test
@@ -52,7 +49,7 @@ public class StellarChannelAccountsTest {
 
     @Transactional
     public List<ChannelAccountEntity> channelAccountsOfVoting(Long votingId) {
-        return test.getDb().getEntityManager().createQuery("select c from ChannelAccountEntity c where voting.id = :id", ChannelAccountEntity.class)
+        return db.entityManager.createQuery("select c from ChannelAccountEntity c where voting.id = :id", ChannelAccountEntity.class)
                 .setParameter("id", votingId)
                 .getResultList();
     }
@@ -63,7 +60,7 @@ public class StellarChannelAccountsTest {
 
         var createVotingRequest = JsonUtils.convertJsonNodeTo(CreateVotingRequest.class, votingRequestJson);
 
-        var votingId = test.getRest().getVoting().create(createVotingRequest, "alice");
+        var votingId = rest.voting.create(createVotingRequest, "alice");
 
         List<String> multipleParticipants = new ArrayList<>();
         for (int i = 0; i < 42; i++) {
@@ -77,7 +74,7 @@ public class StellarChannelAccountsTest {
                 .auth().oauth2(withAccessTokenForAlice)
                 .contentType(ContentType.JSON)
                 .body(addVotersRequest)
-                .post(test.getRest().getVoting().getUrl() + "/addvoters/" + votingId)
+                .post(rest.voting.url + "/addvoters/" + votingId)
                 .then()
                 .statusCode(Response.Status.NO_CONTENT.getStatusCode());
 

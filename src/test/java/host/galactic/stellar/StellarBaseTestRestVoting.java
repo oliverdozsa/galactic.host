@@ -1,17 +1,11 @@
 package host.galactic.stellar;
 
-import host.galactic.stellar.rest.StellarVotingRest;
 import host.galactic.stellar.rest.requests.voting.AddVotersRequest;
 import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
 import host.galactic.stellar.rest.responses.voting.VotingResponse;
 import host.galactic.testutils.AuthForTest;
 import host.galactic.testutils.JsonUtils;
-import io.quarkus.test.common.http.TestHTTPEndpoint;
-import io.quarkus.test.common.http.TestHTTPResource;
-import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 
 import java.net.URL;
@@ -19,22 +13,13 @@ import java.util.List;
 
 import static io.restassured.RestAssured.given;
 
-
-@ApplicationScoped
-@QuarkusTest
-public class StellarRestVotingTestBase {
-    @Inject
+public class StellarBaseTestRestVoting {
     private AuthForTest authForTest;
 
-    @TestHTTPEndpoint(StellarVotingRest.class)
-    @TestHTTPResource
-    private URL url;
+    public URL url;
 
-    public URL getUrl() {
-        return url;
-    }
-
-    public void setUrl(URL url) {
+    public StellarBaseTestRestVoting(AuthForTest authForTest, URL url) {
+        this.authForTest = authForTest;
         this.url = url;
     }
 
@@ -55,7 +40,7 @@ public class StellarRestVotingTestBase {
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()
-                .post(getUrl())
+                .post(url)
                 .then()
                 .statusCode(Response.Status.CREATED.getStatusCode())
                 .extract()
@@ -72,7 +57,7 @@ public class StellarRestVotingTestBase {
                 .auth().oauth2(withAccessTokenForOwner)
                 .contentType(ContentType.JSON)
                 .body(addVotersRequest)
-                .post(getUrl() + "/addvoters/" + votingId)
+                .post(url + "/addvoters/" + votingId)
                 .then()
                 .statusCode(Response.Status.NO_CONTENT.getStatusCode());
     }
@@ -81,7 +66,7 @@ public class StellarRestVotingTestBase {
         String withAccessToken = authForTest.loginAs(owner);
         return given()
                 .auth().oauth2(withAccessToken)
-                .get(getUrl() + "/" + votingId)
+                .get(url + "/" + votingId)
                 .then()
                 .statusCode(200)
                 .extract()

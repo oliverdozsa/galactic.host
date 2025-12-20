@@ -1,7 +1,7 @@
 package host.galactic.stellar.rest;
 
 import host.galactic.data.entities.VotingEntity;
-import host.galactic.stellar.StellarTest;
+import host.galactic.stellar.StellarBaseTest;
 import host.galactic.testutils.AuthForTest;
 import io.quarkus.logging.Log;
 import io.quarkus.test.junit.QuarkusTest;
@@ -16,24 +16,21 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @QuarkusTest
-public class StellarDeleteVotingRestTest {
+public class StellarDeleteVotingRestTest extends StellarBaseTest {
     @Inject
     private AuthForTest auth;
-
-    @Inject
-    private StellarTest test;
 
     @Test
     public void testDeleteExisting() {
         Log.info("[START TEST]: testDeleteExisting()");
 
-        long id = test.getRest().getVoting().createAs("alice");
+        long id = rest.voting.createAs("alice");
         assertVotingWithIdExists(id);
 
         var asAlice = auth.loginAs("alice");
         given().auth().oauth2(asAlice)
                 .when()
-                .delete(test.getRest().getVoting().getUrl() + "/" + id)
+                .delete(rest.voting.url + "/" + id)
                 .then()
                 .statusCode(Response.Status.NO_CONTENT.getStatusCode());
 
@@ -51,7 +48,7 @@ public class StellarDeleteVotingRestTest {
         var asAlice = auth.loginAs("alice");
         given().auth().oauth2(asAlice)
                 .when()
-                .delete(test.getRest().getVoting().getUrl() + "/-1")
+                .delete(rest.voting.url + "/-1")
                 .then()
                 .statusCode(Response.Status.NOT_FOUND.getStatusCode());
 
@@ -62,13 +59,13 @@ public class StellarDeleteVotingRestTest {
     public void testDeleteForbidden() {
         Log.info("[START TEST]: testDeleteForbidden()");
 
-        long id = test.getRest().getVoting().createAs("alice");
+        long id = rest.voting.createAs("alice");
         assertVotingWithIdExists(id);
 
         var asBob = auth.loginAs("bob");
         given().auth().oauth2(asBob)
                 .when()
-                .delete(test.getRest().getVoting().getUrl() + "/" + id)
+                .delete(rest.voting.url + "/" + id)
                 .then()
                 .statusCode(Response.Status.FORBIDDEN.getStatusCode());
 
@@ -81,7 +78,7 @@ public class StellarDeleteVotingRestTest {
         VotingEntity voting = null;
 
         try {
-            voting = test.getDb().getEntityManager().createQuery("select v from VotingEntity v where v.id = :id", VotingEntity.class)
+            voting = db.entityManager.createQuery("select v from VotingEntity v where v.id = :id", VotingEntity.class)
                     .setParameter("id", id)
                     .getSingleResult();
         } catch (NoResultException ignored) {
@@ -94,7 +91,7 @@ public class StellarDeleteVotingRestTest {
         VotingEntity voting = null;
 
         try {
-            voting = test.getDb().getEntityManager().createQuery("select v from VotingEntity v where v.id = :id", VotingEntity.class)
+            voting = db.entityManager.createQuery("select v from VotingEntity v where v.id = :id", VotingEntity.class)
                     .setParameter("id", id)
                     .getSingleResult();
         } catch (NoResultException ignored) {

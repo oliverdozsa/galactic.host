@@ -1,7 +1,7 @@
 package host.galactic.stellar.rest;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import host.galactic.stellar.StellarTest;
+import host.galactic.stellar.StellarBaseTest;
 import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
 import host.galactic.stellar.rest.responses.voting.PageResponse;
 import host.galactic.testutils.AuthForTest;
@@ -21,19 +21,16 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 @QuarkusTest
-public class StellarGetCreatedVotingsTest {
+public class StellarGetCreatedVotingsTest extends StellarBaseTest {
     @Inject
     private AuthForTest auth;
-
-    @Inject
-    private StellarTest test;
 
     @Test
     public void testGetCreatedNotAuthenticated() {
         Log.info("[START TEST]: testGetCreatedNotAuthenticated()");
 
         given()
-                .get(test.getRest().getVoting().getUrl() + "/created")
+                .get(rest.voting.url + "/created")
                 .then()
                 .statusCode(Response.Status.UNAUTHORIZED.getStatusCode());
 
@@ -49,9 +46,9 @@ public class StellarGetCreatedVotingsTest {
         var votingsCreatedByCharlie = createMultipleVotingsForPagingAs("charlie")
                 .toArray(new Long[]{});
 
-        var votingsCreatedByAliceQueried = test.getRest().getPages(test.getRest().getVoting().getUrl() + "/created", "alice")
+        var votingsCreatedByAliceQueried = rest.getPages(rest.voting.url + "/created", "alice")
                 .stream()
-                .map(m -> test.getRest().getIdsFrom(m))
+                .map(m -> rest.getIdsFrom(m))
                 .flatMap(Collection::stream)
                 .toList();
 
@@ -72,7 +69,7 @@ public class StellarGetCreatedVotingsTest {
 
         given()
                 .auth().oauth2(withAccessToken)
-                .get(test.getRest().getVoting().getUrl() + "/created?page=" + totalPages)
+                .get(rest.voting.url + "/created?page=" + totalPages)
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode())
                 .body("totalPages", greaterThan(0))
@@ -88,7 +85,7 @@ public class StellarGetCreatedVotingsTest {
         var withAccessToken = auth.loginAs("alice");
         given()
                 .auth().oauth2(withAccessToken)
-                .get(test.getRest().getVoting().getUrl() + "/" + votingId)
+                .get(rest.voting.url + "/" + votingId)
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode());
     }
@@ -98,7 +95,7 @@ public class StellarGetCreatedVotingsTest {
         var asAlice = auth.loginAs("alice");
         given()
                 .auth().oauth2(asAlice)
-                .get(test.getRest().getVoting().getUrl() + "/-1")
+                .get(rest.voting.url + "/-1")
                 .then()
                 .statusCode(Response.Status.NOT_FOUND.getStatusCode());
     }
@@ -106,7 +103,7 @@ public class StellarGetCreatedVotingsTest {
     private List<Long> createMultipleVotingsForPagingAs(String user) {
         var createdVotingIds = new ArrayList<Long>();
         for (int i = 0; i < 42; i++) {
-            createdVotingIds.add(test.getRest().getVoting().createAs(user));
+            createdVotingIds.add(rest.voting.createAs(user));
         }
 
         return createdVotingIds;
@@ -117,7 +114,7 @@ public class StellarGetCreatedVotingsTest {
         votingRequestJson.put("visibility", "PRIVATE");
 
         var createRequest = JsonUtils.convertJsonNodeTo(CreateVotingRequest.class, votingRequestJson);
-        return test.getRest().getVoting().create(createRequest, user);
+        return rest.voting.create(createRequest, user);
     }
 
     private int getTotalPageCount() {
@@ -125,7 +122,7 @@ public class StellarGetCreatedVotingsTest {
 
         return given()
                 .auth().oauth2(withAccessToken)
-                .get(test.getRest().getVoting().getUrl() + "/created")
+                .get(rest.voting.url + "/created")
                 .then()
                 .extract()
                 .body()
