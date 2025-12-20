@@ -1,7 +1,7 @@
 package host.galactic.stellar.rest.requests.voting;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import host.galactic.testutils.ValidationTestsBase;
+import host.galactic.testutils.ValidationBaseTest;
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 
@@ -9,7 +9,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 
 @QuarkusTest
-public class CreateVotingRequestUseTestNetTests extends ValidationTestsBase {
+public class CreateVotingRequestUseTestNetTest extends ValidationBaseTest {
     @Test
     public void testUseTestNetIsNull() {
         CreateVotingRequest tooManyMaxVotersRequest = makeCreateVotingRequestWithUseTestNet(null);

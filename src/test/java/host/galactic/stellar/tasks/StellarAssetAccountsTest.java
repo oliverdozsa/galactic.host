@@ -5,7 +5,6 @@ import host.galactic.stellar.StellarBaseTest;
 import host.galactic.stellar.rest.responses.voting.VotingResponse;
 import io.quarkus.logging.Log;
 import io.quarkus.test.junit.QuarkusTest;
-import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;

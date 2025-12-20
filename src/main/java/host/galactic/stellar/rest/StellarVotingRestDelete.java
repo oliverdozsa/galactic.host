@@ -9,7 +9,7 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 
 @RequestScoped
-public class StellarVotingRestDelete {
+class StellarVotingRestDelete {
     @Inject
     VotingRepository votingRepository;
 

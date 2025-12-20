@@ -1,7 +1,7 @@
 package host.galactic.stellar.rest.requests.voting;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import host.galactic.testutils.ValidationTestsBase;
+import host.galactic.testutils.ValidationBaseTest;
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 
@@ -10,7 +10,7 @@ import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 
 @QuarkusTest
-public class CreatePollRequestDescriptionTests extends ValidationTestsBase {
+public class CreatePollRequestDescriptionTest extends ValidationBaseTest {
     @Test
     public void testDescriptionIsNull() {
         CreatePollRequest nullDescriptionRequest = makeCreatePollRequestWithDescription(null);

@@ -8,10 +8,9 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 
-public class ValidationTestsBase {
+public class ValidationBaseTest {
     @Inject
     protected Validator validator;
 
