@@ -1,6 +1,6 @@
 package host.galactic.stellar.rest.requests.voting;
 
-import host.galactic.testutils.ValidationTestsBase;
+import host.galactic.testutils.ValidationBaseTest;
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +12,7 @@ import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 
 @QuarkusTest
-public class AddVotersRequestTests extends ValidationTestsBase {
+public class AddVotersRequestTest extends ValidationBaseTest {
     @Test
     public void testEmailsIsNull() {
         var nullEmailsRequest = new AddVotersRequest(null);

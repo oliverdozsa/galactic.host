@@ -2,7 +2,7 @@ package host.galactic.stellar.rest.requests.voting;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import host.galactic.testutils.ValidationTestsBase;
+import host.galactic.testutils.ValidationBaseTest;
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 
@@ -11,7 +11,7 @@ import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 
 @QuarkusTest
-public class CreatePollRequestPollOptionValidationTest extends ValidationTestsBase {
+public class CreatePollRequestPollOptionValidationTestTest extends ValidationBaseTest {
     @Test
     public void testTooFewPollOptions() {
         CreatePollRequest tooFewOptionsRequest = makeCreatePollOptionRequestWithTooFewOptions();
