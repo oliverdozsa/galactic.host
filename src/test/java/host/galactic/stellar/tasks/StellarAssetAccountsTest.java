@@ -1,7 +1,7 @@
 package host.galactic.stellar.tasks;
 
 import host.galactic.data.entities.VotingEntity;
-import host.galactic.stellar.StellarTest;
+import host.galactic.stellar.StellarBaseTest;
 import host.galactic.stellar.rest.responses.voting.VotingResponse;
 import io.quarkus.logging.Log;
 import io.quarkus.test.junit.QuarkusTest;
@@ -15,24 +15,21 @@ import org.junit.jupiter.api.Test;
 import static org.awaitility.Awaitility.*;
 
 @QuarkusTest
-public class StellarAssetAccountsTest {
-    @Inject
-    private StellarTest test;
-
+public class StellarAssetAccountsTest extends StellarBaseTest {
     @BeforeEach
     @Transactional
     public void deleteAllVotings() {
-        var votings = test.getDb().getEntityManager().createQuery("select v from VotingEntity v", VotingEntity.class)
+        var votings = db.entityManager.createQuery("select v from VotingEntity v", VotingEntity.class)
                 .getResultList();
-        votings.forEach(v -> test.getDb().getEntityManager().remove(v));
+        votings.forEach(v -> db.entityManager.remove(v));
     }
 
     @Test
     public void testAssetAccountsCreated() {
         Log.info("[START TEST]: testAssetAccountsCreated()");
 
-        var votingId = test.getRest().getVoting().createAs("alice");
-        await().until(() -> test.getRest().getVoting().getById(votingId, "alice"), hasAssetAccounts());
+        var votingId = rest.voting.createAs("alice");
+        await().until(() -> rest.voting.getById(votingId, "alice"), hasAssetAccounts());
 
         Log.info("[  END TEST]: testAssetAccountsCreated()");
     }

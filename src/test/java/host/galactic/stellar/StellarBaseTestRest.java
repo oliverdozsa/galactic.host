@@ -2,8 +2,6 @@ package host.galactic.stellar;
 
 import host.galactic.stellar.rest.responses.voting.PageResponse;
 import host.galactic.testutils.AuthForTest;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 
 import java.util.ArrayList;
@@ -12,23 +10,16 @@ import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 
-@ApplicationScoped
-public class StellarRestTestBase {
-    @Inject
+public class StellarBaseTestRest {
     private AuthForTest authForTest;
 
-    @Inject
-    private StellarRestVotingTestBase voting;
+    public StellarBaseTestRestVoting voting;
+    public StellarBaseTestRestCommission commission;
 
-    @Inject
-    private StellarRestCommissionTestBase commission;
-
-    public StellarRestVotingTestBase getVoting() {
-        return voting;
-    }
-
-    public StellarRestCommissionTestBase getCommission() {
-        return commission;
+    public StellarBaseTestRest(AuthForTest authForTest, StellarBaseTestRestVoting voting, StellarBaseTestRestCommission commission) {
+        this.authForTest = authForTest;
+        this.voting = voting;
+        this.commission = commission;
     }
 
     public List<PageResponse> getPages(String url, String asUser) {

@@ -1,6 +1,6 @@
 package host.galactic.stellar.rest;
 
-import host.galactic.stellar.StellarTest;
+import host.galactic.stellar.StellarBaseTest;
 import host.galactic.stellar.operations.MockStellarOperations;
 import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
 import host.galactic.stellar.rest.responses.voting.VotingPollOptionResponse;
@@ -19,18 +19,15 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 @QuarkusTest
-public class StellarCreateVotingRestTest {
+public class StellarCreateVotingRestTest extends StellarBaseTest {
     @Inject
     private AuthForTest auth;
-
-    @Inject
-    private StellarTest test;
 
     @Test
     public void testCreateVoting() {
         Log.info("[START TEST]: testCreateVoting()");
 
-        var createRequest = test.getRest().getVoting().makeCreateRequest();
+        var createRequest = rest.voting.makeCreateRequest();
 
         String withAccessToken = auth.loginAs("alice");
         String locationHeader = given()
@@ -38,7 +35,7 @@ public class StellarCreateVotingRestTest {
                 .contentType(ContentType.JSON)
                 .body(createRequest)
                 .when()
-                .post(test.getRest().getVoting().getUrl())
+                .post(rest.voting.url)
                 .then()
                 .statusCode(201)
                 .extract()
@@ -81,7 +78,7 @@ public class StellarCreateVotingRestTest {
                 .contentType(ContentType.JSON)
                 .body(invalidCreateRequest)
                 .when()
-                .post(test.getRest().getVoting().getUrl())
+                .post(rest.voting.url)
                 .then()
                 .statusCode(400);
 
@@ -96,7 +93,7 @@ public class StellarCreateVotingRestTest {
         given()
                 .auth().oauth2(withAccessToken)
                 .when()
-                .get(test.getRest().getVoting().getUrl() + "/42")
+                .get(rest.voting.url + "/42")
                 .then()
                 .statusCode(404);
 
@@ -107,7 +104,7 @@ public class StellarCreateVotingRestTest {
     public void testFailedToDeductCostWhileCreatingVoting() {
         Log.info("[START TEST]: testFailedToDeductCostWhileCreatingVoting()");
 
-        var createRequest = test.getRest().getVoting().makeCreateRequest();
+        var createRequest = rest.voting.makeCreateRequest();
 
         MockStellarOperations.failTransferXlm();
 
@@ -117,7 +114,7 @@ public class StellarCreateVotingRestTest {
                 .contentType(ContentType.JSON)
                 .body(createRequest)
                 .when()
-                .post(test.getRest().getVoting().getUrl())
+                .post(rest.voting.url)
                 .then()
                 .statusCode(500);
 

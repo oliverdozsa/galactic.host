@@ -1,6 +1,6 @@
 package host.galactic.stellar.rest;
 
-import host.galactic.stellar.StellarTest;
+import host.galactic.stellar.StellarBaseTest;
 import host.galactic.stellar.rest.requests.commission.CommissionInitRequest;
 import host.galactic.stellar.rest.responses.commission.CommissionInitResponse;
 import host.galactic.testutils.AuthForTest;
@@ -17,10 +17,7 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 @QuarkusTest
-public class StellarCommissionInitRestTest {
-    @Inject
-    private StellarTest test;
-
+public class StellarCommissionInitRestTest extends StellarBaseTest {
     @Inject
     private AuthForTest auth;
 
@@ -39,7 +36,7 @@ public class StellarCommissionInitRestTest {
                 .contentType(ContentType.JSON)
                 .body(initRequest)
                 .when()
-                .post(test.getRest().getCommission().getUrl() + "/initsession")
+                .post(rest.commission.url + "/initsession")
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode())
                 .extract().body()

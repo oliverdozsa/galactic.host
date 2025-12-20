@@ -2,7 +2,7 @@ package host.galactic.stellar.tasks;
 
 import host.galactic.data.entities.ChannelGeneratorEntity;
 import host.galactic.data.entities.VotingEntity;
-import host.galactic.stellar.StellarTest;
+import host.galactic.stellar.StellarBaseTest;
 import host.galactic.stellar.rest.requests.voting.AddVotersRequest;
 import host.galactic.testutils.AuthForTest;
 import io.quarkus.logging.Log;
@@ -22,19 +22,16 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.awaitility.Awaitility.*;
 
 @QuarkusTest
-public class StellarChannelGeneratorAccountsTest {
+public class StellarChannelGeneratorAccountsTest extends StellarBaseTest {
     @Inject
     private AuthForTest auth;
-
-    @Inject
-    private StellarTest test;
 
     @BeforeEach
     @Transactional
     public void deleteAllVotings() {
-        var votings = test.getDb().getEntityManager().createQuery("select v from VotingEntity v", VotingEntity.class)
+        var votings = db.entityManager.createQuery("select v from VotingEntity v", VotingEntity.class)
                 .getResultList();
-        votings.forEach(v -> test.getDb().getEntityManager().remove(v));
+        votings.forEach(v -> db.entityManager.remove(v));
     }
 
     @Test
@@ -49,13 +46,13 @@ public class StellarChannelGeneratorAccountsTest {
 
     @Transactional
     public List<ChannelGeneratorEntity> channelGeneratorsOf(Long votingId) {
-        return test.getDb().getEntityManager().createQuery("select c from ChannelGeneratorEntity c where voting.id = :id", ChannelGeneratorEntity.class)
+        return db.entityManager.createQuery("select c from ChannelGeneratorEntity c where voting.id = :id", ChannelGeneratorEntity.class)
                 .setParameter("id", votingId)
                 .getResultList();
     }
 
     private long createAVotingWithThreeParticipants() {
-        var id = test.getRest().getVoting().createAs("alice");
+        var id = rest.voting.createAs("alice");
 
         var addVotersRequest = new AddVotersRequest(List.of("emily@galactic.pub", "duke@galactic.pub", "alice@galactic.pub"));
         String withAccessTokenForAlice = auth.loginAs("alice");
@@ -63,7 +60,7 @@ public class StellarChannelGeneratorAccountsTest {
                 .auth().oauth2(withAccessTokenForAlice)
                 .contentType(ContentType.JSON)
                 .body(addVotersRequest)
-                .post(test.getRest().getVoting().getUrl() + "/addvoters/" + id)
+                .post(rest.voting.url + "/addvoters/" + id)
                 .then()
                 .statusCode(Response.Status.NO_CONTENT.getStatusCode());
 
