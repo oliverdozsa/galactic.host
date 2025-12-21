@@ -19,4 +19,10 @@ public class StellarBaseTestDb {
         var voting = entityManager.find(VotingEntity.class, votingId);
         return voting.maxVoters == voting.channelAccounts.size();
     }
+
+    public void deleteAllVoting() {
+        var votings = entityManager.createQuery("select v from VotingEntity v", VotingEntity.class)
+                .getResultList();
+        votings.forEach(v -> entityManager.remove(v));
+    }
 }

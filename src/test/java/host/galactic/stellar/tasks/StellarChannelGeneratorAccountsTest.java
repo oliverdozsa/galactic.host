@@ -29,9 +29,7 @@ public class StellarChannelGeneratorAccountsTest extends StellarBaseTest {
     @BeforeEach
     @Transactional
     public void deleteAllVotings() {
-        var votings = db.entityManager.createQuery("select v from VotingEntity v", VotingEntity.class)
-                .getResultList();
-        votings.forEach(v -> db.entityManager.remove(v));
+        db.deleteAllVoting();
     }
 
     @Test
