@@ -7,12 +7,17 @@ import jakarta.inject.Named;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.crypto.generators.RSAKeyPairGenerator;
 import org.bouncycastle.crypto.params.RSAKeyGenerationParameters;
+import org.bouncycastle.crypto.util.PrivateKeyFactory;
 import org.bouncycastle.crypto.util.PrivateKeyInfoFactory;
+import org.bouncycastle.crypto.util.PublicKeyFactory;
+import org.bouncycastle.openssl.PEMKeyPair;
+import org.bouncycastle.openssl.PEMParser;
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemWriter;
 import org.eclipse.microprofile.config.ConfigProvider;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.math.BigInteger;
 import java.security.SecureRandom;
@@ -24,7 +29,7 @@ public class SigningKeyProvider {
     @Produces
     @Named("signing")
     AsymmetricCipherKeyPair provide() {
-        if(keyPair == null) {
+        if (keyPair == null) {
             readKeyPair();
         }
 
@@ -33,16 +38,26 @@ public class SigningKeyProvider {
 
     private void readKeyPair() {
         var keyPairAsPem = getKeyPairPem();
-        if(keyPairAsPem == null || keyPairAsPem.isBlank()) {
+        if (keyPairAsPem == null || keyPairAsPem.isBlank()) {
             Log.error("galactic.host.voting.signing.key cannot be empty!");
             throw new RuntimeException("galactic.host.voting.signing.key cannot be empty!");
         }
 
-        // TODO
+        var stringReader = new StringReader(keyPairAsPem);
+        var pemParser = new PEMParser(stringReader);
+        try {
+            var pemKeyPair = (PEMKeyPair) pemParser.readObject();
+            var privateParam = PrivateKeyFactory.createKey(pemKeyPair.getPrivateKeyInfo());
+            var publicParam = PublicKeyFactory.createKey(pemKeyPair.getPublicKeyInfo());
+
+            keyPair = new AsymmetricCipherKeyPair(publicParam, privateParam);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to read signing key!", e);
+        }
     }
 
     private String getKeyPairPem() {
-        if(LaunchMode.current() != LaunchMode.NORMAL) {
+        if (LaunchMode.current() != LaunchMode.NORMAL) {
             Log.info("Generating random signing keypair for dev and test modes.");
             var keyPair = generateKeyPair();
             return privateToPemString(keyPair);
