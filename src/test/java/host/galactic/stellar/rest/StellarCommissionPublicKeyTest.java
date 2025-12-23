@@ -37,7 +37,7 @@ public class StellarCommissionPublicKeyTest extends StellarBaseTest {
         var response = given()
                 .contentType(ContentType.JSON)
                 .when()
-                .post(rest.commission.url + "/initsession")
+                .get(rest.commission.url + "/publickey")
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode())
                 .extract().body()
