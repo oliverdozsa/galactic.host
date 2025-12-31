@@ -9,6 +9,7 @@ import io.restassured.http.ContentType;
 import jakarta.ws.rs.core.Response;
 
 import java.net.URL;
+import java.util.Arrays;
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
@@ -50,18 +51,6 @@ public class StellarBaseTestRestVoting {
         return Long.parseLong(locationParts[locationParts.length - 1]);
     }
 
-    public void addVoterAsParticipantTo(Long votingId, String voter, String owner) {
-        var addVotersRequest = new AddVotersRequest(List.of(voter + "@galactic.pub"));
-        var withAccessTokenForOwner = authForTest.loginAs(owner);
-        given()
-                .auth().oauth2(withAccessTokenForOwner)
-                .contentType(ContentType.JSON)
-                .body(addVotersRequest)
-                .post(url + "/addvoters/" + votingId)
-                .then()
-                .statusCode(Response.Status.NO_CONTENT.getStatusCode());
-    }
-
     public VotingResponse getById(Long votingId, String owner) {
         String withAccessToken = authForTest.loginAs(owner);
         return given()
@@ -72,5 +61,27 @@ public class StellarBaseTestRestVoting {
                 .extract()
                 .body()
                 .as(VotingResponse.class);
+    }
+
+    public Long createWithParticipants(String owner, String[] participants) {
+        var votingId = createAs(owner);
+        addParticipantsTo(votingId, participants, owner);
+        return votingId;
+    }
+
+    private void addParticipantsTo(Long votingId, String[] voters, String owner) {
+        var votersWithEmails = Arrays.stream(voters).map(v -> v + "@galactic.pub")
+                .toList();
+        var request = new AddVotersRequest(votersWithEmails);
+
+        var withAccessTokenForOwner = authForTest.loginAs(owner);
+        given()
+                .auth().oauth2(withAccessTokenForOwner)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .post(url + "/addvoters/" + votingId)
+                .then()
+                .statusCode(Response.Status.NO_CONTENT.getStatusCode());
+
     }
 }
