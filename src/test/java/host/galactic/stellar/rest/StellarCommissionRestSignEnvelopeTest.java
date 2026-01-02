@@ -18,7 +18,6 @@ import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.blankOrNullString;
 import static org.hamcrest.Matchers.not;
-import static org.junit.jupiter.api.Assertions.fail;
 
 @QuarkusTest
 public class StellarCommissionRestSignEnvelopeTest extends StellarBaseTest {
@@ -37,8 +36,8 @@ public class StellarCommissionRestSignEnvelopeTest extends StellarBaseTest {
 
         var votingId = rest.voting.createWithParticipants("alice", new String[]{"charlie", "bob"});
 
-
-        var request = new CommissionSignEnvelopeRequest("someEnvelope");
+        var base64Envelope = utils.createEnvelopeFor("someMessage");
+        var request = new CommissionSignEnvelopeRequest(base64Envelope);
         var asBob = auth.loginAs("bob");
         var response = given()
                 .auth().oauth2(asBob)
@@ -47,7 +46,7 @@ public class StellarCommissionRestSignEnvelopeTest extends StellarBaseTest {
                 .when()
                 .post(rest.commission.url + "/signenvelope/" + votingId)
                 .then()
-                .statusCode(Response.Status.OK.getStatusCode())
+                .statusCode(Response.Status.CREATED.getStatusCode())
                 .extract().body()
                 .as(CommissionSignEnvelopeResponse.class);
 
@@ -61,8 +60,16 @@ public class StellarCommissionRestSignEnvelopeTest extends StellarBaseTest {
         Log.info("[START TEST]: testSignEnvelopeUnauthenticated()");
 
         var votingId = rest.voting.createWithParticipants("alice", new String[]{"charlie", "bob"});
+        var base64Envelope = utils.createEnvelopeFor("someMessage");
+        var request = new CommissionSignEnvelopeRequest(base64Envelope);
 
-        fail("Implement testSignEnvelopeUnauthenticated().");
+        given()
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .post(rest.commission.url + "/signenvelope/" + votingId)
+                .then()
+                .statusCode(Response.Status.UNAUTHORIZED.getStatusCode());
 
         Log.info("[  END TEST]: testSignEnvelopeUnauthenticated()");
     }
@@ -73,7 +80,17 @@ public class StellarCommissionRestSignEnvelopeTest extends StellarBaseTest {
 
         var votingId = rest.voting.createWithParticipants("alice", new String[]{"charlie", "bob"});
 
-        fail("Implement testSignEnvelopeUserIsNotParticipant().");
+        var base64Envelope = utils.createEnvelopeFor("someMessage");
+        var request = new CommissionSignEnvelopeRequest(base64Envelope);
+        var asDuke = auth.loginAs("duke");
+        given()
+                .auth().oauth2(asDuke)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .post(rest.commission.url + "/signenvelope/" + votingId)
+                .then()
+                .statusCode(Response.Status.FORBIDDEN.getStatusCode());
 
         Log.info("[  END TEST]: testSignEnvelopeUserIsNotParticipant()");
     }
@@ -82,7 +99,18 @@ public class StellarCommissionRestSignEnvelopeTest extends StellarBaseTest {
     public void testSignEnvelopeInvalidVoting() {
         Log.info("[START TEST]: testSignEnvelopeInvalidVoting()");
 
-        fail("Implement testSignEnvelopeInvalidVoting().");
+        var nonExistingVotingId = -1L;
+        var base64Envelope = utils.createEnvelopeFor("someMessage");
+        var request = new CommissionSignEnvelopeRequest(base64Envelope);
+        var asBob = auth.loginAs("bob");
+        given()
+                .auth().oauth2(asBob)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .post(rest.commission.url + "/signenvelope/" + nonExistingVotingId)
+                .then()
+                .statusCode(Response.Status.NOT_FOUND.getStatusCode());
 
         Log.info("[  END TEST]: testSignEnvelopeInvalidVoting()");
     }

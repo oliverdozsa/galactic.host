@@ -32,13 +32,15 @@ public class StellarBaseTest {
 
     public StellarBaseTestRest rest;
     public StellarBaseTestDb db;
+    public StellarBaseTestUtils utils;
 
     @BeforeEach
     void init() {
         var voting = new StellarBaseTestRestVoting(authForTest, votingRestUrl);
         var commission = new StellarBaseTestRestCommission(commisionRestUrl);
-        rest = new StellarBaseTestRest(authForTest, voting, commission);
 
+        rest = new StellarBaseTestRest(authForTest, voting, commission);
         db = new StellarBaseTestDb(entityManager);
+        utils = new StellarBaseTestUtils();
     }
 }

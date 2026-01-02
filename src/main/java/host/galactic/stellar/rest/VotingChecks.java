@@ -1,0 +1,11 @@
+package host.galactic.stellar.rest;
+
+import host.galactic.data.entities.VotingEntity;
+
+public class VotingChecks {
+    public static boolean doesUserNotParticipateIn(VotingEntity entity, String userEmail) {
+        return entity.voters.stream()
+                .map(u -> u.email)
+                .noneMatch(e -> e.equals(userEmail));
+    }
+}
