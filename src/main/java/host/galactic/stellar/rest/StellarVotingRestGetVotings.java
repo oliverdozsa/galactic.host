@@ -18,6 +18,8 @@ import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.util.List;
 
+import static host.galactic.stellar.rest.VotingChecks.doesUserNotParticipateIn;
+
 @RequestScoped
 class StellarVotingRestGetVotings {
     @Inject
@@ -58,17 +60,11 @@ class StellarVotingRestGetVotings {
 
     private void checkIfUserIsAllowedToGetVoting(VotingEntity voting) {
         if (voting.visibility == Visibility.PRIVATE &&
-                doesUserNotParticipateIn(voting) &&
+                doesUserNotParticipateIn(voting, userInfo.getEmail()) &&
                 isUserNotCreatorOf(voting)) {
             Log.warnf("User \"%s\" is not allowed to get voting with id = %s", userInfo.getEmail(), voting.id);
             throw new ForbiddenException();
         }
-    }
-
-    private boolean doesUserNotParticipateIn(VotingEntity entity) {
-        return entity.voters.stream()
-                .map(u -> u.email)
-                .noneMatch(e -> e.equals(userInfo.getEmail()));
     }
 
     private boolean isUserNotCreatorOf(VotingEntity voting) {

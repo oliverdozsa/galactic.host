@@ -1,40 +1,31 @@
 package host.galactic.stellar.envelope;
 
 import io.quarkus.logging.Log;
-import io.quarkus.runtime.LaunchMode;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Named;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
-import org.bouncycastle.crypto.generators.RSAKeyPairGenerator;
-import org.bouncycastle.crypto.params.RSAKeyGenerationParameters;
 import org.bouncycastle.crypto.params.RSAKeyParameters;
 import org.bouncycastle.crypto.util.PrivateKeyFactory;
-import org.bouncycastle.crypto.util.PrivateKeyInfoFactory;
 import org.bouncycastle.crypto.util.PublicKeyFactory;
 import org.bouncycastle.crypto.util.SubjectPublicKeyInfoFactory;
 import org.bouncycastle.openssl.PEMKeyPair;
 import org.bouncycastle.openssl.PEMParser;
 import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
-import org.bouncycastle.util.io.pem.PemObject;
-import org.bouncycastle.util.io.pem.PemWriter;
 import org.eclipse.microprofile.config.ConfigProvider;
 
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.math.BigInteger;
-import java.security.SecureRandom;
 
 public class SigningKeyProvider {
     private AsymmetricCipherKeyPair keyPair;
-    private String publicKesAsPem;
+    private String publicKeyAsPem;
 
     @PostConstruct
     private void init() {
-        if (keyPair == null) {
-            keyPair = readKeyPair();
-        }
+        keyPair = readKeyPair();
+        publicKeyAsPem = publicKeyAsPem();
     }
 
     @Produces
@@ -46,6 +37,10 @@ public class SigningKeyProvider {
     @Produces
     @Named("signingPublicKeyPem")
     public String providePublicKeyAsPem() {
+        return publicKeyAsPem;
+    }
+
+    private String publicKeyAsPem() {
         try (var sw = new StringWriter(); var pw = new JcaPEMWriter(sw)) {
             var publicKeyInfo = SubjectPublicKeyInfoFactory
                     .createSubjectPublicKeyInfo((RSAKeyParameters) keyPair.getPublic());
@@ -63,8 +58,6 @@ public class SigningKeyProvider {
             Log.error("galactic.host.voting.signing.key cannot be empty!");
             throw new RuntimeException("galactic.host.voting.signing.key cannot be empty!");
         }
-
-        Log.infof("keyPairAsPem = %s", keyPairAsPem);
 
         var stringReader = new StringReader(keyPairAsPem);
         var pemParser = new PEMParser(stringReader);
