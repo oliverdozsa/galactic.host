@@ -1,6 +1,7 @@
 package host.galactic.stellar.rest;
 
 import host.galactic.data.entities.VotingEntity;
+import host.galactic.data.repositories.EnvelopeSignatureRepository;
 import host.galactic.data.repositories.VotingRepository;
 import host.galactic.stellar.rest.requests.commission.CommissionSignEnvelopeRequest;
 import host.galactic.stellar.rest.responses.commission.CommissionSignEnvelopeResponse;
@@ -26,6 +27,9 @@ public class StellarCommissionRestSignEnvelope {
     private VotingRepository votingRepository;
 
     @Inject
+    private EnvelopeSignatureRepository signatureRepository;
+
+    @Inject
     @Named("signing")
     private AsymmetricCipherKeyPair signingKey;
 
@@ -36,18 +40,27 @@ public class StellarCommissionRestSignEnvelope {
         return votingRepository.getById(votingId)
                 .onItem()
                 .call(v -> Mutiny.fetch(v.voters))
-                .invoke(this::checkIfUserIsAllowedToSignEnvelopeFor)
-                .map(v -> createResponse());
+                .invoke(this::checkIfUserIsAllowedToSignEnvelope)
+                .call(this::checkIfUserSignedAnEnvelopeAlready)
+                .onItem()
+                .transformToUni(v -> createResponse(request, v));
     }
 
-    private void checkIfUserIsAllowedToSignEnvelopeFor(VotingEntity voting) {
+    private void checkIfUserIsAllowedToSignEnvelope(VotingEntity voting) {
         if(doesUserNotParticipateIn(voting, userInfo.getEmail())){
             throw new ForbiddenException("User does not participate in this voting.");
         }
     }
 
-    private CommissionSignEnvelopeResponse createResponse() {
-        // TODO
+    private Uni<VotingEntity> checkIfUserSignedAnEnvelopeAlready(VotingEntity voting) {
+        return signatureRepository.findFor(voting.id, userInfo.getEmail())
+                .onItem()
+                .failWith(() -> new ForbiddenException())
+                .replaceWith(voting);
+    }
+
+    private Uni<CommissionSignEnvelopeResponse> createResponse(CommissionSignEnvelopeRequest request, VotingEntity voting) {
+        // TODO: produce signature, persist it, then create response
         return null;
     }
 }

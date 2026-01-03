@@ -115,6 +115,43 @@ public class StellarCommissionRestSignEnvelopeTest extends StellarBaseTest {
         Log.info("[  END TEST]: testSignEnvelopeInvalidVoting()");
     }
 
+    @Test
+    public void testDoubleSigningEnvelope() {
+        Log.info("[START TEST]: testDoubleSigningEnvelope()");
+
+        var votingId = rest.voting.createWithParticipants("alice", new String[]{"charlie", "bob"});
+
+        var base64Envelope = utils.createEnvelopeFor("someMessage");
+        var request = new CommissionSignEnvelopeRequest(base64Envelope);
+        var asBob = auth.loginAs("bob");
+        var response = given()
+                .auth().oauth2(asBob)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .post(rest.commission.url + "/signenvelope/" + votingId)
+                .then()
+                .statusCode(Response.Status.CREATED.getStatusCode())
+                .extract().body()
+                .as(CommissionSignEnvelopeResponse.class);
+
+        assertThat(response.signature(), not(blankOrNullString()));
+
+
+        base64Envelope = utils.createEnvelopeFor("someOtherMessage");
+        request = new CommissionSignEnvelopeRequest(base64Envelope);
+        given()
+                .auth().oauth2(asBob)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .post(rest.commission.url + "/signenvelope/" + votingId)
+                .then()
+                .statusCode(Response.Status.FORBIDDEN.getStatusCode());
+
+        Log.info("[  END TEST]: testDoubleSigningEnvelope()");
+    }
+
     public void waitForChannelAccountsToBeCreatedFor(Long votingId) {
         await().until(() -> areChannelAccountsCreatedFor(votingId));
     }
