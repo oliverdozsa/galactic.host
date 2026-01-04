@@ -14,7 +14,10 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.ws.rs.ForbiddenException;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
+import org.bouncycastle.crypto.engines.RSAEngine;
 import org.hibernate.reactive.mutiny.Mutiny;
+
+import java.util.Base64;
 
 import static host.galactic.stellar.rest.VotingChecks.doesUserNotParticipateIn;
 
@@ -60,7 +63,18 @@ public class StellarCommissionRestSignEnvelope {
     }
 
     private Uni<CommissionSignEnvelopeResponse> createResponse(CommissionSignEnvelopeRequest request, VotingEntity voting) {
-        // TODO: produce signature, persist it, then create response
-        return null;
+        var signature = createSignatureAsBase64(request);
+        return signatureRepository.create(signature, voting.id, userInfo.getEmail())
+                .map(entity -> new CommissionSignEnvelopeResponse(entity.signature));
+    }
+
+    private String createSignatureAsBase64(CommissionSignEnvelopeRequest request) {
+        var rsaEngine = new RSAEngine();
+        rsaEngine.init(true, signingKey.getPrivate());
+
+        var envelopeBytes = Base64.getDecoder().decode(request.envelopeBase64());
+        var signatureBytes = rsaEngine.processBlock(envelopeBytes, 0, envelopeBytes.length);
+
+        return Base64.getEncoder().encodeToString(signatureBytes);
     }
 }
