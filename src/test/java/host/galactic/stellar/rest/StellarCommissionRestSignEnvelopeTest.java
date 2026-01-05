@@ -46,7 +46,7 @@ public class StellarCommissionRestSignEnvelopeTest extends StellarBaseTest {
                 .when()
                 .post(rest.commission.url + "/signenvelope/" + votingId)
                 .then()
-                .statusCode(Response.Status.CREATED.getStatusCode())
+                .statusCode(Response.Status.OK.getStatusCode())
                 .extract().body()
                 .as(CommissionSignEnvelopeResponse.class);
 
@@ -131,7 +131,7 @@ public class StellarCommissionRestSignEnvelopeTest extends StellarBaseTest {
                 .when()
                 .post(rest.commission.url + "/signenvelope/" + votingId)
                 .then()
-                .statusCode(Response.Status.CREATED.getStatusCode())
+                .statusCode(Response.Status.OK.getStatusCode())
                 .extract().body()
                 .as(CommissionSignEnvelopeResponse.class);
 
@@ -150,6 +150,58 @@ public class StellarCommissionRestSignEnvelopeTest extends StellarBaseTest {
                 .statusCode(Response.Status.FORBIDDEN.getStatusCode());
 
         Log.info("[  END TEST]: testDoubleSigningEnvelope()");
+    }
+
+    @Test
+    public void testGetSignature() {
+        Log.info("[START TEST]: testGetSignature()");
+
+        var votingId = rest.voting.createWithParticipants("alice", new String[]{"charlie", "bob"});
+
+        var base64Envelope = utils.createEnvelopeFor("someMessage");
+        var request = new CommissionSignEnvelopeRequest(base64Envelope);
+        var asBob = auth.loginAs("bob");
+
+        given()
+                .auth().oauth2(asBob)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .post(rest.commission.url + "/signenvelope/" + votingId)
+                .then()
+                .statusCode(Response.Status.OK.getStatusCode());
+
+        var response = given()
+                .auth().oauth2(asBob)
+                .contentType(ContentType.JSON)
+                .when()
+                .get(rest.commission.url + "/signature/voting=" + votingId)
+                .then()
+                .statusCode(Response.Status.OK.getStatusCode())
+                .extract().body()
+                .as(CommissionSignEnvelopeResponse.class);
+
+        assertThat(response.signature(), not(blankOrNullString()));
+
+        Log.info("[  END TEST]: testGetSignature()");
+    }
+
+    @Test
+    public void testGetNonExistingSignature() {
+        Log.info("[START TEST]: testGetNonExistingSignature()");
+
+        var asBob = auth.loginAs("bob");
+        given()
+                .auth().oauth2(asBob)
+                .contentType(ContentType.JSON)
+                .when()
+                .get(rest.commission.url + "/signature/voting=-1")
+                .then()
+                .statusCode(Response.Status.NOT_FOUND.getStatusCode())
+                .extract().body()
+                .as(CommissionSignEnvelopeResponse.class);
+
+        Log.info("[  END TEST]: testGetNonExistingSignature()");
     }
 
     public void waitForChannelAccountsToBeCreatedFor(Long votingId) {

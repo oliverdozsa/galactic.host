@@ -95,6 +95,6 @@ public class VotingEntity extends PanacheEntityBase {
     @Column(name = "issuer_account_secret", columnDefinition = "text")
     public String issuerAccountSecret;
 
-    @OneToMany(mappedBy = "voting")
+    @OneToMany(mappedBy = "voting", cascade = CascadeType.REMOVE)
     public List<EnvelopeSignatureEntity> signatures;
 }
