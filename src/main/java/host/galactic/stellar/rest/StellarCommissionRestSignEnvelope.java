@@ -12,6 +12,7 @@ import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import jakarta.persistence.NoResultException;
 import jakarta.ws.rs.ForbiddenException;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.crypto.engines.RSAEngine;
@@ -59,6 +60,8 @@ public class StellarCommissionRestSignEnvelope {
         return signatureRepository.findFor(voting.id, userInfo.getEmail())
                 .onItem()
                 .failWith(() -> new ForbiddenException())
+                .onFailure(NoResultException.class)
+                .recoverWithNull()
                 .replaceWith(voting);
     }
 
