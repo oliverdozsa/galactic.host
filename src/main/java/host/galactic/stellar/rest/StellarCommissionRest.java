@@ -33,4 +33,12 @@ public class StellarCommissionRest {
     public Uni<CommissionSignEnvelopeResponse> signEnvelope(Long votingId, @Valid CommissionSignEnvelopeRequest request) {
         return signEnvelope.sign(votingId, request);
     }
+
+    @Path("/signature")
+    @GET
+    @Authenticated
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<CommissionSignEnvelopeResponse> getSignature(@QueryParam("voting") Long voting) {
+        return signEnvelope.getBy(voting);
+    }
 }

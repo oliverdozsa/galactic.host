@@ -5,6 +5,7 @@ import host.galactic.data.repositories.EnvelopeSignatureRepository;
 import host.galactic.data.repositories.VotingRepository;
 import host.galactic.stellar.rest.requests.commission.CommissionSignEnvelopeRequest;
 import host.galactic.stellar.rest.responses.commission.CommissionSignEnvelopeResponse;
+import io.quarkus.hibernate.reactive.panache.common.WithSession;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.quarkus.logging.Log;
 import io.quarkus.oidc.UserInfo;
@@ -14,6 +15,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.persistence.NoResultException;
 import jakarta.ws.rs.ForbiddenException;
+import jakarta.ws.rs.NotFoundException;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.crypto.engines.RSAEngine;
 import org.hibernate.reactive.mutiny.Mutiny;
@@ -48,6 +50,16 @@ public class StellarCommissionRestSignEnvelope {
                 .call(this::checkIfUserSignedAnEnvelopeAlready)
                 .onItem()
                 .transformToUni(v -> createResponse(request, v));
+    }
+
+    @WithSession
+    public Uni<CommissionSignEnvelopeResponse> getBy(Long votingId) {
+        Log.infof("Got request to get envelope signature of user: %s for voting: %s", userInfo.getEmail(), votingId);
+        return signatureRepository.findFor(votingId, userInfo.getEmail())
+                .onFailure(NoResultException.class)
+                .transform(t -> new NotFoundException())
+                .onItem()
+                .transform(e -> new CommissionSignEnvelopeResponse(e.signature));
     }
 
     private void checkIfUserIsAllowedToSignEnvelope(VotingEntity voting) {

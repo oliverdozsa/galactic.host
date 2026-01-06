@@ -173,9 +173,8 @@ public class StellarCommissionRestSignEnvelopeTest extends StellarBaseTest {
 
         var response = given()
                 .auth().oauth2(asBob)
-                .contentType(ContentType.JSON)
                 .when()
-                .get(rest.commission.url + "/signature/voting=" + votingId)
+                .get(rest.commission.url + "/signature/?voting=" + votingId)
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode())
                 .extract().body()
@@ -193,13 +192,11 @@ public class StellarCommissionRestSignEnvelopeTest extends StellarBaseTest {
         var asBob = auth.loginAs("bob");
         given()
                 .auth().oauth2(asBob)
-                .contentType(ContentType.JSON)
                 .when()
-                .get(rest.commission.url + "/signature/voting=-1")
+                .get(rest.commission.url + "/signature/?voting=-1")
                 .then()
                 .statusCode(Response.Status.NOT_FOUND.getStatusCode())
-                .extract().body()
-                .as(CommissionSignEnvelopeResponse.class);
+                .extract().body();
 
         Log.info("[  END TEST]: testGetNonExistingSignature()");
     }

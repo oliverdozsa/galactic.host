@@ -19,7 +19,6 @@ public class EnvelopeSignatureRepository implements PanacheRepository<EnvelopeSi
                 .singleResult();
     }
 
-    @WithTransaction
     public Uni<EnvelopeSignatureEntity> create(String signature, Long votingId, String userEmail) {
         return userRepository.findByEmail(userEmail)
                 .onItem()
