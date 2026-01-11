@@ -36,7 +36,7 @@ public class StellarCommissionRestSignEnvelopeTest extends StellarBaseTest {
 
         var votingId = rest.voting.createWithParticipants("alice", new String[]{"charlie", "bob"});
 
-        var base64Envelope = utils.createEnvelopeFor("someMessage");
+        var base64Envelope = utils.toBase64("someMessage");
         var request = new CommissionSignEnvelopeRequest(base64Envelope);
         var asBob = auth.loginAs("bob");
         var response = given()
@@ -60,7 +60,7 @@ public class StellarCommissionRestSignEnvelopeTest extends StellarBaseTest {
         Log.info("[START TEST]: testSignEnvelopeUnauthenticated()");
 
         var votingId = rest.voting.createWithParticipants("alice", new String[]{"charlie", "bob"});
-        var base64Envelope = utils.createEnvelopeFor("someMessage");
+        var base64Envelope = utils.toBase64("someMessage");
         var request = new CommissionSignEnvelopeRequest(base64Envelope);
 
         given()
@@ -80,7 +80,7 @@ public class StellarCommissionRestSignEnvelopeTest extends StellarBaseTest {
 
         var votingId = rest.voting.createWithParticipants("alice", new String[]{"charlie", "bob"});
 
-        var base64Envelope = utils.createEnvelopeFor("someMessage");
+        var base64Envelope = utils.toBase64("someMessage");
         var request = new CommissionSignEnvelopeRequest(base64Envelope);
         var asDuke = auth.loginAs("duke");
         given()
@@ -100,7 +100,7 @@ public class StellarCommissionRestSignEnvelopeTest extends StellarBaseTest {
         Log.info("[START TEST]: testSignEnvelopeInvalidVoting()");
 
         var nonExistingVotingId = -1L;
-        var base64Envelope = utils.createEnvelopeFor("someMessage");
+        var base64Envelope = utils.toBase64("someMessage");
         var request = new CommissionSignEnvelopeRequest(base64Envelope);
         var asBob = auth.loginAs("bob");
         given()
@@ -121,7 +121,7 @@ public class StellarCommissionRestSignEnvelopeTest extends StellarBaseTest {
 
         var votingId = rest.voting.createWithParticipants("alice", new String[]{"charlie", "bob"});
 
-        var base64Envelope = utils.createEnvelopeFor("someMessage");
+        var base64Envelope = utils.toBase64("someMessage");
         var request = new CommissionSignEnvelopeRequest(base64Envelope);
         var asBob = auth.loginAs("bob");
         var response = given()
@@ -138,7 +138,7 @@ public class StellarCommissionRestSignEnvelopeTest extends StellarBaseTest {
         assertThat(response.signature(), not(blankOrNullString()));
 
 
-        base64Envelope = utils.createEnvelopeFor("someOtherMessage");
+        base64Envelope = utils.toBase64("someOtherMessage");
         request = new CommissionSignEnvelopeRequest(base64Envelope);
         given()
                 .auth().oauth2(asBob)
@@ -158,7 +158,7 @@ public class StellarCommissionRestSignEnvelopeTest extends StellarBaseTest {
 
         var votingId = rest.voting.createWithParticipants("alice", new String[]{"charlie", "bob"});
 
-        var base64Envelope = utils.createEnvelopeFor("someMessage");
+        var base64Envelope = utils.toBase64("someMessage");
         var request = new CommissionSignEnvelopeRequest(base64Envelope);
         var asBob = auth.loginAs("bob");
 
@@ -199,23 +199,5 @@ public class StellarCommissionRestSignEnvelopeTest extends StellarBaseTest {
                 .extract().body();
 
         Log.info("[  END TEST]: testGetNonExistingSignature()");
-    }
-
-    public void waitForChannelAccountsToBeCreatedFor(Long votingId) {
-        await().until(() -> areChannelAccountsCreatedFor(votingId));
-    }
-
-    public void waitForAssetAccountsToBeCreatedFor(Long votingId) {
-        await().until(() -> areAssetAccountsCreatedFor(votingId));
-    }
-
-    @Transactional
-    public boolean areAssetAccountsCreatedFor(Long votingId) {
-        return db.areAssetAccountsCreatedFor(votingId);
-    }
-
-    @Transactional
-    public boolean areChannelAccountsCreatedFor(Long votingId) {
-        return db.areChannelAccountsCreatedFor(votingId);
     }
 }
