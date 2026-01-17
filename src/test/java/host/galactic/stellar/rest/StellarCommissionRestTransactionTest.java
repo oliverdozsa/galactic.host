@@ -2,18 +2,22 @@ package host.galactic.stellar.rest;
 
 import host.galactic.stellar.StellarBaseTest;
 import host.galactic.stellar.rest.requests.commission.CommissionCreateTransactionRequest;
-import host.galactic.stellar.rest.requests.commission.CommissionSignEnvelopeRequestTest;
+
 import host.galactic.stellar.rest.responses.commission.CommissionCreateTransactionResponse;
-import host.galactic.stellar.rest.responses.commission.CommissionSignEnvelopeResponse;
+import host.galactic.testutils.RsaEnvelope;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
 import static org.awaitility.Awaitility.await;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.blankOrNullString;
+import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.fail;
 
 @QuarkusTest
@@ -34,14 +38,18 @@ public class StellarCommissionRestTransactionTest extends StellarBaseTest {
         waitForChannelAccountsToBeCreatedFor(votingId);
 
         var message = votingId + "|" + TEST_STELLAR_ACCOUNT;
-        var envelopedMessage = envelopeMessage(message);
+        var signingKeyPublic = rest.commission.getPublicKey().publicKey();
 
+        var rsaEnvelope = new RsaEnvelope(signingKeyPublic);
+        var envelopedMessage = rsaEnvelope.create(message.getBytes());
         var base64Envelope = utils.toBase64(envelopedMessage);
-        var envelopeSignature = rest.commission.signEnvelope(base64Envelope);
 
-        var revealedSignature = createRevealedSignatureFrom(envelopeSignature, envelopedMessage);
+        var envelopeSignatureResponse = rest.commission.signEnvelope(base64Envelope);
+        var envelopeSignatureBytes = utils.fromBase64(envelopeSignatureResponse.signature());
+        var revealedSignature = rsaEnvelope.revealedSignature(envelopeSignatureBytes);
+        var revealedSignatureBase64 = utils.toBase64(revealedSignature);
 
-        var request = new CommissionCreateTransactionRequest();
+        var request = new CommissionCreateTransactionRequest(message, revealedSignatureBase64);
         var response = given()
                 .contentType(ContentType.JSON)
                 .body(request)
@@ -51,9 +59,8 @@ public class StellarCommissionRestTransactionTest extends StellarBaseTest {
                 .statusCode(Response.Status.OK.getStatusCode())
                 .extract().body()
                 .as(CommissionCreateTransactionResponse.class);
-        // TODO assert response
 
-        fail("Implement testCreateTransaction()");
+        assertThat(response.transaction(), not(blankOrNullString()));
     }
 
     @Test
@@ -86,6 +93,11 @@ public class StellarCommissionRestTransactionTest extends StellarBaseTest {
         fail("Implement testTryGettingNonExistingTransactionForSignature()");
     }
 
+    @Test
+    public void testCreateTransactionButSignatureIsInvalid() {
+        fail("Implement testCreateTransactionButSignatureIsInvalid()");
+    }
+
     public void waitForChannelAccountsToBeCreatedFor(Long votingId) {
         await().until(() -> areChannelAccountsCreatedFor(votingId));
     }
@@ -104,13 +116,5 @@ public class StellarCommissionRestTransactionTest extends StellarBaseTest {
         return db.areChannelAccountsCreatedFor(votingId);
     }
 
-    private String envelopeMessage(String original) {
-        // TODO
-        return null;
-    }
-
-    private String createRevealedSignatureFrom(CommissionSignEnvelopeResponse envelopeSignature, String envelopedMessage) {
-        // TODO
-        return null;
-    }
+    private String createSignatureFor(Long votingId)
 }
