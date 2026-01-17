@@ -14,10 +14,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
-import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.blankOrNullString;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.*;
 
 @QuarkusTest
 public class StellarCommissionRestSignEnvelopeTest extends StellarBaseTest {
@@ -195,8 +193,7 @@ public class StellarCommissionRestSignEnvelopeTest extends StellarBaseTest {
                 .when()
                 .get(rest.commission.url + "/signature/?voting=-1")
                 .then()
-                .statusCode(Response.Status.NOT_FOUND.getStatusCode())
-                .extract().body();
+                .statusCode(Response.Status.NOT_FOUND.getStatusCode());
 
         Log.info("[  END TEST]: testGetNonExistingSignature()");
     }

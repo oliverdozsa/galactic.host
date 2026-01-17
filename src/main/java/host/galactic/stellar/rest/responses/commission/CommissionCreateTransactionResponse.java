@@ -1,4 +1,4 @@
 package host.galactic.stellar.rest.responses.commission;
 
-public class CommissionCreateTransactionResponse {
+public record CommissionCreateTransactionResponse (String transaction) {
 }
