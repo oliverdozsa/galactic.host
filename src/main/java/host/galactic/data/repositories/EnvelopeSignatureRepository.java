@@ -12,7 +12,7 @@ import jakarta.inject.Inject;
 @ApplicationScoped
 public class EnvelopeSignatureRepository implements PanacheRepository<EnvelopeSignatureEntity> {
     @Inject
-    private UserRepository userRepository;
+    UserRepository userRepository;
 
     public Uni<EnvelopeSignatureEntity> findFor(Long votingId, String email) {
         return find("voting.id = ?1 and user.email = ?2", votingId, email)

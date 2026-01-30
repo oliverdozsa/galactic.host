@@ -16,7 +16,7 @@ import java.util.List;
 @ApplicationScoped
 public class ChannelAccountRepository implements PanacheRepository<ChannelAccountEntity> {
     @Inject
-    private ChannelGeneratorRepository channelGeneratorRepository;
+    ChannelGeneratorRepository channelGeneratorRepository;
 
     @WithTransaction
     public Uni<Void> channelAccountsCreated(List<StellarChannelAccount> stellarChannelAccounts, Long channelGeneratorId) {

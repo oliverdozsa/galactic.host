@@ -21,7 +21,7 @@ import static org.hamcrest.Matchers.*;
 @QuarkusTest
 public class StellarCreateVotingRestTest extends StellarBaseTest {
     @Inject
-    private AuthForTest auth;
+    AuthForTest auth;
 
     @Test
     public void testCreateVoting() {

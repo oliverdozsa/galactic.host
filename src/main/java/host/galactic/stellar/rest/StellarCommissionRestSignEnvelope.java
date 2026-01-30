@@ -27,17 +27,17 @@ import static host.galactic.stellar.rest.VotingChecks.doesUserNotParticipateIn;
 @RequestScoped
 public class StellarCommissionRestSignEnvelope {
     @Inject
-    private UserInfo userInfo;
+    UserInfo userInfo;
 
     @Inject
-    private VotingRepository votingRepository;
+    VotingRepository votingRepository;
 
     @Inject
-    private EnvelopeSignatureRepository signatureRepository;
+    EnvelopeSignatureRepository signatureRepository;
 
     @Inject
     @Named("signing")
-    private AsymmetricCipherKeyPair signingKey;
+    AsymmetricCipherKeyPair signingKey;
 
     @WithTransaction
     public Uni<CommissionSignEnvelopeResponse> sign(Long votingId, CommissionSignEnvelopeRequest request) {

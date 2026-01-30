@@ -20,7 +20,7 @@ import static org.hamcrest.Matchers.*;
 @QuarkusTest
 public class StellarCommissionRestSignEnvelopeTest extends StellarBaseTest {
     @Inject
-    private AuthForTest auth;
+    AuthForTest auth;
 
     @BeforeEach
     @Transactional

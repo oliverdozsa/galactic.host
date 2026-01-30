@@ -26,7 +26,7 @@ import static org.hamcrest.Matchers.equalTo;
 @QuarkusTest
 public class StellarVotersRestTest extends StellarBaseTest {
     @Inject
-    private AuthForTest auth;
+    AuthForTest auth;
 
     @Test
     public void testGetPrivateVotingAsNonParticipant() {

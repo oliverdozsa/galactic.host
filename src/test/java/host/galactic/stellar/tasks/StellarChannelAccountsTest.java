@@ -27,7 +27,7 @@ import static org.awaitility.Awaitility.*;
 @QuarkusTest
 public class StellarChannelAccountsTest extends StellarBaseTest {
     @Inject
-    private AuthForTest auth;
+    AuthForTest auth;
 
     @BeforeEach
     @Transactional
