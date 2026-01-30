@@ -18,7 +18,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @QuarkusTest
 public class StellarDeleteVotingRestTest extends StellarBaseTest {
     @Inject
-    private AuthForTest auth;
+    AuthForTest auth;
 
     @Test
     public void testDeleteExisting() {

@@ -18,17 +18,17 @@ import java.net.URL;
 public class StellarBaseTest {
     @TestHTTPEndpoint(StellarVotingRest.class)
     @TestHTTPResource
-    private URL votingRestUrl;
+    URL votingRestUrl;
 
     @TestHTTPEndpoint(StellarCommissionRest.class)
     @TestHTTPResource
-    private URL commisionRestUrl;
+    URL commisionRestUrl;
 
     @Inject
-    private EntityManager entityManager;
+    EntityManager entityManager;
 
     @Inject
-    private AuthForTest authForTest;
+    AuthForTest authForTest;
 
     public StellarBaseTestRest rest;
     public StellarBaseTestDb db;

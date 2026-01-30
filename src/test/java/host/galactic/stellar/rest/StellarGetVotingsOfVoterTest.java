@@ -22,7 +22,7 @@ import static org.hamcrest.Matchers.*;
 @QuarkusTest
 class StellarGetVotingsOfVoterTest extends StellarBaseTest {
     @Inject
-    private AuthForTest auth;
+    AuthForTest auth;
 
     @Test
     public void testGetVotingsOfVoterNotAuthenticated() {

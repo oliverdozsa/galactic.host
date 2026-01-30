@@ -1,6 +1,8 @@
 package host.galactic.stellar.rest;
 
+import host.galactic.stellar.rest.requests.commission.CommissionCreateTransactionRequest;
 import host.galactic.stellar.rest.requests.commission.CommissionSignEnvelopeRequest;
+import host.galactic.stellar.rest.responses.commission.CommissionCreateTransactionResponse;
 import host.galactic.stellar.rest.responses.commission.CommissionGetPublicKeyResponse;
 import host.galactic.stellar.rest.responses.commission.CommissionSignEnvelopeResponse;
 import io.quarkus.security.Authenticated;
@@ -13,10 +15,13 @@ import jakarta.ws.rs.core.MediaType;
 @Path("/stellar/commission")
 public class StellarCommissionRest {
     @Inject
-    private StellarCommissionRestPublicKey publicKeyRest;
+    StellarCommissionRestPublicKey publicKeyRest;
 
     @Inject
-    private StellarCommissionRestSignEnvelope signEnvelope;
+    StellarCommissionRestSignEnvelope signEnvelope;
+
+    @Inject
+    StellarCommissionRestTransaction transaction;
 
     @Path("/publickey")
     @GET
@@ -40,5 +45,13 @@ public class StellarCommissionRest {
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<CommissionSignEnvelopeResponse> getSignature(@QueryParam("voting") Long voting) {
         return signEnvelope.getBy(voting);
+    }
+
+    @Path("/transaction")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<CommissionCreateTransactionResponse> createTransaction(CommissionCreateTransactionRequest request) {
+        return transaction.create(request);
     }
 }
