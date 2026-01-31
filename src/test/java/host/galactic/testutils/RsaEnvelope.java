@@ -1,10 +1,13 @@
 package host.galactic.testutils;
 
 import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
+import org.bouncycastle.crypto.CryptoException;
+import org.bouncycastle.crypto.digests.SHA384Digest;
 import org.bouncycastle.crypto.engines.RSABlindingEngine;
 import org.bouncycastle.crypto.generators.RSABlindingFactorGenerator;
 import org.bouncycastle.crypto.params.RSABlindingParameters;
 import org.bouncycastle.crypto.params.RSAKeyParameters;
+import org.bouncycastle.crypto.signers.PSSSigner;
 import org.bouncycastle.crypto.util.PublicKeyFactory;
 import org.bouncycastle.openssl.PEMParser;
 
@@ -30,12 +33,11 @@ public class RsaEnvelope {
 
     public byte[] create(byte[] content) {
         try {
-            var contentDigest = MessageDigest.getInstance("SHA-384").digest(content);
-
-            var engine = new RSABlindingEngine();
-            engine.init(true, blindingParameters);
-            return engine.processBlock(contentDigest, 0, contentDigest.length);
-        } catch (NoSuchAlgorithmException e) {
+            var signer = new PSSSigner(new RSABlindingEngine(), new SHA384Digest(), 0);
+            signer.init(true, blindingParameters);
+            signer.update(content, 0, content.length);
+            return signer.generateSignature();
+        } catch (CryptoException e) {
             throw new RuntimeException(e);
         }
     }

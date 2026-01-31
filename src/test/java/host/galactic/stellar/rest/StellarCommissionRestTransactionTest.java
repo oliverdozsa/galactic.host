@@ -62,8 +62,8 @@ public class StellarCommissionRestTransactionTest extends StellarBaseTest {
     }
 
     @Test
-    public void testCreateTransactionButNotEnoughChannelAccounts() {
-        Log.info("[START TEST]: testCreateTransactionButNotEnoughChannelAccounts()");
+    public void testCreateTransactionButVotingIsNotPreparedYet() {
+        Log.info("[START TEST]: testCreateTransactionButVotingIsNotPreparedYet()");
         var votingId = rest.voting.createWithParticipants("alice", new String[]{"bob", "charlie"});
 
         var message = votingId + "|" + TEST_STELLAR_ACCOUNT;
@@ -78,7 +78,7 @@ public class StellarCommissionRestTransactionTest extends StellarBaseTest {
                 .then()
                 .statusCode(Response.Status.SERVICE_UNAVAILABLE.getStatusCode());
 
-        Log.info("[  END TEST]: testCreateTransactionButNotEnoughChannelAccounts()");
+        Log.info("[  END TEST]: testCreateTransactionButVotingIsNotPreparedYet()");
     }
 
     @Test
