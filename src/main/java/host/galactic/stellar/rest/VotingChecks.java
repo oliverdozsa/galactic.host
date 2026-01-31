@@ -8,4 +8,8 @@ public class VotingChecks {
                 .map(u -> u.email)
                 .noneMatch(e -> e.equals(userEmail));
     }
+
+    public static boolean areAssetAccountsCreated(VotingEntity entity) {
+        return entity.ballotAccountSecret != null;
+    }
 }
