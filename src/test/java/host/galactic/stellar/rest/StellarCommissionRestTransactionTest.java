@@ -90,7 +90,7 @@ public class StellarCommissionRestTransactionTest extends StellarBaseTest {
         waitForAssetAccountsToBeCreatedFor(votingId);
         waitForChannelAccountsToBeCreatedFor(votingId);
 
-        var message = votingId + "|" + TEST_STELLAR_ACCOUNT;
+        var message = "-1|" + TEST_STELLAR_ACCOUNT;
         var revealedSignatureBase64 = createRevealedSignatureFor(message, votingId, "bob");
 
         var request = new CommissionCreateTransactionRequest(message, revealedSignatureBase64);

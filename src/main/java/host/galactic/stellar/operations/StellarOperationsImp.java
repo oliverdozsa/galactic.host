@@ -37,4 +37,9 @@ class StellarOperationsImp implements StellarOperations {
     public Uni<StellarAssetAccounts> createAssetAccounts(StellarAssetAccountsOperationPayload payload) {
         return new StellarAssetAccountsOperation(server, network).create(payload);
     }
+
+    @Override
+    public Uni<String> createVoterAccountTransaction(StellarCreateVoterAccountTxPayload payload) {
+        return new StellarCreateVoterAccountTxOperation(server, network).create(payload);
+    }
 }

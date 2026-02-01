@@ -29,6 +29,14 @@ public class CommissionCreateTransactionRequestTest extends ValidationBaseTest {
     }
 
     @Test
+    public void testInvalidVotingIdInMessageInCommissionCreateTransactionRequest() {
+        var request = new CommissionCreateTransactionRequest("a|bbb", "abcd");
+
+        var violations = validator.validateProperty(request, "message");
+        assertThat("Expected 1 violation for invalid message in transaction request!", violations, hasSize(1));
+    }
+
+    @Test
     public void testInvalidSignatureInCommissionCreateTransactionRequest() {
         var request = new CommissionCreateTransactionRequest("a|b", "");
 

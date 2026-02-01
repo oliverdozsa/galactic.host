@@ -62,4 +62,9 @@ class MockStellarOperationsImp implements StellarOperations {
                 .createFrom()
                 .item(new StellarAssetAccounts(distributionAccountSecret, ballotAccountSecret, issuerAccountSecret, payload.votingEntity().id));
     }
+
+    @Override
+    public Uni<String> createVoterAccountTransaction(StellarCreateVoterAccountTxPayload payload) {
+        return Uni.createFrom().item("someRandomTxString");
+    }
 }

@@ -9,4 +9,5 @@ public interface StellarOperations {
     Uni<List<StellarChannelGenerator>> createChannelGenerators(StellarChannelGeneratorOperationPayload payload);
     Uni<List<StellarChannelAccount>> createChannelAccounts(StellarChannelAccountOperationPayload payload);
     Uni<StellarAssetAccounts> createAssetAccounts(StellarAssetAccountsOperationPayload payload);
+    Uni<String> createVoterAccountTransaction(StellarCreateVoterAccountTxPayload payload);
 }
