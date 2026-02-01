@@ -3,9 +3,9 @@ package host.galactic.stellar.operations;
 public record StellarCreateVoterAccountTxPayload(
         String channelAccountSecret,
         String distributionAccountSecret,
-        String issuerAccountPublic,
+        String issuerAccountSecret,
         String assetCode,
-        long votesCap,
+        long maxVoters,
         String voterAccountPublic
 ) {
 }

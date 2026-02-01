@@ -10,6 +10,7 @@ import io.quarkus.logging.Log;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.NotFoundException;
 
 import java.util.List;
 
@@ -29,6 +30,18 @@ public class ChannelAccountRepository implements PanacheRepository<ChannelAccoun
                 .chain(v -> channelGeneratorRepository.findById(channelGeneratorId))
                 .chain(e -> subtractNumOfChannelAccountFrom(e, stellarChannelAccounts.size()))
                 .replaceWithVoid();
+    }
+
+    public Uni<ChannelAccountEntity> consumeOneFor(Long votingId) {
+        return find("voting.id = ?1 and isConsumed = false", votingId)
+                .firstResult()
+                .onItem()
+                .ifNull()
+                .failWith(new NotFoundException())
+                .chain(e -> {
+                    e.isConsumed = true;
+                    return persist(e);
+                });
     }
 
     private ChannelAccountEntity toEntity(StellarChannelAccount stellarChannelAccount) {

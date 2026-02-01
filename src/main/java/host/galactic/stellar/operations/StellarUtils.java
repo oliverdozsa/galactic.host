@@ -18,8 +18,8 @@ public class StellarUtils {
     }
 
     public static BigDecimal toAssetAmount(long value) {
-        BigDecimal votesCapBigDec = new BigDecimal(value);
+        BigDecimal valueAsBigDecimal = new BigDecimal(value);
         BigDecimal divisor = new BigDecimal(10).pow(7);
-        return votesCapBigDec.divide(divisor);
+        return valueAsBigDecimal.divide(divisor);
     }
 }

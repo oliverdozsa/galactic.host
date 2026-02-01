@@ -2,15 +2,20 @@ package host.galactic.stellar.rest;
 
 import host.galactic.data.entities.ChannelAccountEntity;
 import host.galactic.data.entities.VotingEntity;
+import host.galactic.data.repositories.ChannelAccountRepository;
 import host.galactic.data.repositories.VotingRepository;
+import host.galactic.stellar.operations.StellarCreateVoterAccountTxPayload;
+import host.galactic.stellar.operations.StellarOperationsProducer;
 import host.galactic.stellar.rest.requests.commission.CommissionCreateTransactionRequest;
 import host.galactic.stellar.rest.responses.commission.CommissionCreateTransactionResponse;
+import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.quarkus.logging.Log;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.ServiceUnavailableException;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.crypto.digests.SHA384Digest;
@@ -25,18 +30,27 @@ public class StellarCommissionRestTransaction {
     VotingRepository votingRepository;
 
     @Inject
+    ChannelAccountRepository channelAccountRepository;
+
+    @Inject
+    StellarOperationsProducer stellarOperationsProducer;
+
+    @Inject
     @Named("signing")
     AsymmetricCipherKeyPair signingKey;
 
+    @WithTransaction
     public Uni<CommissionCreateTransactionResponse> create(CommissionCreateTransactionRequest request) {
         Log.infof("Got request to create transaction for: %s", toLoggableString(request));
         var parsedMessage = ParsedMessage.parse(request.message());
 
         return verifySignatureOf(request)
                 .onItem().transformToUni(v -> votingRepository.getById(parsedMessage.votingId))
+                .onFailure(NotFoundException.class).transform(e -> new BadRequestException())
                 .invoke(this::checkAssetAccountsCreated)
                 .onItem()
-                .transformToUni(v -> consumeAChannelFor(v))
+                .transformToUni(v -> channelAccountRepository.consumeOneFor(v.id))
+                .onFailure(NotFoundException.class).transform(e -> new ServiceUnavailableException())
                 .onItem()
                 .transformToUni(c -> createTransaction(c, parsedMessage.voterPublic))
                 .onItem()
@@ -78,32 +92,39 @@ public class StellarCommissionRestTransaction {
         }
     }
 
-    private Uni<ChannelAccountEntity> consumeAChannelFor(VotingEntity voting) {
-        // TODO
-        return null;
-    }
-
     private Uni<String> createTransaction(ChannelAccountEntity channelAccountEntity, String voterPublic) {
-        // TODO
-        return null;
+        var stellarOperation = stellarOperationsProducer.create(channelAccountEntity.voting.isOnTestNetwork);
+        var payload = new StellarCreateVoterAccountTxPayload(
+                channelAccountEntity.accountSecret,
+                channelAccountEntity.voting.distributionAccountSecret,
+                channelAccountEntity.voting.issuerAccountSecret,
+                channelAccountEntity.voting.assetCode,
+                channelAccountEntity.voting.maxVoters,
+                voterPublic
+        );
+
+        return stellarOperation.createVoterAccountTransaction(payload);
     }
 
     private CommissionCreateTransactionResponse toResponse(String transaction) {
-        // TODO
-        return null;
+        return new CommissionCreateTransactionResponse(transaction);
     }
 
-    private class ParsedMessage {
+    private static class ParsedMessage {
         Long votingId;
         String voterPublic;
 
-        static ParsedMessage parse(String message) {
-            // TODO
-            return null;
+        private ParsedMessage(Long votingId, String voterPublic) {
+            this.votingId = votingId;
+            this.voterPublic = voterPublic;
         }
 
-        private ParsedMessage(String rawMessage) {
-            // TODO
+        static ParsedMessage parse(String message) {
+            var parts = message.split("\\|");
+            var votingId = Long.parseLong(parts[0]);
+            var voterPublic = parts[1];
+
+            return new ParsedMessage(votingId, voterPublic);
         }
     }
 
