@@ -3,11 +3,15 @@ package host.galactic.stellar.rest;
 import host.galactic.data.entities.ChannelAccountEntity;
 import host.galactic.data.entities.VotingEntity;
 import host.galactic.data.repositories.ChannelAccountRepository;
+import host.galactic.data.repositories.VoterTransactionRepository;
 import host.galactic.data.repositories.VotingRepository;
 import host.galactic.stellar.operations.StellarCreateVoterAccountTxPayload;
 import host.galactic.stellar.operations.StellarOperationsProducer;
 import host.galactic.stellar.rest.requests.commission.CommissionCreateTransactionRequest;
+import host.galactic.stellar.rest.requests.commission.CommissionGetTransactionOfSignatureRequest;
 import host.galactic.stellar.rest.responses.commission.CommissionCreateTransactionResponse;
+import host.galactic.stellar.rest.responses.commission.CommissionGetTransactionOfSignatureResponse;
+import io.quarkus.hibernate.reactive.panache.common.WithSession;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.quarkus.logging.Log;
 import io.smallrye.mutiny.Uni;
@@ -33,6 +37,9 @@ public class StellarCommissionRestTransaction {
     ChannelAccountRepository channelAccountRepository;
 
     @Inject
+    VoterTransactionRepository voterTransactionRepository;
+
+    @Inject
     StellarOperationsProducer stellarOperationsProducer;
 
     @Inject
@@ -45,6 +52,8 @@ public class StellarCommissionRestTransaction {
         var parsedMessage = ParsedMessage.parse(request.message());
 
         return verifySignatureOf(request)
+                .onItem()
+                .call(() -> checkIfTxExistsFor(request.revealedSignatureBase64()))
                 .onItem().transformToUni(v -> votingRepository.getById(parsedMessage.votingId))
                 .onFailure(NotFoundException.class).transform(e -> new BadRequestException())
                 .invoke(this::checkAssetAccountsCreated)
@@ -54,17 +63,19 @@ public class StellarCommissionRestTransaction {
                 .onItem()
                 .transformToUni(c -> createTransaction(c, parsedMessage.voterPublic))
                 .onItem()
+                .transformToUni(t -> saveTransactionFor(request.revealedSignatureBase64(), t))
+                .onItem()
                 .transform(this::toResponse);
+    }
 
-
-        // TODO: 1. Check that signature is valid for message
-        // TODO: 2. Parse the message. It's in format: votingId|voterPublic. It's assumed that voterPublic doesn't exist
-        // TODO: 3. Check that voting exists
-        // TODO: 4. Ensure that asset accounts are created for voting
-        // TODO: 5. Consume a channel account from voting
-        // TODO: 6. Using the channel account, the distribution account, the issuer account and the voter public, form the transaction,
-        // TODO     that creates voter account, and transfers 1 vote token to it.
-        // TODO: 7. Return the transaction as envelopeXdrBase64
+    @WithSession
+    public Uni<CommissionGetTransactionOfSignatureResponse> getTxOfSignature(CommissionGetTransactionOfSignatureRequest request) {
+        return voterTransactionRepository.findBySignature(request.signature())
+                .onItem()
+                .ifNull()
+                .failWith(new NotFoundException())
+                .onItem()
+                .transform(e -> toGetTxResponse(e.transaction));
     }
 
     private Uni<Void> verifySignatureOf(CommissionCreateTransactionRequest request) {
@@ -83,6 +94,14 @@ public class StellarCommissionRestTransaction {
                 throw new BadRequestException("Signature is invalid!");
             }
         });
+    }
+
+    private Uni<Void> checkIfTxExistsFor(String signature) {
+        return voterTransactionRepository.findBySignature(signature)
+                .onItem()
+                .ifNotNull()
+                .failWith(new BadRequestException())
+                .replaceWithVoid();
     }
 
     private void checkAssetAccountsCreated(VotingEntity voting) {
@@ -106,8 +125,18 @@ public class StellarCommissionRestTransaction {
         return stellarOperation.createVoterAccountTransaction(payload);
     }
 
+    private Uni<String> saveTransactionFor(String signature, String transaction) {
+        return voterTransactionRepository.createFrom(signature, transaction)
+                .onItem()
+                .transform(e -> e.transaction);
+    }
+
     private CommissionCreateTransactionResponse toResponse(String transaction) {
         return new CommissionCreateTransactionResponse(transaction);
+    }
+
+    private CommissionGetTransactionOfSignatureResponse toGetTxResponse(String transaction) {
+        return new CommissionGetTransactionOfSignatureResponse(transaction);
     }
 
     private static class ParsedMessage {
