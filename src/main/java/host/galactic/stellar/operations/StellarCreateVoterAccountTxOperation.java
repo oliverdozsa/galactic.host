@@ -1,5 +1,6 @@
 package host.galactic.stellar.operations;
 
+import io.quarkus.logging.Log;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.infrastructure.Infrastructure;
 import io.smallrye.mutiny.vertx.MutinyHelper;
@@ -12,6 +13,7 @@ import org.stellar.sdk.operations.PaymentOperation;
 import java.math.BigDecimal;
 
 import static host.galactic.stellar.operations.StellarUtils.toAssetAmount;
+import static host.galactic.stellar.operations.StellarUtils.toTruncatedAccountId;
 
 public class StellarCreateVoterAccountTxOperation {
     private Server server;
@@ -31,6 +33,8 @@ public class StellarCreateVoterAccountTxOperation {
 
     public Uni<String> create(StellarCreateVoterAccountTxPayload payload) {
         return Uni.createFrom().item(() -> {
+                    var truncatedVoterPublic = toTruncatedAccountId(payload.voterAccountPublic());
+                    Log.infof("[STELLAR]: Creating transaction for %s with asset code %s", truncatedVoterPublic, payload.assetCode());
                     this.payload = payload;
                     channelKeyPair = KeyPair.fromSecretSeed(payload.channelAccountSecret());
                     distributionKeyPair = KeyPair.fromSecretSeed(payload.distributionAccountSecret());

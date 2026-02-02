@@ -58,7 +58,7 @@ public class StellarCommissionRestTransaction {
                 .onFailure(NotFoundException.class).transform(e -> new BadRequestException())
                 .invoke(this::checkAssetAccountsCreated)
                 .onItem()
-                .transformToUni(v -> channelAccountRepository.consumeOneFor(v.id))
+                .transformToUni(v -> consumeAChannelAccountFor(v.id))
                 .onFailure(NotFoundException.class).transform(e -> new ServiceUnavailableException())
                 .onItem()
                 .transformToUni(c -> createTransaction(c, parsedMessage.voterPublic))
@@ -70,10 +70,14 @@ public class StellarCommissionRestTransaction {
 
     @WithSession
     public Uni<CommissionGetTransactionOfSignatureResponse> getTxOfSignature(CommissionGetTransactionOfSignatureRequest request) {
+        Log.infof("Got request to get transaction for signature: %s", toLoggableString(request));
         return voterTransactionRepository.findBySignature(request.signature())
                 .onItem()
                 .ifNull()
-                .failWith(new NotFoundException())
+                .failWith(() -> {
+                    Log.infof("Not found transaction for signature: %s", toLoggableString(request));
+                    return new NotFoundException();
+                })
                 .onItem()
                 .transform(e -> toGetTxResponse(e.transaction));
     }
@@ -97,7 +101,11 @@ public class StellarCommissionRestTransaction {
     }
 
     private Uni<Void> checkIfTxExistsFor(String signature) {
+        var truncatedSignature = signature.length() > 10 ? signature.substring(0, 10) + "..." : signature;
+        Log.infof("Checking if transaction exists already for signature: %s", truncatedSignature);
         return voterTransactionRepository.findBySignature(signature)
+                .onItem()
+                .invoke(() -> Log.infof("Transaction already exists for signature: %s; failing.", truncatedSignature))
                 .onItem()
                 .ifNotNull()
                 .failWith(new BadRequestException())
@@ -105,10 +113,24 @@ public class StellarCommissionRestTransaction {
     }
 
     private void checkAssetAccountsCreated(VotingEntity voting) {
+        Log.infof("Checking if asset accounts are created for voting: %s", voting.id);
         if (!VotingChecks.areAssetAccountsCreated(voting)) {
-            Log.warnf("Asset accounts are not ready for voting: %s", voting.id);
+            Log.warnf("Asset accounts are not ready for voting: %s!", voting.id);
             throw new ServiceUnavailableException("Asset accounts are not ready for voting:" + voting.id);
+        } else {
+            Log.info("Asset accounts are ready!");
         }
+    }
+
+    private Uni<ChannelAccountEntity> consumeAChannelAccountFor(Long votingId) {
+        Log.infof("Consuming a channel account for voting: %s", votingId);
+        return channelAccountRepository.consumeOneFor(votingId)
+                .onItem()
+                .invoke(c -> {
+                    if(c == null) {
+                        Log.warnf("Not found any unused channel account for voting: %s; failing!", votingId);
+                    }
+                });
     }
 
     private Uni<String> createTransaction(ChannelAccountEntity channelAccountEntity, String voterPublic) {
@@ -165,5 +187,12 @@ public class StellarCommissionRestTransaction {
         var truncatedSignature = signature.length() > 10 ? signature.substring(0, 10) + "..." : signature;
 
         return "message = " + truncatedMessage + ", signature = " + truncatedSignature;
+    }
+
+    private static String toLoggableString(CommissionGetTransactionOfSignatureRequest request) {
+        var signature = request.signature();
+        var truncatedSignature = signature.length() > 10 ? signature.substring(0, 10) + "..." : signature;
+
+        return "signature = " + truncatedSignature;
     }
 }
