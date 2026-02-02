@@ -1,9 +1,11 @@
 package host.galactic.stellar.rest;
 
 import host.galactic.stellar.rest.requests.commission.CommissionCreateTransactionRequest;
+import host.galactic.stellar.rest.requests.commission.CommissionGetTransactionOfSignatureRequest;
 import host.galactic.stellar.rest.requests.commission.CommissionSignEnvelopeRequest;
 import host.galactic.stellar.rest.responses.commission.CommissionCreateTransactionResponse;
 import host.galactic.stellar.rest.responses.commission.CommissionGetPublicKeyResponse;
+import host.galactic.stellar.rest.responses.commission.CommissionGetTransactionOfSignatureResponse;
 import host.galactic.stellar.rest.responses.commission.CommissionSignEnvelopeResponse;
 import io.quarkus.security.Authenticated;
 import io.smallrye.mutiny.Uni;
@@ -53,5 +55,13 @@ public class StellarCommissionRest {
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<CommissionCreateTransactionResponse> createTransaction(CommissionCreateTransactionRequest request) {
         return transaction.create(request);
+    }
+
+    @Path("/transactionofsignature")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<CommissionGetTransactionOfSignatureResponse> getTransactionOfSignature(CommissionGetTransactionOfSignatureRequest request) {
+        return transaction.getTxOfSignature(request);
     }
 }

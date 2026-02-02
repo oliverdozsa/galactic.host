@@ -11,7 +11,7 @@ import static org.hamcrest.Matchers.hasSize;
 public class CommissionCreateTransactionRequestTest extends ValidationBaseTest {
     @Test
     public void testValidCommissionCreateTransactionRequest() {
-        var request = new CommissionCreateTransactionRequest("a|b", "abcd");
+        var request = new CommissionCreateTransactionRequest("3|b", "abcd");
 
         var violations = validator.validateProperty(request, "message");
         assertThat("Expected no violation for valid message in transaction request!", violations, hasSize(0));
