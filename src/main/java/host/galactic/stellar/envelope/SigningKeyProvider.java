@@ -1,26 +1,37 @@
 package host.galactic.stellar.envelope;
 
 import io.quarkus.logging.Log;
+import io.quarkus.runtime.LaunchMode;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Named;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
+import org.bouncycastle.crypto.generators.RSAKeyPairGenerator;
+import org.bouncycastle.crypto.params.RSAKeyGenerationParameters;
 import org.bouncycastle.crypto.params.RSAKeyParameters;
 import org.bouncycastle.crypto.util.PrivateKeyFactory;
+import org.bouncycastle.crypto.util.PrivateKeyInfoFactory;
 import org.bouncycastle.crypto.util.PublicKeyFactory;
 import org.bouncycastle.crypto.util.SubjectPublicKeyInfoFactory;
 import org.bouncycastle.openssl.PEMKeyPair;
 import org.bouncycastle.openssl.PEMParser;
+import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
+import org.bouncycastle.util.io.pem.PemObject;
+import org.bouncycastle.util.io.pem.PemWriter;
 import org.eclipse.microprofile.config.ConfigProvider;
 
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.math.BigInteger;
+import java.security.SecureRandom;
 
 public class SigningKeyProvider {
     private AsymmetricCipherKeyPair keyPair;
     private String publicKeyAsPem;
+
+    private static AsymmetricCipherKeyPair testKeyPair = generateKeyPair();
 
     @PostConstruct
     private void init() {
@@ -73,6 +84,39 @@ public class SigningKeyProvider {
     }
 
     private String getKeyPairPem() {
-        return ConfigProvider.getConfig().getValue("galactic.host.voting.signing.key", String.class);
+        if (LaunchMode.current() != LaunchMode.NORMAL) {
+            Log.info("Using random signing keypair for dev and test modes.");
+            return privateToPemString(testKeyPair);
+        } else {
+            return ConfigProvider.getConfig().getValue("galactic.host.voting.signing.key", String.class);
+        }
+    }
+
+    private static AsymmetricCipherKeyPair generateKeyPair() {
+        RSAKeyPairGenerator generator = new RSAKeyPairGenerator();
+
+        BigInteger publicExponent = new BigInteger("10001", 16);
+        SecureRandom random = new SecureRandom();
+        RSAKeyGenerationParameters keyGenParams = new RSAKeyGenerationParameters(
+                publicExponent, random, 4096, 80
+        );
+
+        generator.init(keyGenParams);
+        return generator.generateKeyPair();
+    }
+
+    private static String privateToPemString(AsymmetricCipherKeyPair keyPair) {
+        try (var sw = new StringWriter(); var pw = new JcaPEMWriter(sw)) {
+            var converter = new JcaPEMKeyConverter();
+            converter.setProvider("BC");
+
+            var pkInfo = PrivateKeyInfoFactory.createPrivateKeyInfo(keyPair.getPrivate());
+
+            pw.writeObject(converter.getPrivateKey(pkInfo));
+            pw.flush();
+            return sw.toString();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
