@@ -1,14 +1,22 @@
 package host.galactic.stellar.rest;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import host.galactic.data.entities.VotingEntity;
 import host.galactic.stellar.StellarBaseTest;
+import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
 import host.galactic.stellar.rest.requests.voting.VotingEncryptChoiceRequest;
 import host.galactic.stellar.rest.responses.voting.VotingEncryptChoiceResponse;
 import host.galactic.stellar.rest.responses.voting.VotingEncryptionKeyResponse;
+import host.galactic.testutils.JsonUtils;
 import io.quarkus.logging.Log;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
+
+import java.time.Duration;
+import java.time.Instant;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -124,19 +132,26 @@ public class StellarVotingEncryptedChoiceTest extends StellarBaseTest {
     }
 
     private Long createAnEncryptedVoting() {
-        // TODO
-        return 0L;
+        return rest.voting.createAs("alice");
     }
 
-    private Long createAnEncryptedVotingWithEncryptUntilExpired() {
-        // TODO
-        return 0L;
+    @Transactional
+    public Long createAnEncryptedVotingWithEncryptUntilExpired() {
+        var votingId = rest.voting.createAs("alice");
+
+        var votingEntity = db.entityManager.find(VotingEntity.class, votingId);
+        votingEntity.encryptedUntil = Instant.now().minus(Duration.ofDays(1));
+        db.entityManager.persist(votingEntity);
+
+        return votingId;
     }
 
     private Long createAnUnencryptedVoting() {
-        // TODO
-        return 0L;
+        var jsonVotingRequest = JsonUtils.readJsonFile("valid-voting-request.json");
+        ((ObjectNode) jsonVotingRequest.get("dates")).remove("encryptedUntil");
+
+        var request = JsonUtils.convertJsonNodeTo(CreateVotingRequest.class, jsonVotingRequest);
+
+        return rest.voting.create(request, "alice");
     }
-
-
 }
