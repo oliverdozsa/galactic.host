@@ -3,10 +3,10 @@ package host.galactic.stellar.rest;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import host.galactic.data.entities.VotingEntity;
 import host.galactic.stellar.StellarBaseTest;
+import host.galactic.stellar.encryption.EncryptedChoice;
 import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
 import host.galactic.stellar.rest.requests.voting.VotingEncryptChoiceRequest;
 import host.galactic.stellar.rest.responses.voting.VotingEncryptChoiceResponse;
-import host.galactic.stellar.rest.responses.voting.VotingEncryptionKeyResponse;
 import host.galactic.testutils.JsonUtils;
 import io.quarkus.logging.Log;
 import io.quarkus.test.junit.QuarkusTest;
@@ -20,8 +20,7 @@ import java.time.Instant;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.blankOrNullString;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.*;
 
 @QuarkusTest
 public class StellarVotingEncryptedChoiceTest extends StellarBaseTest {
@@ -43,6 +42,14 @@ public class StellarVotingEncryptedChoiceTest extends StellarBaseTest {
                 .body().as(VotingEncryptChoiceResponse.class);
 
         assertThat(response.encryptedChoice(), not(blankOrNullString()));
+
+        expireEncryptionFor(votingId);
+
+        var voting = rest.voting.getById(votingId, "alice");
+        assertThat(voting.decryptionKey(), not(blankOrNullString()));
+
+        var decryptedChoice = EncryptedChoice.decryptFromBase64(response.encryptedChoice(), voting.decryptionKey());
+        assertThat(decryptedChoice, equalTo("someChoice"));
 
         Log.info("[  END TEST]: testEncryptedOption()");
     }
@@ -86,17 +93,9 @@ public class StellarVotingEncryptedChoiceTest extends StellarBaseTest {
         Log.info("[START TEST]: testGetEncryptionKeyOfVoting()");
 
         var votingId = createAnEncryptedVotingWithEncryptUntilExpired();
+        var response = rest.voting.getById(votingId, "alice");
 
-        var response = given()
-                .contentType(ContentType.JSON)
-                .when()
-                .get(rest.voting.url + "/" + votingId + "/encryptionkey")
-                .then()
-                .statusCode(Response.Status.OK.getStatusCode())
-                .extract()
-                .body().as(VotingEncryptionKeyResponse.class);
-
-        assertThat(response.key(), not(blankOrNullString()));
+        assertThat(response.decryptionKey(), not(blankOrNullString()));
 
         Log.info("[  END TEST]: testGetEncryptionKeyOfVoting()");
     }
@@ -105,14 +104,10 @@ public class StellarVotingEncryptedChoiceTest extends StellarBaseTest {
     public void testGetEncryptionKeyOfVotingButEncryptUntilDidNotExpire() {
         Log.info("[START TEST]: testGetEncryptionKeyOfVotingButEncryptUntilDidNotExpire()");
 
-        var votingId = createAnEncryptedVotingWithEncryptUntilExpired();
+        var votingId = createAnEncryptedVoting();
+        var response = rest.voting.getById(votingId, "alice");
 
-        given()
-                .contentType(ContentType.JSON)
-                .when()
-                .get(rest.voting.url + "/" + votingId + "/encryptionkey")
-                .then()
-                .statusCode(Response.Status.FORBIDDEN.getStatusCode());
+        assertThat(response.decryptionKey(), blankOrNullString());
 
         Log.info("[  END TEST]: testGetEncryptionKeyOfVotingButEncryptUntilDidNotExpire()");
     }
@@ -138,11 +133,7 @@ public class StellarVotingEncryptedChoiceTest extends StellarBaseTest {
     @Transactional
     public Long createAnEncryptedVotingWithEncryptUntilExpired() {
         var votingId = rest.voting.createAs("alice");
-
-        var votingEntity = db.entityManager.find(VotingEntity.class, votingId);
-        votingEntity.encryptedUntil = Instant.now().minus(Duration.ofDays(1));
-        db.entityManager.persist(votingEntity);
-
+        expireEncryptionFor(votingId);
         return votingId;
     }
 
@@ -153,5 +144,12 @@ public class StellarVotingEncryptedChoiceTest extends StellarBaseTest {
         var request = JsonUtils.convertJsonNodeTo(CreateVotingRequest.class, jsonVotingRequest);
 
         return rest.voting.create(request, "alice");
+    }
+
+    @Transactional
+    public void expireEncryptionFor(Long votingId) {
+        var votingEntity = db.entityManager.find(VotingEntity.class, votingId);
+        votingEntity.encryptedUntil = Instant.now().minus(Duration.ofDays(1));
+        db.entityManager.persist(votingEntity);
     }
 }

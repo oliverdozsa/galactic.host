@@ -2,7 +2,9 @@ package host.galactic.stellar.rest;
 
 import host.galactic.stellar.rest.requests.voting.AddVotersRequest;
 import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
+import host.galactic.stellar.rest.requests.voting.VotingEncryptChoiceRequest;
 import host.galactic.stellar.rest.responses.voting.PageResponse;
+import host.galactic.stellar.rest.responses.voting.VotingEncryptChoiceResponse;
 import host.galactic.stellar.rest.responses.voting.VotingResponse;
 import io.quarkus.security.Authenticated;
 import io.smallrye.mutiny.Uni;
@@ -25,6 +27,9 @@ public class StellarVotingRest {
 
     @Inject
     StellarVotingRestDelete votingRestDelete;
+
+    @Inject
+    StellarVotingRestEncryptedChoice votingRestEncryptedChoice;
 
     @POST
     @Authenticated
@@ -69,5 +74,14 @@ public class StellarVotingRest {
     @Consumes(MediaType.APPLICATION_JSON)
     public Uni<Response> addVoters(Long votingId, @Valid AddVotersRequest addVotersRequest) {
         return votingRestVotersOperations.addVoters(votingId, addVotersRequest);
+    }
+
+
+    @Path("/{votingId}/encryptchoice")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<VotingEncryptChoiceResponse> encryptChoice(Long votingId, @Valid VotingEncryptChoiceRequest request) {
+        return votingRestEncryptedChoice.encrypt(votingId, request);
     }
 }

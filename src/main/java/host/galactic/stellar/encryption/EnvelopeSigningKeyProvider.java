@@ -1,4 +1,4 @@
-package host.galactic.stellar.envelope;
+package host.galactic.stellar.encryption;
 
 import io.quarkus.logging.Log;
 import io.quarkus.runtime.LaunchMode;
@@ -17,8 +17,6 @@ import org.bouncycastle.openssl.PEMKeyPair;
 import org.bouncycastle.openssl.PEMParser;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
-import org.bouncycastle.util.io.pem.PemObject;
-import org.bouncycastle.util.io.pem.PemWriter;
 import org.eclipse.microprofile.config.ConfigProvider;
 
 import java.io.IOException;
@@ -27,7 +25,7 @@ import java.io.StringWriter;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 
-public class SigningKeyProvider {
+public class EnvelopeSigningKeyProvider {
     private AsymmetricCipherKeyPair keyPair;
     private String publicKeyAsPem;
 
