@@ -1,6 +1,7 @@
 package host.galactic.data.mappers;
 
 import host.galactic.data.entities.*;
+import host.galactic.stellar.encryption.EncryptedChoice;
 import host.galactic.stellar.rest.requests.voting.CreatePollOptionRequest;
 import host.galactic.stellar.rest.requests.voting.CreatePollRequest;
 import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
@@ -28,6 +29,10 @@ public class CreateVotingRequestMapper {
         votingEntity.isOnTestNetwork = request.useTestNet();
         votingEntity.fundingAccountSecret = fundingAccountSecret;
         votingEntity.polls = new ArrayList<>();
+
+        if (request.dates().encryptedUntil() != null) {
+            votingEntity.encryptionKey = EncryptedChoice.generateKeyBase64();
+        }
 
         for (int i = 0; i < request.polls().size(); i++) {
             addPollRequestTo(votingEntity, request.polls().get(i), i + 1);
