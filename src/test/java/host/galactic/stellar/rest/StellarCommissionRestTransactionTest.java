@@ -1,5 +1,6 @@
 package host.galactic.stellar.rest;
 
+import host.galactic.data.entities.VotingEntity;
 import host.galactic.stellar.StellarBaseTest;
 import host.galactic.stellar.rest.requests.commission.CommissionCreateTransactionRequest;
 
@@ -15,6 +16,9 @@ import jakarta.ws.rs.core.Response;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.time.Duration;
+import java.time.Instant;
 
 import static io.restassured.RestAssured.given;
 import static org.awaitility.Awaitility.await;
@@ -37,7 +41,7 @@ public class StellarCommissionRestTransactionTest extends StellarBaseTest {
     public void testCreateTransaction() {
         Log.info("[START TEST]: testCreateTransaction()");
 
-        var votingId = rest.voting.createWithParticipants("alice", new String[]{"bob", "charlie"});
+        var votingId = createAnAlreadyStartedVoting("alice", new String[]{"bob", "charlie"});
 
         waitForAssetAccountsToBeCreatedFor(votingId);
         waitForChannelAccountsToBeCreatedFor(votingId);
@@ -64,7 +68,7 @@ public class StellarCommissionRestTransactionTest extends StellarBaseTest {
     @Test
     public void testCreateTransactionButVotingIsNotPreparedYet() {
         Log.info("[START TEST]: testCreateTransactionButVotingIsNotPreparedYet()");
-        var votingId = rest.voting.createWithParticipants("alice", new String[]{"bob", "charlie"});
+        var votingId = createAnAlreadyStartedVoting("alice", new String[]{"bob", "charlie"});
 
         var message = votingId + "|" + TEST_STELLAR_ACCOUNT;
         var revealedSignatureBase64 = createRevealedSignatureFor(message, votingId, "bob");
@@ -85,7 +89,7 @@ public class StellarCommissionRestTransactionTest extends StellarBaseTest {
     public void testCreateTransactionInvalidVotingId() {
         Log.info("[START TEST]: testCreateTransactionInvalidVotingId()");
 
-        var votingId = rest.voting.createWithParticipants("alice", new String[]{"bob", "charlie"});
+        var votingId = createAnAlreadyStartedVoting("alice", new String[]{"bob", "charlie"});
 
         waitForAssetAccountsToBeCreatedFor(votingId);
         waitForChannelAccountsToBeCreatedFor(votingId);
@@ -109,7 +113,7 @@ public class StellarCommissionRestTransactionTest extends StellarBaseTest {
     public void testCreateTransactionButAlreadySentIt() {
         Log.info("[START TEST]: testCreateTransactionButAlreadySentIt()");
 
-        var votingId = rest.voting.createWithParticipants("alice", new String[]{"bob", "charlie"});
+        var votingId = createAnAlreadyStartedVoting("alice", new String[]{"bob", "charlie"});
 
         waitForAssetAccountsToBeCreatedFor(votingId);
         waitForChannelAccountsToBeCreatedFor(votingId);
@@ -141,7 +145,7 @@ public class StellarCommissionRestTransactionTest extends StellarBaseTest {
     public void testGetTransactionForSignature() {
         Log.info("[START TEST]: testGetTransactionForSignature()");
 
-        var votingId = rest.voting.createWithParticipants("alice", new String[]{"bob", "charlie"});
+        var votingId = createAnAlreadyStartedVoting("alice", new String[]{"bob", "charlie"});
 
         waitForAssetAccountsToBeCreatedFor(votingId);
         waitForChannelAccountsToBeCreatedFor(votingId);
@@ -178,7 +182,7 @@ public class StellarCommissionRestTransactionTest extends StellarBaseTest {
     public void testTryGettingNonExistingTransactionForSignature() {
         Log.info("[START TEST]: testTryGettingNonExistingTransactionForSignature()");
 
-        var votingId = rest.voting.createWithParticipants("alice", new String[]{"bob", "charlie"});
+        var votingId = createAnAlreadyStartedVoting("alice", new String[]{"bob", "charlie"});
 
         waitForAssetAccountsToBeCreatedFor(votingId);
         waitForChannelAccountsToBeCreatedFor(votingId);
@@ -211,7 +215,7 @@ public class StellarCommissionRestTransactionTest extends StellarBaseTest {
     public void testCreateTransactionButSignatureIsInvalid() {
         Log.info("[START TEST]: testCreateTransactionButSignatureIsInvalid()");
 
-        var votingId = rest.voting.createWithParticipants("alice", new String[]{"bob", "charlie"});
+        var votingId = createAnAlreadyStartedVoting("alice", new String[]{"bob", "charlie"});
 
         waitForAssetAccountsToBeCreatedFor(votingId);
         waitForChannelAccountsToBeCreatedFor(votingId);
@@ -259,5 +263,16 @@ public class StellarCommissionRestTransactionTest extends StellarBaseTest {
         var envelopeSignatureBytes = utils.fromBase64(envelopeSignatureResponse.signature());
         var revealedSignature = rsaEnvelope.revealedSignature(envelopeSignatureBytes);
         return utils.toBase64(revealedSignature);
+    }
+
+    @Transactional
+    public Long createAnAlreadyStartedVoting(String owner, String[] participants) {
+        var votingId = rest.voting.createWithParticipants(owner, participants);
+
+        var voting = db.entityManager.find(VotingEntity.class, votingId);
+        voting.startDate = Instant.now().minus(Duration.ofDays(2));
+        db.entityManager.persist(voting);
+
+        return votingId;
     }
 }

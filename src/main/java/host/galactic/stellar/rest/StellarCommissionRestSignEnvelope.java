@@ -20,6 +20,7 @@ import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.crypto.engines.RSAEngine;
 import org.hibernate.reactive.mutiny.Mutiny;
 
+import java.time.Instant;
 import java.util.Base64;
 
 import static host.galactic.stellar.rest.VotingChecks.doesUserNotParticipateIn;
@@ -46,6 +47,7 @@ public class StellarCommissionRestSignEnvelope {
         return votingRepository.getById(votingId)
                 .onItem()
                 .call(v -> Mutiny.fetch(v.voters))
+                .invoke(this::checkIfVotingHasStartedButNotEndedAlready)
                 .invoke(this::checkIfUserIsAllowedToSignEnvelope)
                 .call(this::checkIfUserSignedAnEnvelopeAlready)
                 .onItem()
@@ -91,5 +93,16 @@ public class StellarCommissionRestSignEnvelope {
         var signatureBytes = rsaEngine.processBlock(envelopeBytes, 0, envelopeBytes.length);
 
         return Base64.getEncoder().encodeToString(signatureBytes);
+    }
+
+    private void checkIfVotingHasStartedButNotEndedAlready(VotingEntity voting) {
+        var now = Instant.now();
+        if(voting.startDate.isAfter(now)) {
+            throw new ForbiddenException("Voting has not started yet!");
+        }
+
+        if(voting.endDate.isBefore(now)) {
+            throw new ForbiddenException("Voting ended!");
+        }
     }
 }

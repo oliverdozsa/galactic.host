@@ -1,14 +1,18 @@
 package host.galactic.stellar;
 
+import host.galactic.data.entities.VotingEntity;
 import host.galactic.stellar.rest.requests.voting.AddVotersRequest;
 import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
 import host.galactic.stellar.rest.responses.voting.VotingResponse;
 import host.galactic.testutils.AuthForTest;
 import host.galactic.testutils.JsonUtils;
 import io.restassured.http.ContentType;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
 
 import java.net.URL;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 

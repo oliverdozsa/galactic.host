@@ -1,5 +1,6 @@
 package host.galactic.stellar.rest;
 
+import host.galactic.data.entities.VotingEntity;
 import host.galactic.stellar.StellarBaseTest;
 import host.galactic.stellar.rest.requests.commission.CommissionSignEnvelopeRequest;
 import host.galactic.stellar.rest.responses.commission.CommissionSignEnvelopeResponse;
@@ -12,6 +13,9 @@ import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.time.Duration;
+import java.time.Instant;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -32,7 +36,7 @@ public class StellarCommissionRestSignEnvelopeTest extends StellarBaseTest {
     public void testSignEnvelope() {
         Log.info("[START TEST]: testSignEnvelope()");
 
-        var votingId = rest.voting.createWithParticipants("alice", new String[]{"charlie", "bob"});
+        var votingId = createAnAlreadyStartedVoting("alice", new String[]{"charlie", "bob"});
 
         var base64Envelope = utils.toBase64("someMessage");
         var request = new CommissionSignEnvelopeRequest(base64Envelope);
@@ -57,7 +61,7 @@ public class StellarCommissionRestSignEnvelopeTest extends StellarBaseTest {
     public void testSignEnvelopeUnauthenticated() {
         Log.info("[START TEST]: testSignEnvelopeUnauthenticated()");
 
-        var votingId = rest.voting.createWithParticipants("alice", new String[]{"charlie", "bob"});
+        var votingId = createAnAlreadyStartedVoting("alice", new String[]{"charlie", "bob"});
         var base64Envelope = utils.toBase64("someMessage");
         var request = new CommissionSignEnvelopeRequest(base64Envelope);
 
@@ -76,7 +80,7 @@ public class StellarCommissionRestSignEnvelopeTest extends StellarBaseTest {
     public void testSignEnvelopeUserIsNotParticipant() {
         Log.info("[START TEST]: testSignEnvelopeUserIsNotParticipant()");
 
-        var votingId = rest.voting.createWithParticipants("alice", new String[]{"charlie", "bob"});
+        var votingId = createAnAlreadyStartedVoting("alice", new String[]{"charlie", "bob"});
 
         var base64Envelope = utils.toBase64("someMessage");
         var request = new CommissionSignEnvelopeRequest(base64Envelope);
@@ -117,7 +121,7 @@ public class StellarCommissionRestSignEnvelopeTest extends StellarBaseTest {
     public void testDoubleSigningEnvelope() {
         Log.info("[START TEST]: testDoubleSigningEnvelope()");
 
-        var votingId = rest.voting.createWithParticipants("alice", new String[]{"charlie", "bob"});
+        var votingId = createAnAlreadyStartedVoting("alice", new String[]{"charlie", "bob"});
 
         var base64Envelope = utils.toBase64("someMessage");
         var request = new CommissionSignEnvelopeRequest(base64Envelope);
@@ -154,7 +158,7 @@ public class StellarCommissionRestSignEnvelopeTest extends StellarBaseTest {
     public void testGetSignature() {
         Log.info("[START TEST]: testGetSignature()");
 
-        var votingId = rest.voting.createWithParticipants("alice", new String[]{"charlie", "bob"});
+        var votingId = createAnAlreadyStartedVoting("alice", new String[]{"charlie", "bob"});
 
         var base64Envelope = utils.toBase64("someMessage");
         var request = new CommissionSignEnvelopeRequest(base64Envelope);
@@ -196,5 +200,68 @@ public class StellarCommissionRestSignEnvelopeTest extends StellarBaseTest {
                 .statusCode(Response.Status.NOT_FOUND.getStatusCode());
 
         Log.info("[  END TEST]: testGetNonExistingSignature()");
+    }
+
+    @Test
+    public void testSigningAnEnvelopeButVotingIsNotStarted() {
+        Log.info("[START TEST]: testSigningAnEnvelopeButVotingIsNotStarted()");
+
+        var votingId = rest.voting.createWithParticipants("alice", new String[]{"charlie", "bob"});
+
+        var base64Envelope = utils.toBase64("someMessage");
+        var request = new CommissionSignEnvelopeRequest(base64Envelope);
+        var asBob = auth.loginAs("bob");
+        given()
+                .auth().oauth2(asBob)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .post(rest.commission.url + "/signenvelope/" + votingId)
+                .then()
+                .statusCode(Response.Status.FORBIDDEN.getStatusCode());
+
+        Log.info("[  END TEST]: testSigningAnEnvelopeButVotingIsNotStarted()");
+    }
+
+    @Test
+    public void testSigningAnEnvelopeButVotingEnded() {
+        Log.info("[START TEST]: testSigningAnEnvelopeButVotingEnded()");
+
+        var votingId = rest.voting.createWithParticipants("alice", new String[]{"charlie", "bob"});
+        setEndDateBeforeTodayFor(votingId);
+
+        var base64Envelope = utils.toBase64("someMessage");
+        var request = new CommissionSignEnvelopeRequest(base64Envelope);
+        var asBob = auth.loginAs("bob");
+        given()
+                .auth().oauth2(asBob)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .post(rest.commission.url + "/signenvelope/" + votingId)
+                .then()
+                .statusCode(Response.Status.FORBIDDEN.getStatusCode());
+
+        Log.info("[  END TEST]: testSigningAnEnvelopeButVotingEnded()");
+    }
+
+    private Long createAnAlreadyStartedVoting(String owner, String[] participants) {
+        var votingId = rest.voting.createWithParticipants(owner, participants);
+        setStartDayBeforeTodayFor(votingId);
+        return votingId;
+    }
+
+    @Transactional
+    public void setStartDayBeforeTodayFor(Long votingId) {
+        var voting = db.entityManager.find(VotingEntity.class, votingId);
+        voting.startDate = Instant.now().minus(Duration.ofDays(2));
+        db.entityManager.persist(voting);
+    }
+
+    @Transactional
+    public void setEndDateBeforeTodayFor(Long votingId) {
+        var voting = db.entityManager.find(VotingEntity.class, votingId);
+        voting.endDate = Instant.now().minus(Duration.ofDays(1));
+        db.entityManager.persist(voting);
     }
 }
