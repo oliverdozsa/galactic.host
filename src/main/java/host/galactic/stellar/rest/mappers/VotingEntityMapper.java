@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 import static host.galactic.stellar.operations.StellarUtils.toAccountId;
 
 public class VotingEntityMapper {
-    public static VotingResponse from(VotingEntity entity) {
+    public static VotingResponse from(VotingEntity entity, boolean isParticipant) {
         var polls = pollsFrom(entity);
 
         var fundingAccountId = toAccountId(entity.fundingAccountSecret);
@@ -44,7 +44,8 @@ public class VotingEntityMapper {
                 fundingAccountId,
                 distributionAccountId,
                 ballotAccountId,
-                issuerAccountId
+                issuerAccountId,
+                isParticipant
         );
     }
 

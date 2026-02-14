@@ -19,6 +19,7 @@ import org.hibernate.reactive.mutiny.Mutiny;
 import java.util.List;
 
 import static host.galactic.stellar.rest.VotingChecks.doesUserNotParticipateIn;
+import static host.galactic.stellar.rest.VotingChecks.doesUserParticipateIn;
 
 @RequestScoped
 class StellarVotingRestGetVotings {
@@ -37,9 +38,8 @@ class StellarVotingRestGetVotings {
                 .ifNull()
                 .failWith(new NotFoundException())
                 .onItem()
-                .call(e -> Mutiny.fetch(e.voters))
                 .invoke(this::checkIfUserIsAllowedToGetVoting)
-                .map(VotingEntityMapper::from)
+                .map(e -> VotingEntityMapper.from(e, doesUserParticipateIn(e, userInfo.getEmail())))
                 .onFailure()
                 .invoke(t -> Log.warn("byId(): Could not get voting!", t));
     }
@@ -73,7 +73,7 @@ class StellarVotingRestGetVotings {
 
     private PageResponse<VotingResponse> toResponse(Page<VotingEntity> page) {
         var items = page.items().stream()
-                .map(VotingEntityMapper::from)
+                .map(e -> VotingEntityMapper.from(e, doesUserParticipateIn(e, userInfo.getEmail())))
                 .toList();
 
         return new PageResponse<>(items, page.totalPages());

@@ -72,7 +72,7 @@ public class VotingEntity extends PanacheEntityBase {
     @Column(name = "num_of_voters")
     public Integer numOfVoters;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "votings_partipicants",
             joinColumns = {@JoinColumn(name = "voting_id")},

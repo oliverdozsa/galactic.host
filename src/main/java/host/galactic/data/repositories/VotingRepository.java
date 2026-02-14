@@ -43,7 +43,6 @@ public class VotingRepository implements PanacheRepository<VotingEntity> {
 
         return findAndAssertById(votingId)
                 .onItem()
-                .call(v -> Mutiny.fetch(v.voters))
                 .invoke(v -> {
                     checkIfMaxVotersWouldBeExceeded(v, voters);
                     v.voters.addAll(voters);

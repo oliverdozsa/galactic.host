@@ -46,7 +46,6 @@ public class StellarCommissionRestSignEnvelope {
 
         return votingRepository.getById(votingId)
                 .onItem()
-                .call(v -> Mutiny.fetch(v.voters))
                 .invoke(this::checkIfVotingHasStartedButNotEndedAlready)
                 .invoke(this::checkIfUserIsAllowedToSignEnvelope)
                 .call(this::checkIfUserSignedAnEnvelopeAlready)

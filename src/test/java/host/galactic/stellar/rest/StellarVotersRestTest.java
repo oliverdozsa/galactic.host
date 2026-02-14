@@ -21,7 +21,7 @@ import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.*;
 
 @QuarkusTest
 public class StellarVotersRestTest extends StellarBaseTest {
@@ -91,11 +91,16 @@ public class StellarVotersRestTest extends StellarBaseTest {
                 .statusCode(Response.Status.NO_CONTENT.getStatusCode());
 
         var withAccessTokenForEmily = auth.loginAs("emily");
-        given()
+        var response = given()
                 .auth().oauth2(withAccessTokenForEmily)
                 .get(location)
                 .then()
-                .statusCode(Response.Status.OK.getStatusCode());
+                .statusCode(Response.Status.OK.getStatusCode())
+                .extract()
+                .body()
+                .as(VotingResponse.class);
+
+        assertThat(response.isParticipant(), is(true));
 
         Log.info("[  END TEST]: testGetPrivateVotingByParticipant()\n\n");
     }

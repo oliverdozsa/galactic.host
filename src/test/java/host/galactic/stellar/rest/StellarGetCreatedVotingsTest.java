@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import host.galactic.stellar.StellarBaseTest;
 import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
 import host.galactic.stellar.rest.responses.voting.PageResponse;
+import host.galactic.stellar.rest.responses.voting.VotingResponse;
 import host.galactic.testutils.AuthForTest;
 import host.galactic.testutils.JsonUtils;
 import io.quarkus.logging.Log;
@@ -83,11 +84,16 @@ public class StellarGetCreatedVotingsTest extends StellarBaseTest {
         var votingId = createPrivateVotingAs("alice");
 
         var withAccessToken = auth.loginAs("alice");
-        given()
+        var response = given()
                 .auth().oauth2(withAccessToken)
                 .get(rest.voting.url + "/" + votingId)
                 .then()
-                .statusCode(Response.Status.OK.getStatusCode());
+                .statusCode(Response.Status.OK.getStatusCode())
+                .extract()
+                .body()
+                .as(VotingResponse.class);
+
+        assertThat(response.isParticipant(), is(false));
     }
 
     @Test

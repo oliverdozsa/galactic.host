@@ -23,6 +23,7 @@ public record VotingResponse (
         String fundingAccountId,
         String distributionAccountId,
         String ballotAccountId,
-        String issuerAccountId
+        String issuerAccountId,
+        Boolean isParticipant
 ) {
 }

@@ -9,6 +9,10 @@ public class VotingChecks {
                 .noneMatch(e -> e.equals(userEmail));
     }
 
+    public static boolean doesUserParticipateIn(VotingEntity entity, String userEmail) {
+        return !doesUserNotParticipateIn(entity, userEmail);
+    }
+
     public static boolean areAssetAccountsCreated(VotingEntity entity) {
         return entity.ballotAccountSecret != null;
     }
