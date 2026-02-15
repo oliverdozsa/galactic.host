@@ -96,7 +96,7 @@ public class EnvelopeSigningKeyProvider {
         BigInteger publicExponent = new BigInteger("10001", 16);
         SecureRandom random = new SecureRandom();
         RSAKeyGenerationParameters keyGenParams = new RSAKeyGenerationParameters(
-                publicExponent, random, 4096, 80
+                publicExponent, random, 2048, 80
         );
 
         generator.init(keyGenParams);

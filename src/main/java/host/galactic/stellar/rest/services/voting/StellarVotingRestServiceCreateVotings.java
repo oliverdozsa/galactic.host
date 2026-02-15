@@ -1,10 +1,10 @@
-package host.galactic.stellar.rest;
+package host.galactic.stellar.rest.services.voting;
 
 import host.galactic.data.entities.VotingEntity;
 import host.galactic.data.repositories.UserRepository;
 import host.galactic.data.repositories.VotingRepository;
-import host.galactic.stellar.operations.StellarOperations;
 import host.galactic.stellar.operations.StellarOperationsProducer;
+import host.galactic.stellar.rest.StellarVotingRest;
 import host.galactic.stellar.rest.requests.voting.CreateVotingRequest;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.quarkus.logging.Log;
@@ -16,10 +16,8 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriBuilder;
 import org.stellar.sdk.KeyPair;
 
-import java.net.URI;
-
 @RequestScoped
-class StellarVotingRestCreateVotings {
+public class StellarVotingRestServiceCreateVotings {
     @Inject
     VotingRepository votingRepository;
 
@@ -43,7 +41,7 @@ class StellarVotingRestCreateVotings {
         return deductEstimatedCost(createVotingRequest, internalFundingAccount)
                 .chain(v -> userRepository.findByEmail(userInfo.getEmail()))
                 .chain(u -> votingRepository.createFrom(createVotingRequest, u, internalFundingAccountSecret))
-                .map(StellarVotingRestCreateVotings::toCreatedResponse)
+                .map(StellarVotingRestServiceCreateVotings::toCreatedResponse)
                 .onFailure()
                 .invoke(t -> Log.warn("create(): Could not create voting!", t));
     }

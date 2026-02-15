@@ -28,7 +28,7 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.fail;
 
 @QuarkusTest
-public class StellarCommissionRestTransactionTest extends StellarBaseTest {
+public class StellarCommissionRestServiceTransactionTest extends StellarBaseTest {
     private static final String TEST_STELLAR_ACCOUNT = "GBM3C4UKUCG3COTA3G4FXAG5427CXU4DADODFTGNEEJJC55WOEODU7KG";
 
     @BeforeEach

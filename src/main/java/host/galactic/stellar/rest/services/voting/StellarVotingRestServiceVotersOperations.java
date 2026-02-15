@@ -1,4 +1,4 @@
-package host.galactic.stellar.rest;
+package host.galactic.stellar.rest.services.voting;
 
 import host.galactic.data.entities.VotingEntity;
 import host.galactic.data.repositories.UserRepository;
@@ -14,7 +14,7 @@ import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.core.Response;
 
 @RequestScoped
-class StellarVotingRestVotersOperations {
+public class StellarVotingRestServiceVotersOperations {
     @Inject
     UserRepository userRepository;
 

@@ -1,4 +1,4 @@
-package host.galactic.stellar.rest;
+package host.galactic.stellar.rest.services.commission;
 
 import host.galactic.data.entities.VotingEntity;
 import host.galactic.data.repositories.EnvelopeSignatureRepository;
@@ -18,15 +18,14 @@ import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.NotFoundException;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.crypto.engines.RSAEngine;
-import org.hibernate.reactive.mutiny.Mutiny;
 
 import java.time.Instant;
 import java.util.Base64;
 
-import static host.galactic.stellar.rest.VotingChecks.doesUserNotParticipateIn;
+import static host.galactic.stellar.rest.services.VotingChecks.doesUserNotParticipateIn;
 
 @RequestScoped
-public class StellarCommissionRestSignEnvelope {
+public class StellarCommissionRestServiceSignEnvelope {
     @Inject
     UserInfo userInfo;
 

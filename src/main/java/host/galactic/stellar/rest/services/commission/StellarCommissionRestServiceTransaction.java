@@ -1,4 +1,4 @@
-package host.galactic.stellar.rest;
+package host.galactic.stellar.rest.services.commission;
 
 import host.galactic.data.entities.ChannelAccountEntity;
 import host.galactic.data.entities.VotingEntity;
@@ -7,6 +7,7 @@ import host.galactic.data.repositories.VoterTransactionRepository;
 import host.galactic.data.repositories.VotingRepository;
 import host.galactic.stellar.operations.StellarCreateVoterAccountTxPayload;
 import host.galactic.stellar.operations.StellarOperationsProducer;
+import host.galactic.stellar.rest.services.VotingChecks;
 import host.galactic.stellar.rest.requests.commission.CommissionCreateTransactionRequest;
 import host.galactic.stellar.rest.requests.commission.CommissionGetTransactionOfSignatureRequest;
 import host.galactic.stellar.rest.responses.commission.CommissionCreateTransactionResponse;
@@ -29,7 +30,7 @@ import org.bouncycastle.crypto.signers.PSSSigner;
 import java.util.Base64;
 
 @RequestScoped
-public class StellarCommissionRestTransaction {
+public class StellarCommissionRestServiceTransaction {
     @Inject
     VotingRepository votingRepository;
 

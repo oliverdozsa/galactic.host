@@ -1,4 +1,4 @@
-package host.galactic.stellar.rest;
+package host.galactic.stellar.rest.services.commission;
 
 import host.galactic.stellar.rest.responses.commission.CommissionGetPublicKeyResponse;
 import io.quarkus.logging.Log;
@@ -8,7 +8,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 @RequestScoped
-class StellarCommissionRestPublicKey {
+public class StellarCommissionRestServicePublicKey {
     @Inject
     @Named("signingPublicKeyPem")
     private String publicSigningKey;

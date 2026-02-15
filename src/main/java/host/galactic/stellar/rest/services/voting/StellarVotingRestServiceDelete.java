@@ -1,4 +1,4 @@
-package host.galactic.stellar.rest;
+package host.galactic.stellar.rest.services.voting;
 
 import host.galactic.data.repositories.VotingRepository;
 import io.quarkus.logging.Log;
@@ -9,7 +9,7 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 
 @RequestScoped
-class StellarVotingRestDelete {
+public class StellarVotingRestServiceDelete {
     @Inject
     VotingRepository votingRepository;
 

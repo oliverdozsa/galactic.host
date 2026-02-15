@@ -19,7 +19,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
 
 @QuarkusTest
-public class StellarCommissionRestPublicKeyTest extends StellarBaseTest {
+public class StellarCommissionRestServicePublicKeyTest extends StellarBaseTest {
     @BeforeEach
     @Transactional
     public void deleteAllVotings() {

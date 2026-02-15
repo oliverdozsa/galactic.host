@@ -7,6 +7,9 @@ import host.galactic.stellar.rest.responses.commission.CommissionCreateTransacti
 import host.galactic.stellar.rest.responses.commission.CommissionGetPublicKeyResponse;
 import host.galactic.stellar.rest.responses.commission.CommissionGetTransactionOfSignatureResponse;
 import host.galactic.stellar.rest.responses.commission.CommissionSignEnvelopeResponse;
+import host.galactic.stellar.rest.services.commission.StellarCommissionRestServicePublicKey;
+import host.galactic.stellar.rest.services.commission.StellarCommissionRestServiceSignEnvelope;
+import host.galactic.stellar.rest.services.commission.StellarCommissionRestServiceTransaction;
 import io.quarkus.security.Authenticated;
 import io.smallrye.mutiny.Uni;
 import jakarta.inject.Inject;
@@ -17,13 +20,13 @@ import jakarta.ws.rs.core.MediaType;
 @Path("/stellar/commission")
 public class StellarCommissionRest {
     @Inject
-    StellarCommissionRestPublicKey publicKeyRest;
+    StellarCommissionRestServicePublicKey publicKeyRest;
 
     @Inject
-    StellarCommissionRestSignEnvelope signEnvelope;
+    StellarCommissionRestServiceSignEnvelope signEnvelope;
 
     @Inject
-    StellarCommissionRestTransaction transaction;
+    StellarCommissionRestServiceTransaction transaction;
 
     @Path("/publickey")
     @GET

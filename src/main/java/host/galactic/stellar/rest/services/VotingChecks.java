@@ -1,4 +1,4 @@
-package host.galactic.stellar.rest;
+package host.galactic.stellar.rest.services;
 
 import host.galactic.data.entities.VotingEntity;
 

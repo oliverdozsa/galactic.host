@@ -1,4 +1,4 @@
-package host.galactic.stellar.rest;
+package host.galactic.stellar.rest.services.voting;
 
 import host.galactic.data.entities.VotingEntity;
 import host.galactic.data.repositories.VotingRepository;
@@ -13,7 +13,7 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.BadRequestException;
 
 @RequestScoped
-public class StellarVotingRestEncryptedChoice {
+public class StellarVotingRestServiceEncryptedChoice {
     @Inject
     VotingRepository votingRepository;
 

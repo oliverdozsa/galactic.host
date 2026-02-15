@@ -1,4 +1,4 @@
-package host.galactic.stellar.rest;
+package host.galactic.stellar.rest.services.voting;
 
 import host.galactic.data.entities.Visibility;
 import host.galactic.data.entities.VotingEntity;
@@ -14,15 +14,12 @@ import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
-import org.hibernate.reactive.mutiny.Mutiny;
 
-import java.util.List;
-
-import static host.galactic.stellar.rest.VotingChecks.doesUserNotParticipateIn;
-import static host.galactic.stellar.rest.VotingChecks.doesUserParticipateIn;
+import static host.galactic.stellar.rest.services.VotingChecks.doesUserNotParticipateIn;
+import static host.galactic.stellar.rest.services.VotingChecks.doesUserParticipateIn;
 
 @RequestScoped
-class StellarVotingRestGetVotings {
+public class StellarVotingRestServiceGetVotings {
     @Inject
     VotingRepository votingRepository;
 

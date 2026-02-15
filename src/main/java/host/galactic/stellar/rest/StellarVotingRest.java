@@ -6,6 +6,7 @@ import host.galactic.stellar.rest.requests.voting.VotingEncryptChoiceRequest;
 import host.galactic.stellar.rest.responses.voting.PageResponse;
 import host.galactic.stellar.rest.responses.voting.VotingEncryptChoiceResponse;
 import host.galactic.stellar.rest.responses.voting.VotingResponse;
+import host.galactic.stellar.rest.services.voting.*;
 import io.quarkus.security.Authenticated;
 import io.smallrye.mutiny.Uni;
 import jakarta.inject.Inject;
@@ -17,19 +18,19 @@ import jakarta.ws.rs.core.Response;
 @Path("/stellar/votings")
 public class StellarVotingRest {
     @Inject
-    StellarVotingRestCreateVotings votingRestCreate;
+    StellarVotingRestServiceCreateVotings votingRestCreate;
 
     @Inject
-    StellarVotingRestGetVotings votingRestGet;
+    StellarVotingRestServiceGetVotings votingRestGet;
 
     @Inject
-    StellarVotingRestVotersOperations votingRestVotersOperations;
+    StellarVotingRestServiceVotersOperations votingRestVotersOperations;
 
     @Inject
-    StellarVotingRestDelete votingRestDelete;
+    StellarVotingRestServiceDelete votingRestDelete;
 
     @Inject
-    StellarVotingRestEncryptedChoice votingRestEncryptedChoice;
+    StellarVotingRestServiceEncryptedChoice votingRestEncryptedChoice;
 
     @POST
     @Authenticated
